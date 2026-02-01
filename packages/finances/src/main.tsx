@@ -1,5 +1,5 @@
 import { createRouter, RouterProvider } from "@tanstack/react-router"
-import { StrictMode } from "react"
+import { type ReactNode, StrictMode } from "react"
 import ReactDOM from "react-dom/client"
 
 import * as TanStackQueryProvider from "@/integrations/tanstack-query/root-provider"
@@ -29,6 +29,13 @@ const router = createRouter({
 declare module "@tanstack/react-router" {
   interface Register {
     router: typeof router
+  }
+
+  interface StaticDataRouteOption {
+    name: string
+    permission: string
+    icon: ReactNode
+    groupName?: string
   }
 }
 

@@ -132,7 +132,7 @@ export function DataTable<TData>({
           </TableHeader>
 
           <TableBody>
-            {isLoading ? (
+            {isLoading && table.getRowModel().rows.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={columns.length}>
                   <div className="text-muted-foreground flex items-center justify-center py-8 text-sm">加载中...</div>
@@ -161,7 +161,7 @@ export function DataTable<TData>({
       </div>
 
       {pagination && (
-        <div className="flex items-center gap-3 overflow-x-auto">
+        <div className="flex items-center gap-3 overflow-x-auto py-2">
           <div className="flex items-center gap-3 text-muted-foreground text-sm whitespace-nowrap">
             <div>共 {pagination.total} 条</div>
             {pagination.onPageSizeChange && (
@@ -214,7 +214,6 @@ export function DataTable<TData>({
               <Button
                 key={p}
                 variant={p === currentPage ? "default" : "outline"}
-                size="sm"
                 className="min-w-8"
                 onClick={() => pagination.onPageChange(p)}
               >

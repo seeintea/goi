@@ -11,7 +11,10 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as UserListRouteImport } from './routes/user-list'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as SysManageRouteRouteImport } from './routes/sys-manage/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as SysManageUserRouteImport } from './routes/sys-manage/user'
+import { Route as SysManageRoleRouteImport } from './routes/sys-manage/role'
 
 const UserListRoute = UserListRouteImport.update({
   id: '/user-list',
@@ -23,38 +26,82 @@ const LoginRoute = LoginRouteImport.update({
   path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SysManageRouteRoute = SysManageRouteRouteImport.update({
+  id: '/sys-manage',
+  path: '/sys-manage',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SysManageUserRoute = SysManageUserRouteImport.update({
+  id: '/user',
+  path: '/user',
+  getParentRoute: () => SysManageRouteRoute,
+} as any)
+const SysManageRoleRoute = SysManageRoleRouteImport.update({
+  id: '/role',
+  path: '/role',
+  getParentRoute: () => SysManageRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/sys-manage': typeof SysManageRouteRouteWithChildren
   '/login': typeof LoginRoute
   '/user-list': typeof UserListRoute
+  '/sys-manage/role': typeof SysManageRoleRoute
+  '/sys-manage/user': typeof SysManageUserRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/sys-manage': typeof SysManageRouteRouteWithChildren
   '/login': typeof LoginRoute
   '/user-list': typeof UserListRoute
+  '/sys-manage/role': typeof SysManageRoleRoute
+  '/sys-manage/user': typeof SysManageUserRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/sys-manage': typeof SysManageRouteRouteWithChildren
   '/login': typeof LoginRoute
   '/user-list': typeof UserListRoute
+  '/sys-manage/role': typeof SysManageRoleRoute
+  '/sys-manage/user': typeof SysManageUserRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/login' | '/user-list'
+  fullPaths:
+    | '/'
+    | '/sys-manage'
+    | '/login'
+    | '/user-list'
+    | '/sys-manage/role'
+    | '/sys-manage/user'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/login' | '/user-list'
-  id: '__root__' | '/' | '/login' | '/user-list'
+  to:
+    | '/'
+    | '/sys-manage'
+    | '/login'
+    | '/user-list'
+    | '/sys-manage/role'
+    | '/sys-manage/user'
+  id:
+    | '__root__'
+    | '/'
+    | '/sys-manage'
+    | '/login'
+    | '/user-list'
+    | '/sys-manage/role'
+    | '/sys-manage/user'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  SysManageRouteRoute: typeof SysManageRouteRouteWithChildren
   LoginRoute: typeof LoginRoute
   UserListRoute: typeof UserListRoute
 }
@@ -75,6 +122,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/sys-manage': {
+      id: '/sys-manage'
+      path: '/sys-manage'
+      fullPath: '/sys-manage'
+      preLoaderRoute: typeof SysManageRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -82,11 +136,40 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/sys-manage/user': {
+      id: '/sys-manage/user'
+      path: '/user'
+      fullPath: '/sys-manage/user'
+      preLoaderRoute: typeof SysManageUserRouteImport
+      parentRoute: typeof SysManageRouteRoute
+    }
+    '/sys-manage/role': {
+      id: '/sys-manage/role'
+      path: '/role'
+      fullPath: '/sys-manage/role'
+      preLoaderRoute: typeof SysManageRoleRouteImport
+      parentRoute: typeof SysManageRouteRoute
+    }
   }
 }
 
+interface SysManageRouteRouteChildren {
+  SysManageRoleRoute: typeof SysManageRoleRoute
+  SysManageUserRoute: typeof SysManageUserRoute
+}
+
+const SysManageRouteRouteChildren: SysManageRouteRouteChildren = {
+  SysManageRoleRoute: SysManageRoleRoute,
+  SysManageUserRoute: SysManageUserRoute,
+}
+
+const SysManageRouteRouteWithChildren = SysManageRouteRoute._addFileChildren(
+  SysManageRouteRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  SysManageRouteRoute: SysManageRouteRouteWithChildren,
   LoginRoute: LoginRoute,
   UserListRoute: UserListRoute,
 }

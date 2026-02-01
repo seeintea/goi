@@ -1,45 +1,46 @@
-import { Link, useLocation } from "@tanstack/react-router"
+import { useMatches } from "@tanstack/react-router"
 
 import {
   Breadcrumb,
   BreadcrumbItem,
-  BreadcrumbLink,
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb"
 
-const labels: Record<string, string> = {
-  "/": "首页",
-}
-
 export function AppBreadcrumb() {
-  const { pathname } = useLocation()
+  const matches = useMatches()
+  const crumbs = matches.map((match) => {
+    const staticData = (match as unknown as { staticData?: { name?: string } })?.staticData ?? null
+    const name = staticData?.name ?? ""
+    return { to: match.routeId, name }
+  })
 
-  const label = labels[pathname] ?? pathname
-
-  if (pathname === "/") {
-    return (
-      <Breadcrumb>
-        <BreadcrumbList>
-          <BreadcrumbItem>
-            <BreadcrumbPage>{label}</BreadcrumbPage>
-          </BreadcrumbItem>
-        </BreadcrumbList>
-      </Breadcrumb>
-    )
+  if (crumbs.length === 0) {
+    return null
   }
 
   return (
     <Breadcrumb>
       <BreadcrumbList>
-        <BreadcrumbItem>
-          <BreadcrumbLink render={<Link to="/" />}>首页</BreadcrumbLink>
-        </BreadcrumbItem>
-        <BreadcrumbSeparator />
-        <BreadcrumbItem>
-          <BreadcrumbPage>{label}</BreadcrumbPage>
-        </BreadcrumbItem>
+        {crumbs.flatMap((crumb, index) => {
+          const isLast = index === crumbs.length - 1
+
+          if (isLast) {
+            return [
+              <BreadcrumbItem key={crumb.to}>
+                <BreadcrumbPage>{crumb.name}</BreadcrumbPage>
+              </BreadcrumbItem>,
+            ]
+          }
+
+          return [
+            <BreadcrumbItem key={crumb.to}>
+              <BreadcrumbPage>{crumb.name}</BreadcrumbPage>
+            </BreadcrumbItem>,
+            <BreadcrumbSeparator key={`${crumb.to}-sep`} />,
+          ]
+        })}
       </BreadcrumbList>
     </Breadcrumb>
   )

@@ -1,32 +1,25 @@
 import { Link, useLocation } from "@tanstack/react-router"
 
-import { Separator } from "@/components/ui/separator"
 import {
   Sidebar,
   SidebarContent,
-  SidebarFooter,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarSeparator,
 } from "@/components/ui/sidebar"
-import { useUser } from "@/stores"
-
-type NavItem = {
-  to: "/" | "/login" | "/user-list"
-  label: string
-}
-
-const navItems: NavItem[] = [
-  { to: "/", label: "首页" },
-  { to: "/user-list", label: "用户列表" },
-]
+import { useRouteTree } from "@/hooks/useRouteTree"
 
 export function AppSidebar() {
   const { pathname } = useLocation()
-  const username = useUser((s) => s.username)
-  const roleName = useUser((s) => s.roleName)
+
+  const rootTree = useRouteTree()
+  const flatItems = rootTree.filter((n) => !n.isGroup).flatMap((n) => n.children)
+  const groupNodes = rootTree.filter((n) => n.isGroup)
 
   return (
     <Sidebar collapsible="icon">
@@ -50,28 +43,49 @@ export function AppSidebar() {
       </SidebarHeader>
 
       <SidebarContent className="p-2">
-        <SidebarMenu>
-          {navItems.map((item) => (
-            <SidebarMenuItem key={item.to}>
-              <SidebarMenuButton
-                tooltip={item.label}
-                isActive={pathname === item.to}
-                render={<Link to={item.to} />}
-              >
-                <span>{item.label}</span>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          ))}
-        </SidebarMenu>
-      </SidebarContent>
+        {flatItems.length > 0 && (
+          <SidebarGroup>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {flatItems.map((item) => (
+                  <SidebarMenuItem key={item.id}>
+                    <SidebarMenuButton
+                      tooltip={item.staticData.name}
+                      isActive={pathname === item.id}
+                      render={<Link to={item.id} />}
+                    >
+                      {item.staticData.icon}
+                      <span>{item.staticData.name}</span>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        )}
 
-      <SidebarFooter>
-        <Separator className="bg-sidebar-border" />
-        <div className="px-1 text-sm leading-snug">
-          <div className="font-medium">{username || "-"}</div>
-          <div className="text-muted-foreground">{roleName || "-"}</div>
-        </div>
-      </SidebarFooter>
+        {groupNodes.map((node) => (
+          <SidebarGroup key={node.id}>
+            <SidebarGroupLabel>{node.groupName}</SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {node.children.map((child) => (
+                  <SidebarMenuItem key={child.id}>
+                    <SidebarMenuButton
+                      tooltip={child.staticData.name}
+                      isActive={pathname === child.id}
+                      render={<Link to={child.id} />}
+                    >
+                      {child.staticData.icon}
+                      <span>{child.staticData.name}</span>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        ))}
+      </SidebarContent>
     </Sidebar>
   )
 }

@@ -15,4 +15,9 @@ export const Route = createRootRouteWithContext<RouterContext>()({
       <TanStackDevtools />
     </>
   ),
+  staticData: {
+    name: "控制面板",
+    permission: "unauthed",
+    icon: null,
+  },
 })
