@@ -24,10 +24,10 @@
     "@nestjs/platform-express": "^11.1.12",
     "@nestjs/swagger": "^11.2.5",
     "drizzle-orm": "^0.45.1",
-    "ioredis": "^5.8.2",
+    "ioredis": "^5.9.2",
     "nanoid": "^5.1.6",
     "nestjs-zod": "^5.1.1",
-    "pg": "^8.17.2",
+    "pg": "^8.18.0",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.2"
   },
