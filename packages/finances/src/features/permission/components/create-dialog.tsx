@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from "react"
 import { useForm } from "react-hook-form"
 
 import { useCreatePermission } from "@/api/react-query/permission"
+import { Select } from "@/components/select"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Field, FieldContent, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field"
@@ -11,10 +12,16 @@ import { Input } from "@/components/ui/input"
 type FormValues = {
   code: string
   name: string
-  module: string
+  moduleId: string
 }
 
-export function CreateDialog({ onCreated }: { onCreated?: () => void }) {
+export function CreateDialog({
+  onCreated,
+  moduleOptions,
+}: {
+  onCreated?: () => void
+  moduleOptions: { label: string; value: string }[]
+}) {
   const [open, setOpen] = useState(false)
   const createPermissionMutation = useCreatePermission()
 
@@ -22,7 +29,7 @@ export function CreateDialog({ onCreated }: { onCreated?: () => void }) {
     () => ({
       code: "",
       name: "",
-      module: "",
+      moduleId: "",
     }),
     [],
   )
@@ -44,7 +51,7 @@ export function CreateDialog({ onCreated }: { onCreated?: () => void }) {
       {
         code: values.code.trim(),
         name: values.name.trim() ? values.name.trim() : undefined,
-        module: values.module.trim() ? values.module.trim() : undefined,
+        moduleId: values.moduleId.trim(),
       },
       {
         onSuccess: () => {
@@ -108,12 +115,19 @@ export function CreateDialog({ onCreated }: { onCreated?: () => void }) {
             <Field>
               <FieldLabel>模块</FieldLabel>
               <FieldContent>
-                <Input
-                  {...form.register("module")}
-                  placeholder="例如：sys"
+                <input
+                  type="hidden"
+                  {...form.register("moduleId", { required: "请选择模块" })}
+                />
+                <Select
+                  options={moduleOptions}
+                  value={form.watch("moduleId")}
+                  onValueChange={(next) => {
+                    form.setValue("moduleId", String(next), { shouldValidate: true })
+                  }}
                   disabled={isPending}
                 />
-                <FieldError errors={[form.formState.errors.module]} />
+                <FieldError errors={[form.formState.errors.moduleId]} />
               </FieldContent>
             </Field>
           </FieldGroup>

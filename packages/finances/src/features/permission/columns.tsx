@@ -8,11 +8,13 @@ import { Button } from "@/components/ui/button"
 
 export function getPermissionColumns({
   isBusy,
+  moduleLabelById,
   onEdit,
   onToggleDisabled,
   onDelete,
 }: {
   isBusy: boolean
+  moduleLabelById: Record<string, string>
   onEdit: (permission: Permission) => void
   onToggleDisabled: (permission: Permission) => void
   onDelete: (permission: Permission) => void | Promise<void>
@@ -40,10 +42,12 @@ export function getPermissionColumns({
       },
     },
     {
-      accessorKey: "module",
+      accessorKey: "moduleId",
       header: "模块",
       cell: ({ row }) => {
-        return row.getValue<string>("module") || "-"
+        const moduleId = row.getValue<string>("moduleId")
+        if (!moduleId) return "-"
+        return moduleLabelById[moduleId] || moduleId
       },
     },
     {

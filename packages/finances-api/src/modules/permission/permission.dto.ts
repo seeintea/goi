@@ -5,7 +5,7 @@ const shape = {
   permissionId: z.string().length(32).describe("权限ID"),
   code: z.string().min(1).max(80).describe("权限编码"),
   name: z.string().max(80).describe("权限名称"),
-  module: z.string().max(30).describe("所属模块"),
+  moduleId: z.string().length(32).describe("模块ID"),
   isDisabled: z.boolean().describe("是否禁用"),
   isDeleted: z.boolean().describe("是否删除"),
   createTime: z.iso.datetime().describe("创建时间"),
@@ -19,7 +19,7 @@ const permissionResponseSchema = z
     permissionId: shape.permissionId,
     code: shape.code,
     name: shape.name,
-    module: shape.module,
+    moduleId: shape.moduleId,
     isDisabled: shape.isDisabled,
     isDeleted: shape.isDeleted,
     createTime: shape.createTime,
@@ -31,7 +31,7 @@ const createPermissionSchema = z
   .object({
     code: shape.code,
     name: shape.name.optional(),
-    module: shape.module.optional(),
+    moduleId: shape.moduleId,
     isDisabled: shape.isDisabled.optional(),
   })
   .meta({ id: "创建权限请求" })
@@ -41,7 +41,7 @@ const updatePermissionSchema = z
     permissionId: shape.permissionId,
     code: shape.code.optional(),
     name: shape.name.optional(),
-    module: shape.module.optional(),
+    moduleId: shape.moduleId.optional(),
     isDisabled: shape.isDisabled.optional(),
     isDeleted: shape.isDeleted.optional(),
   })
@@ -56,7 +56,7 @@ const deletePermissionSchema = z
 const permissionListQuerySchema = z
   .object({
     code: shape.code.optional(),
-    module: shape.module.optional(),
+    moduleId: shape.moduleId.optional(),
     page: shape.page.optional(),
     pageSize: shape.pageSize.optional(),
   })
@@ -66,7 +66,7 @@ const permissionPageItemSchema = z.object({
   permissionId: shape.permissionId,
   code: shape.code,
   name: shape.name,
-  module: shape.module,
+  moduleId: shape.moduleId,
   isDisabled: shape.isDisabled,
   isDeleted: shape.isDeleted,
   createTime: shape.createTime,

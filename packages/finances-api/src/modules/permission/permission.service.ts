@@ -18,7 +18,7 @@ export class PermissionService {
         permissionId: permissionSchema.permissionId,
         code: permissionSchema.code,
         name: permissionSchema.name,
-        module: permissionSchema.module,
+        moduleId: permissionSchema.moduleId,
         isDisabled: permissionSchema.isDisabled,
         isDeleted: permissionSchema.isDeleted,
         createTime: permissionSchema.createTime,
@@ -40,7 +40,7 @@ export class PermissionService {
       permissionId: values.permissionId,
       code: values.code,
       name: values.name ?? "",
-      module: values.module ?? "",
+      moduleId: values.moduleId,
       isDisabled: values.isDisabled ?? false,
       isDeleted: false,
     })
@@ -53,7 +53,7 @@ export class PermissionService {
       .set({
         ...(values.code !== undefined ? { code: values.code } : {}),
         ...(values.name !== undefined ? { name: values.name } : {}),
-        ...(values.module !== undefined ? { module: values.module } : {}),
+        ...(values.moduleId !== undefined ? { moduleId: values.moduleId } : {}),
         ...(values.isDisabled !== undefined ? { isDisabled: values.isDisabled } : {}),
         ...(values.isDeleted !== undefined ? { isDeleted: values.isDeleted } : {}),
       })
@@ -71,13 +71,13 @@ export class PermissionService {
 
   async list(query: {
     code?: string
-    module?: string
+    moduleId?: string
     page?: number | string
     pageSize?: number | string
   }): Promise<PageResult<Permission>> {
     const where: Parameters<typeof and> = [eq(permissionSchema.isDeleted, false)]
     if (query.code) where.push(like(permissionSchema.code, `%${query.code}%`))
-    if (query.module) where.push(eq(permissionSchema.module, query.module))
+    if (query.moduleId) where.push(eq(permissionSchema.moduleId, query.moduleId))
 
     const pageParams = normalizePage(query)
 
@@ -92,7 +92,7 @@ export class PermissionService {
         permissionId: permissionSchema.permissionId,
         code: permissionSchema.code,
         name: permissionSchema.name,
-        module: permissionSchema.module,
+        moduleId: permissionSchema.moduleId,
         isDisabled: permissionSchema.isDisabled,
         isDeleted: permissionSchema.isDeleted,
         createTime: permissionSchema.createTime,

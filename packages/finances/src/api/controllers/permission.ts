@@ -5,7 +5,7 @@ export type Permission = {
   permissionId: string
   code: string
   name: string
-  module: string
+  moduleId: string
   isDisabled: boolean
   isDeleted: boolean
   createTime: string
@@ -15,7 +15,7 @@ export type Permission = {
 export type CreatePermission = {
   code: string
   name?: string
-  module?: string
+  moduleId: string
   isDisabled?: boolean
 }
 
@@ -23,14 +23,14 @@ export type UpdatePermission = {
   permissionId: string
   code?: string
   name?: string
-  module?: string
+  moduleId?: string
   isDisabled?: boolean
   isDeleted?: boolean
 }
 
 export type PermissionListQuery = PageQuery & {
   code?: string
-  module?: string
+  moduleId?: string
 }
 
 export const createPermission = (body: CreatePermission) => api.post<Permission>("/api/sys/permission/create", body)

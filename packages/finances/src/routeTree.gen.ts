@@ -15,6 +15,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as SysManageUserRouteImport } from './routes/sys-manage/user'
 import { Route as SysManageRoleRouteImport } from './routes/sys-manage/role'
 import { Route as SysManagePermissionRouteImport } from './routes/sys-manage/permission'
+import { Route as SysManageModuleRouteImport } from './routes/sys-manage/module'
 
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
@@ -46,11 +47,17 @@ const SysManagePermissionRoute = SysManagePermissionRouteImport.update({
   path: '/permission',
   getParentRoute: () => SysManageRouteRoute,
 } as any)
+const SysManageModuleRoute = SysManageModuleRouteImport.update({
+  id: '/module',
+  path: '/module',
+  getParentRoute: () => SysManageRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/sys-manage': typeof SysManageRouteRouteWithChildren
   '/login': typeof LoginRoute
+  '/sys-manage/module': typeof SysManageModuleRoute
   '/sys-manage/permission': typeof SysManagePermissionRoute
   '/sys-manage/role': typeof SysManageRoleRoute
   '/sys-manage/user': typeof SysManageUserRoute
@@ -59,6 +66,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/sys-manage': typeof SysManageRouteRouteWithChildren
   '/login': typeof LoginRoute
+  '/sys-manage/module': typeof SysManageModuleRoute
   '/sys-manage/permission': typeof SysManagePermissionRoute
   '/sys-manage/role': typeof SysManageRoleRoute
   '/sys-manage/user': typeof SysManageUserRoute
@@ -68,6 +76,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/sys-manage': typeof SysManageRouteRouteWithChildren
   '/login': typeof LoginRoute
+  '/sys-manage/module': typeof SysManageModuleRoute
   '/sys-manage/permission': typeof SysManagePermissionRoute
   '/sys-manage/role': typeof SysManageRoleRoute
   '/sys-manage/user': typeof SysManageUserRoute
@@ -78,6 +87,7 @@ export interface FileRouteTypes {
     | '/'
     | '/sys-manage'
     | '/login'
+    | '/sys-manage/module'
     | '/sys-manage/permission'
     | '/sys-manage/role'
     | '/sys-manage/user'
@@ -86,6 +96,7 @@ export interface FileRouteTypes {
     | '/'
     | '/sys-manage'
     | '/login'
+    | '/sys-manage/module'
     | '/sys-manage/permission'
     | '/sys-manage/role'
     | '/sys-manage/user'
@@ -94,6 +105,7 @@ export interface FileRouteTypes {
     | '/'
     | '/sys-manage'
     | '/login'
+    | '/sys-manage/module'
     | '/sys-manage/permission'
     | '/sys-manage/role'
     | '/sys-manage/user'
@@ -149,16 +161,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SysManagePermissionRouteImport
       parentRoute: typeof SysManageRouteRoute
     }
+    '/sys-manage/module': {
+      id: '/sys-manage/module'
+      path: '/module'
+      fullPath: '/sys-manage/module'
+      preLoaderRoute: typeof SysManageModuleRouteImport
+      parentRoute: typeof SysManageRouteRoute
+    }
   }
 }
 
 interface SysManageRouteRouteChildren {
+  SysManageModuleRoute: typeof SysManageModuleRoute
   SysManagePermissionRoute: typeof SysManagePermissionRoute
   SysManageRoleRoute: typeof SysManageRoleRoute
   SysManageUserRoute: typeof SysManageUserRoute
 }
 
 const SysManageRouteRouteChildren: SysManageRouteRouteChildren = {
+  SysManageModuleRoute: SysManageModuleRoute,
   SysManagePermissionRoute: SysManagePermissionRoute,
   SysManageRoleRoute: SysManageRoleRoute,
   SysManageUserRoute: SysManageUserRoute,

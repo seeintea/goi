@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react"
 import type { Permission as PermissionModel } from "@/api/controllers/permission"
+import { useModuleAll } from "@/api/react-query/module"
 import { useDeletePermission, usePermissionList, useUpdatePermission } from "@/api/react-query/permission"
 import { DataTable } from "@/components/data-table"
 import { getPermissionColumns } from "./columns"
@@ -25,6 +26,22 @@ export function Permission() {
 
   const { data, isLoading, isFetching } = usePermissionList(query)
 
+  const { data: moduleList } = useModuleAll()
+
+  const moduleOptions = useMemo(() => {
+    return (moduleList ?? []).map((m) => ({
+      value: m.moduleId,
+      label: m.name,
+    }))
+  }, [moduleList])
+
+  const moduleLabelById = useMemo(() => {
+    return (moduleList ?? []).reduce<Record<string, string>>((prev, next) => {
+      prev[next.moduleId] = next.name
+      return prev
+    }, {})
+  }, [moduleList])
+
   useEffect(() => {
     const total = data?.total ?? 0
     const pageCount = Math.max(1, Math.ceil(total / pageSize))
@@ -38,6 +55,7 @@ export function Permission() {
   const columns = useMemo(() => {
     return getPermissionColumns({
       isBusy,
+      moduleLabelById,
       onEdit: (permission) => {
         setEditingPermission(permission)
         setEditOpen(true)
@@ -52,13 +70,14 @@ export function Permission() {
         await deletePermissionMutation.mutateAsync(permission.permissionId)
       },
     })
-  }, [deletePermissionMutation, isBusy, updatePermissionMutation])
+  }, [deletePermissionMutation, isBusy, moduleLabelById, updatePermissionMutation])
 
   return (
     <div className="flex flex-col gap-4">
       <div className="flex items-center justify-between gap-2">
         <div className="text-lg font-medium">权限管理</div>
         <CreateDialog
+          moduleOptions={moduleOptions}
           onCreated={() => {
             setPage(1)
           }}
@@ -86,6 +105,7 @@ export function Permission() {
         open={editOpen}
         permission={editingPermission}
         isBusy={isBusy}
+        moduleOptions={moduleOptions}
         onOpenChange={(open) => {
           if (isBusy) return
           setEditOpen(open)
@@ -97,7 +117,7 @@ export function Permission() {
             permissionId: editingPermission.permissionId,
             code: values.code.trim(),
             name: values.name.trim() ? values.name.trim() : undefined,
-            module: values.module.trim() ? values.module.trim() : undefined,
+            moduleId: values.moduleId.trim() ? values.moduleId.trim() : undefined,
           })
           setEditOpen(false)
           setEditingPermission(null)

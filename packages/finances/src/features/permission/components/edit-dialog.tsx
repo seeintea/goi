@@ -2,6 +2,7 @@ import { useEffect, useMemo } from "react"
 import { useForm } from "react-hook-form"
 
 import type { Permission } from "@/api/controllers/permission"
+import { Select } from "@/components/select"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Field, FieldContent, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field"
@@ -10,19 +11,21 @@ import { Input } from "@/components/ui/input"
 type FormValues = {
   code: string
   name: string
-  module: string
+  moduleId: string
 }
 
 export function EditDialog({
   open,
   permission,
   isBusy,
+  moduleOptions,
   onOpenChange,
   onSubmit,
 }: {
   open: boolean
   permission: Permission | null
   isBusy: boolean
+  moduleOptions: { label: string; value: string }[]
   onOpenChange: (open: boolean) => void
   onSubmit: (values: FormValues) => void | Promise<void>
 }) {
@@ -30,9 +33,9 @@ export function EditDialog({
     return {
       code: permission?.code ?? "",
       name: permission?.name ?? "",
-      module: permission?.module ?? "",
+      moduleId: permission?.moduleId ?? "",
     }
-  }, [permission?.code, permission?.module, permission?.name])
+  }, [permission?.code, permission?.moduleId, permission?.name])
 
   const form = useForm<FormValues>({
     defaultValues,
@@ -85,11 +88,19 @@ export function EditDialog({
             <Field>
               <FieldLabel>模块</FieldLabel>
               <FieldContent>
-                <Input
-                  {...form.register("module")}
+                <input
+                  type="hidden"
+                  {...form.register("moduleId")}
+                />
+                <Select
+                  options={moduleOptions}
+                  value={form.watch("moduleId")}
+                  onValueChange={(next) => {
+                    form.setValue("moduleId", String(next), { shouldValidate: true })
+                  }}
                   disabled={isBusy}
                 />
-                <FieldError errors={[form.formState.errors.module]} />
+                <FieldError errors={[form.formState.errors.moduleId]} />
               </FieldContent>
             </Field>
           </FieldGroup>
