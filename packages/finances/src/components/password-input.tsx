@@ -16,6 +16,7 @@ export function PasswordInput(field: PasswordInputProps) {
     <div className={"relative"}>
       <FieldContent>
         <Input
+          autoComplete="current-password"
           type={showPassword ? "text" : "password"}
           {...field}
         />

@@ -1,9 +1,9 @@
 import { Outlet, useLocation } from "@tanstack/react-router"
 
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar"
-import { AppContent } from "./components/AppContent"
-import { AppHeader } from "./components/AppHeader"
-import { AppSidebar } from "./components/AppSidebar"
+import { Content } from "./content"
+import { Header } from "./header"
+import { Sidebar } from "./sidebar"
 
 export function Layout() {
   const { pathname } = useLocation()
@@ -18,10 +18,10 @@ export function Layout() {
 function AppLayout() {
   return (
     <SidebarProvider>
-      <AppSidebar />
+      <Sidebar />
       <SidebarInset>
-        <AppHeader />
-        <AppContent />
+        <Header />
+        <Content />
       </SidebarInset>
     </SidebarProvider>
   )

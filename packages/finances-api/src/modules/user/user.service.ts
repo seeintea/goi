@@ -58,7 +58,7 @@ export class UserService {
     return rows[0]
   }
 
-  async create(values: CreateUser & { userId: string }): Promise<User> {
+  async create(values: CreateUser & { userId: string; salt: string }): Promise<User> {
     await this.pg.pdb.insert(userSchema).values({
       userId: values.userId,
       username: values.username,

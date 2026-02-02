@@ -3,6 +3,7 @@ import { ApiOperation, ApiTags } from "@nestjs/swagger"
 import { nanoid } from "nanoid"
 import { ZodResponse } from "nestjs-zod"
 import { Permission } from "@/common/decorators/permission.decorator"
+import { generateSalt, hashPassword } from "@/common/utils/password"
 import {
   CreateUserDto,
   DeleteUserDto,
@@ -23,7 +24,9 @@ export class UserController {
   @ApiOperation({ summary: "创建用户" })
   @ZodResponse({ type: UserResponseDto })
   async create(@Body() body: CreateUserDto) {
-    return this.userService.create({ ...body, userId: nanoid(32) })
+    const salt = generateSalt(16)
+    const password = hashPassword(body.password, salt)
+    return this.userService.create({ ...body, password, salt, userId: nanoid(32) })
   }
 
   @Get("find")

@@ -1,7 +1,8 @@
 import type { QueryClient } from "@tanstack/react-query"
 import { createRootRouteWithContext } from "@tanstack/react-router"
 
-import { TanStackDevtools } from "@/components/TanStackDevtools"
+import { TanStackDevtools } from "@/components/tanstack-devtools"
+import { useHead } from "@/hooks/use-head"
 import { Layout } from "@/layout"
 
 export interface RouterContext {
@@ -9,14 +10,18 @@ export interface RouterContext {
 }
 
 export const Route = createRootRouteWithContext<RouterContext>()({
-  component: () => (
-    <>
-      <Layout />
-      <TanStackDevtools />
-    </>
-  ),
+  component: () => {
+    useHead()
+
+    return (
+      <>
+        <Layout />
+        <TanStackDevtools />
+      </>
+    )
+  },
   staticData: {
-    name: "控制面板",
+    name: "书符",
     permission: "unauthed",
     icon: null,
   },

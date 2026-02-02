@@ -1,15 +1,16 @@
 import { useMatches } from "@tanstack/react-router"
 
 import {
-  Breadcrumb,
   BreadcrumbItem,
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
+  Breadcrumb as ShadcnBreadcrumb,
 } from "@/components/ui/breadcrumb"
 
-export function AppBreadcrumb() {
+export function Breadcrumb() {
   const matches = useMatches()
+
   const crumbs = matches.map((match) => {
     const staticData = (match as unknown as { staticData?: { name?: string } })?.staticData ?? null
     const name = staticData?.name ?? ""
@@ -21,27 +22,24 @@ export function AppBreadcrumb() {
   }
 
   return (
-    <Breadcrumb>
+    <ShadcnBreadcrumb>
       <BreadcrumbList>
         {crumbs.flatMap((crumb, index) => {
           const isLast = index === crumbs.length - 1
 
-          if (isLast) {
-            return [
-              <BreadcrumbItem key={crumb.to}>
-                <BreadcrumbPage>{crumb.name}</BreadcrumbPage>
-              </BreadcrumbItem>,
-            ]
-          }
-
-          return [
+          const items = [
             <BreadcrumbItem key={crumb.to}>
               <BreadcrumbPage>{crumb.name}</BreadcrumbPage>
             </BreadcrumbItem>,
-            <BreadcrumbSeparator key={`${crumb.to}-sep`} />,
           ]
+
+          if (!isLast) {
+            items.push(<BreadcrumbSeparator key={`${crumb.to}-sep`} />)
+          }
+
+          return items
         })}
       </BreadcrumbList>
-    </Breadcrumb>
+    </ShadcnBreadcrumb>
   )
 }

@@ -15,10 +15,8 @@ export type User = {
 export type CreateUser = {
   username: string
   password: string
-  salt: string
   email?: string
   phone?: string
-  isDisabled?: boolean
 }
 
 export type UpdateUser = {
@@ -46,4 +44,3 @@ export const listUsers = (query?: UserListQuery) => api.get<PageResult<User>>("/
 export const updateUser = (body: UpdateUser) => api.post<User>("/api/sys/user/update", body)
 
 export const deleteUser = (userId: string) => api.post<boolean>("/api/sys/user/delete", { userId })
-

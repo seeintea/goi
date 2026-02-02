@@ -1,32 +1,23 @@
+import { Plus } from "lucide-react"
 import { useEffect, useMemo, useState } from "react"
 import { useForm } from "react-hook-form"
 
 import { useCreateUser } from "@/api"
-import { PasswordInput } from "@/components/PasswordInput"
+import { PasswordInput } from "@/components/password-input"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Field, FieldContent, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { sha1Hex } from "@/lib/crypto"
 
 type FormValues = {
   username: string
   password: string
   email: string
   phone: string
-  isDisabled: "0" | "1"
 }
 
-function generateSalt() {
-  const cryptoObj = window.crypto
-  const bytes = new Uint8Array(16)
-  cryptoObj.getRandomValues(bytes)
-  return Array.from(bytes)
-    .map((b) => b.toString(16).padStart(2, "0"))
-    .join("")
-}
-
-export function CreateUserDialog({ onCreated }: { onCreated?: () => void }) {
+export function CreateDialog({ onCreated }: { onCreated?: () => void }) {
   const [open, setOpen] = useState(false)
   const createUserMutation = useCreateUser()
 
@@ -36,9 +27,8 @@ export function CreateUserDialog({ onCreated }: { onCreated?: () => void }) {
       password: "",
       email: "",
       phone: "",
-      isDisabled: "0",
     }),
-    []
+    [],
   )
 
   const form = useForm<FormValues>({
@@ -51,22 +41,20 @@ export function CreateUserDialog({ onCreated }: { onCreated?: () => void }) {
     }
   }, [defaultValues, form, open])
 
-  const onSubmit = form.handleSubmit((values) => {
+  const onSubmit = form.handleSubmit(async (values) => {
     createUserMutation.mutate(
       {
         username: values.username.trim(),
-        password: values.password,
-        salt: generateSalt(),
+        password: await sha1Hex(values.password),
         email: values.email.trim() ? values.email.trim() : undefined,
         phone: values.phone.trim() ? values.phone.trim() : undefined,
-        isDisabled: values.isDisabled === "1",
       },
       {
         onSuccess: () => {
           setOpen(false)
           onCreated?.()
         },
-      }
+      },
     )
   })
 
@@ -80,7 +68,14 @@ export function CreateUserDialog({ onCreated }: { onCreated?: () => void }) {
         setOpen(next)
       }}
     >
-      <DialogTrigger render={<Button size="sm">新增用户</Button>} />
+      <DialogTrigger
+        render={
+          <Button>
+            <Plus />
+            新增用户
+          </Button>
+        }
+      />
       <DialogContent>
         <DialogHeader>
           <DialogTitle>新增用户</DialogTitle>
@@ -107,7 +102,10 @@ export function CreateUserDialog({ onCreated }: { onCreated?: () => void }) {
               <FieldLabel>密码</FieldLabel>
               <FieldContent>
                 <PasswordInput
-                  {...form.register("password", { required: "请输入密码", minLength: { value: 6, message: "密码至少 6 位" } })}
+                  {...form.register("password", {
+                    required: "请输入密码",
+                    minLength: { value: 6, message: "密码至少 6 位" },
+                  })}
                   placeholder="请输入密码"
                   disabled={isPending}
                 />
@@ -134,25 +132,6 @@ export function CreateUserDialog({ onCreated }: { onCreated?: () => void }) {
                   placeholder="可选"
                   disabled={isPending}
                 />
-              </FieldContent>
-            </Field>
-
-            <Field>
-              <FieldLabel>状态</FieldLabel>
-              <FieldContent>
-                <Select
-                  value={form.watch("isDisabled")}
-                  onValueChange={(value) => form.setValue("isDisabled", value as FormValues["isDisabled"])}
-                  disabled={isPending}
-                >
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="请选择" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="0">正常</SelectItem>
-                    <SelectItem value="1">禁用</SelectItem>
-                  </SelectContent>
-                </Select>
               </FieldContent>
             </Field>
           </FieldGroup>

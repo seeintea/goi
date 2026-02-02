@@ -4,7 +4,7 @@ import { z } from "zod"
 const shape = {
   userId: z.string().length(32).describe("用户ID"),
   username: z.string().min(1).max(30).describe("用户名"),
-  password: z.string().min(1).max(100).describe("密码哈希/明文(由调用方决定)"),
+  password: z.string().min(1).max(100).describe("密码明文"),
   salt: z.string().min(1).max(16).describe("盐"),
   email: z.string().max(50).describe("邮箱"),
   phone: z.string().max(11).describe("手机号"),
@@ -33,7 +33,6 @@ const createUserSchema = z
   .object({
     username: shape.username,
     password: shape.password,
-    salt: shape.salt,
     email: shape.email.optional(),
     phone: shape.phone.optional(),
     isDisabled: shape.isDisabled.optional(),

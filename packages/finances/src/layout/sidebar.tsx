@@ -1,7 +1,8 @@
 import { Link, useLocation } from "@tanstack/react-router"
-
+import { BadgeDollarSign } from "lucide-react"
+import { Activity } from "react"
 import {
-  Sidebar,
+  Sidebar as ShadcnSidebar,
   SidebarContent,
   SidebarGroup,
   SidebarGroupContent,
@@ -10,19 +11,20 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarSeparator,
+  useSidebar,
 } from "@/components/ui/sidebar"
-import { useRouteTree } from "@/hooks/useRouteTree"
+import { useRouteTree } from "@/hooks/use-route-tree"
 
-export function AppSidebar() {
+export function Sidebar() {
   const { pathname } = useLocation()
+  const { open } = useSidebar()
 
   const rootTree = useRouteTree()
   const flatItems = rootTree.filter((n) => !n.isGroup).flatMap((n) => n.children)
   const groupNodes = rootTree.filter((n) => n.isGroup)
 
   return (
-    <Sidebar collapsible="icon">
+    <ShadcnSidebar collapsible="icon">
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
@@ -31,18 +33,15 @@ export function AppSidebar() {
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
               <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
-                F
+                <BadgeDollarSign size={18} />
               </div>
-              <div className="flex-1 text-left text-sm leading-tight">Finances</div>
+              <div className="flex-1 text-left text-sm leading-tight">书符</div>
             </SidebarMenuButton>
-          </SidebarMenuItem>
-          <SidebarMenuItem>
-            <SidebarSeparator className={"m-0 mt-2"} />
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
 
-      <SidebarContent className="p-2">
+      <SidebarContent>
         {flatItems.length > 0 && (
           <SidebarGroup>
             <SidebarGroupContent>
@@ -66,7 +65,9 @@ export function AppSidebar() {
 
         {groupNodes.map((node) => (
           <SidebarGroup key={node.id}>
-            <SidebarGroupLabel>{node.groupName}</SidebarGroupLabel>
+            <Activity mode={open ? "visible" : "hidden"}>
+              <SidebarGroupLabel>{node.groupName}</SidebarGroupLabel>
+            </Activity>
             <SidebarGroupContent>
               <SidebarMenu>
                 {node.children.map((child) => (
@@ -86,6 +87,6 @@ export function AppSidebar() {
           </SidebarGroup>
         ))}
       </SidebarContent>
-    </Sidebar>
+    </ShadcnSidebar>
   )
 }

@@ -9,18 +9,12 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as UserListRouteImport } from './routes/user-list'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as SysManageRouteRouteImport } from './routes/sys-manage/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as SysManageUserRouteImport } from './routes/sys-manage/user'
 import { Route as SysManageRoleRouteImport } from './routes/sys-manage/role'
 
-const UserListRoute = UserListRouteImport.update({
-  id: '/user-list',
-  path: '/user-list',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
@@ -51,7 +45,6 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/sys-manage': typeof SysManageRouteRouteWithChildren
   '/login': typeof LoginRoute
-  '/user-list': typeof UserListRoute
   '/sys-manage/role': typeof SysManageRoleRoute
   '/sys-manage/user': typeof SysManageUserRoute
 }
@@ -59,7 +52,6 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/sys-manage': typeof SysManageRouteRouteWithChildren
   '/login': typeof LoginRoute
-  '/user-list': typeof UserListRoute
   '/sys-manage/role': typeof SysManageRoleRoute
   '/sys-manage/user': typeof SysManageUserRoute
 }
@@ -68,7 +60,6 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/sys-manage': typeof SysManageRouteRouteWithChildren
   '/login': typeof LoginRoute
-  '/user-list': typeof UserListRoute
   '/sys-manage/role': typeof SysManageRoleRoute
   '/sys-manage/user': typeof SysManageUserRoute
 }
@@ -78,23 +69,15 @@ export interface FileRouteTypes {
     | '/'
     | '/sys-manage'
     | '/login'
-    | '/user-list'
     | '/sys-manage/role'
     | '/sys-manage/user'
   fileRoutesByTo: FileRoutesByTo
-  to:
-    | '/'
-    | '/sys-manage'
-    | '/login'
-    | '/user-list'
-    | '/sys-manage/role'
-    | '/sys-manage/user'
+  to: '/' | '/sys-manage' | '/login' | '/sys-manage/role' | '/sys-manage/user'
   id:
     | '__root__'
     | '/'
     | '/sys-manage'
     | '/login'
-    | '/user-list'
     | '/sys-manage/role'
     | '/sys-manage/user'
   fileRoutesById: FileRoutesById
@@ -103,18 +86,10 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   SysManageRouteRoute: typeof SysManageRouteRouteWithChildren
   LoginRoute: typeof LoginRoute
-  UserListRoute: typeof UserListRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/user-list': {
-      id: '/user-list'
-      path: '/user-list'
-      fullPath: '/user-list'
-      preLoaderRoute: typeof UserListRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/login': {
       id: '/login'
       path: '/login'
@@ -171,7 +146,6 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   SysManageRouteRoute: SysManageRouteRouteWithChildren,
   LoginRoute: LoginRoute,
-  UserListRoute: UserListRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

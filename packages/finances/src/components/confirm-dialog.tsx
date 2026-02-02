@@ -13,7 +13,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 
-type ConfirmActionProps = {
+type ConfirmDialogProps = {
   trigger: ReactElement
   title: string
   description?: string
@@ -24,7 +24,7 @@ type ConfirmActionProps = {
   onConfirm: () => void | Promise<void>
 }
 
-export function ConfirmAction({
+export function ConfirmDialog({
   trigger,
   title,
   description,
@@ -33,7 +33,7 @@ export function ConfirmAction({
   confirmVariant = "destructive",
   disabled = false,
   onConfirm,
-}: ConfirmActionProps) {
+}: ConfirmDialogProps) {
   const [open, setOpen] = useState(false)
   const [isPending, setIsPending] = useState(false)
 

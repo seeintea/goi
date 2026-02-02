@@ -1,7 +1,8 @@
 import type { ColumnDef } from "@tanstack/react-table"
+import { format } from "date-fns"
 
 import type { User } from "@/api/controllers/user"
-import { ConfirmAction } from "@/components/ConfirmAction"
+import { ConfirmDialog } from "@/components/confirm-dialog"
 import { Button } from "@/components/ui/button"
 
 export function getUserColumns({
@@ -46,14 +47,22 @@ export function getUserColumns({
       accessorKey: "isDisabled",
       header: "状态",
       cell: ({ row }) => {
-        return row.original.isDisabled ? <span className="text-destructive text-sm">禁用</span> : <span className="text-sm">正常</span>
+        return row.original.isDisabled ? (
+          <span className="text-destructive text-sm">禁用</span>
+        ) : (
+          <span className="text-sm">正常</span>
+        )
       },
     },
     {
       accessorKey: "createTime",
       header: "创建时间",
       cell: ({ row }) => {
-        return row.getValue<string>("createTime") || "-"
+        const createTime = row.getValue<string>("createTime")
+        if (createTime) {
+          return format(new Date(createTime), "yyyy-MM-dd HH:mm:ss")
+        }
+        return "-"
       },
     },
     {
@@ -73,7 +82,7 @@ export function getUserColumns({
               {nextDisabled ? "禁用" : "启用"}
             </Button>
 
-            <ConfirmAction
+            <ConfirmDialog
               title="确认删除？"
               description={`确定删除用户 ${user.username} 吗？此操作不可恢复。`}
               onConfirm={() => onDelete(user)}

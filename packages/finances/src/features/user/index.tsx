@@ -1,26 +1,23 @@
 import { useEffect, useMemo, useState } from "react"
 
 import { useDeleteUser, useUpdateUser, useUserList } from "@/api"
-import { DataTable } from "@/components/DataTable"
-import { CreateUserDialog } from "./components/CreateUserDialog"
-import { getUserColumns } from "./components/getUserColumns"
+import { DataTable } from "@/components/data-table"
+import { getUserColumns } from "./columns"
+import { CreateDialog } from "./components/create-dialog"
 
-export function UserList() {
+export function User() {
   const [page, setPage] = useState(1)
   const [pageSize, setPageSize] = useState(10)
-  const [keyword, setKeyword] = useState("")
 
   const updateUserMutation = useUpdateUser()
   const deleteUserMutation = useDeleteUser()
 
   const query = useMemo(() => {
-    const username = keyword.trim()
     return {
       page,
       pageSize,
-      username: username ? username : undefined,
     }
-  }, [keyword, page, pageSize])
+  }, [page, pageSize])
 
   const { data, isLoading, isFetching } = useUserList(query)
 
@@ -51,8 +48,8 @@ export function UserList() {
   return (
     <div className="flex flex-col gap-4">
       <div className="flex items-center justify-between gap-2">
-        <div className="text-lg font-medium">用户列表</div>
-        <CreateUserDialog
+        <div className="text-lg font-medium">用户管理</div>
+        <CreateDialog
           onCreated={() => {
             setPage(1)
           }}
@@ -62,14 +59,6 @@ export function UserList() {
         columns={columns}
         data={data?.list ?? []}
         isLoading={isLoading || isFetching}
-        search={{
-          value: keyword,
-          onValueChange: (value) => {
-            setKeyword(value)
-            setPage(1)
-          },
-          placeholder: "按用户名搜索",
-        }}
         pagination={{
           page,
           pageSize,

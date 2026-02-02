@@ -3,23 +3,12 @@ import { useState } from "react"
 import { useForm } from "react-hook-form"
 
 import { useLogin } from "@/api"
-import { PasswordInput } from "@/components/PasswordInput"
+import { PasswordInput } from "@/components/password-input"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Field, FieldContent, FieldError, FieldGroup, FieldTitle } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
-
-async function sha1Hex(input: string): Promise<string> {
-  const subtle = globalThis.crypto?.subtle
-  if (!subtle) {
-    throw new Error("当前环境不支持 WebCrypto")
-  }
-  const data = new TextEncoder().encode(input)
-  const digest = await subtle.digest("SHA-1", data)
-  return Array.from(new Uint8Array(digest))
-    .map((byte) => byte.toString(16).padStart(2, "0"))
-    .join("")
-}
+import { sha1Hex } from "@/lib/crypto"
 
 type LoginFormValues = {
   username: string

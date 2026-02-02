@@ -4,9 +4,9 @@ import { useLogout } from "@/api"
 import { Button } from "@/components/ui/button"
 import { SidebarTrigger } from "@/components/ui/sidebar"
 import { useUser } from "@/stores"
-import { AppBreadcrumb } from "./AppBreadcrumb"
+import { Breadcrumb } from "./breadcrumb"
 
-export function AppHeader() {
+export function Header() {
   const navigate = useNavigate()
   const logoutMutation = useLogout()
   const username = useUser((s) => s.username)
@@ -16,7 +16,7 @@ export function AppHeader() {
       <div className="flex min-w-0 items-center gap-2">
         <SidebarTrigger />
         <div className="min-w-0">
-          <AppBreadcrumb />
+          <Breadcrumb />
         </div>
       </div>
 

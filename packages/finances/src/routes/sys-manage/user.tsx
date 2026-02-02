@@ -1,13 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router"
-import { User } from "lucide-react"
-import { UserList } from "@/features/UserList"
+import { User as UserIcon } from "lucide-react"
+import { User } from "@/features/user"
 
 export const Route = createFileRoute("/sys-manage/user")({
-  component: UserList,
+  component: User,
   staticData: {
     name: "用户管理",
     permission: "user",
-    icon: <User />,
+    icon: <UserIcon />,
     groupName: "系统管理",
   },
 })
