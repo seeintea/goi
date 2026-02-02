@@ -1,21 +1,20 @@
 import { useEffect, useMemo, useState } from "react"
-
-import type { Role as RoleModel } from "@/api/controllers/role"
-import { useDeleteRole, useRoleList, useUpdateRole } from "@/api/react-query/role"
+import type { Permission as PermissionModel } from "@/api/controllers/permission"
+import { useDeletePermission, usePermissionList, useUpdatePermission } from "@/api/react-query/permission"
 import { DataTable } from "@/components/data-table"
-import { getRoleColumns } from "./columns"
+import { getPermissionColumns } from "./columns"
 import { CreateDialog } from "./components/create-dialog"
 import { EditDialog } from "./components/edit-dialog"
 
-export function Role() {
+export function Permission() {
   const [page, setPage] = useState(1)
   const [pageSize, setPageSize] = useState(10)
 
   const [editOpen, setEditOpen] = useState(false)
-  const [editingRole, setEditingRole] = useState<RoleModel | null>(null)
+  const [editingPermission, setEditingPermission] = useState<PermissionModel | null>(null)
 
-  const updateRoleMutation = useUpdateRole()
-  const deleteRoleMutation = useDeleteRole()
+  const updatePermissionMutation = useUpdatePermission()
+  const deletePermissionMutation = useDeletePermission()
 
   const query = useMemo(() => {
     return {
@@ -24,7 +23,7 @@ export function Role() {
     }
   }, [page, pageSize])
 
-  const { data, isLoading, isFetching } = useRoleList(query)
+  const { data, isLoading, isFetching } = usePermissionList(query)
 
   useEffect(() => {
     const total = data?.total ?? 0
@@ -34,30 +33,31 @@ export function Role() {
     }
   }, [data?.total, page, pageSize])
 
-  const isBusy = updateRoleMutation.isPending || deleteRoleMutation.isPending
+  const isBusy = updatePermissionMutation.isPending || deletePermissionMutation.isPending
+
   const columns = useMemo(() => {
-    return getRoleColumns({
+    return getPermissionColumns({
       isBusy,
-      onEdit: (role) => {
-        setEditingRole(role)
+      onEdit: (permission) => {
+        setEditingPermission(permission)
         setEditOpen(true)
       },
-      onToggleDisabled: (role) => {
-        updateRoleMutation.mutate({
-          roleId: role.roleId,
-          isDisabled: !role.isDisabled,
+      onToggleDisabled: (permission) => {
+        updatePermissionMutation.mutate({
+          permissionId: permission.permissionId,
+          isDisabled: !permission.isDisabled,
         })
       },
-      onDelete: async (role) => {
-        await deleteRoleMutation.mutateAsync(role.roleId)
+      onDelete: async (permission) => {
+        await deletePermissionMutation.mutateAsync(permission.permissionId)
       },
     })
-  }, [deleteRoleMutation, isBusy, updateRoleMutation])
+  }, [deletePermissionMutation, isBusy, updatePermissionMutation])
 
   return (
     <div className="flex flex-col gap-4">
       <div className="flex items-center justify-between gap-2">
-        <div className="text-lg font-medium">角色管理</div>
+        <div className="text-lg font-medium">权限管理</div>
         <CreateDialog
           onCreated={() => {
             setPage(1)
@@ -84,22 +84,23 @@ export function Role() {
 
       <EditDialog
         open={editOpen}
-        role={editingRole}
+        permission={editingPermission}
         isBusy={isBusy}
         onOpenChange={(open) => {
           if (isBusy) return
           setEditOpen(open)
-          if (!open) setEditingRole(null)
+          if (!open) setEditingPermission(null)
         }}
         onSubmit={async (values) => {
-          if (!editingRole) return
-          await updateRoleMutation.mutateAsync({
-            roleId: editingRole.roleId,
-            roleCode: values.roleCode.trim(),
-            roleName: values.roleName.trim(),
+          if (!editingPermission) return
+          await updatePermissionMutation.mutateAsync({
+            permissionId: editingPermission.permissionId,
+            code: values.code.trim(),
+            name: values.name.trim() ? values.name.trim() : undefined,
+            module: values.module.trim() ? values.module.trim() : undefined,
           })
           setEditOpen(false)
-          setEditingRole(null)
+          setEditingPermission(null)
         }}
       />
     </div>

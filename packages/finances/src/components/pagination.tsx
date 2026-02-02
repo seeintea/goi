@@ -2,15 +2,7 @@ import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from "lucide-r
 import { useMemo } from "react"
 import { Select } from "@/components/select"
 import { Button } from "@/components/ui/button"
-
-type PaginationState = {
-  page: number
-  pageSize: number
-  total: number
-  onPageChange: (page: number) => void
-  onPageSizeChange?: (pageSize: number) => void
-  pageSizeOptions?: number[]
-}
+import type { PaginationState } from "@/hooks/use-pagination"
 
 export function Pagination({ pagination }: { pagination: PaginationState }) {
   const pageCount = useMemo(() => {
