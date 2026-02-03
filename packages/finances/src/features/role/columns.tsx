@@ -7,12 +7,10 @@ import { ConfirmDialog } from "@/components/confirm-dialog"
 import { Button } from "@/components/ui/button"
 
 export function getRoleColumns({
-  isBusy,
   onEdit,
   onToggleDisabled,
   onDelete,
 }: {
-  isBusy: boolean
   onEdit: (role: Role) => void
   onToggleDisabled: (role: Role) => void
   onDelete: (role: Role) => void | Promise<void>
@@ -72,7 +70,6 @@ export function getRoleColumns({
             <Button
               variant="outline"
               size="sm"
-              disabled={isBusy}
               onClick={() => onEdit(role)}
             >
               <Pencil />
@@ -82,7 +79,6 @@ export function getRoleColumns({
             <Button
               variant="outline"
               size="sm"
-              disabled={isBusy}
               onClick={() => onToggleDisabled(role)}
             >
               {nextDisabled ? "禁用" : "启用"}
@@ -92,12 +88,10 @@ export function getRoleColumns({
               title="确认删除？"
               description={`确定删除角色 ${role.roleName || role.roleCode} 吗？此操作不可恢复。`}
               onConfirm={() => onDelete(role)}
-              disabled={isBusy}
               trigger={
                 <Button
                   variant="destructive"
                   size="sm"
-                  disabled={isBusy}
                 >
                   删除
                 </Button>
@@ -109,4 +103,3 @@ export function getRoleColumns({
     },
   ]
 }
-

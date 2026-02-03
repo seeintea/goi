@@ -7,12 +7,10 @@ import { ConfirmDialog } from "@/components/confirm-dialog"
 import { Button } from "@/components/ui/button"
 
 export function getModuleColumns({
-  isBusy,
   moduleNameById,
   onEdit,
   onDelete,
 }: {
-  isBusy: boolean
   moduleNameById: Record<string, string>
   onEdit: (module: Module) => void
   onDelete: (module: Module) => void | Promise<void>
@@ -84,7 +82,6 @@ export function getModuleColumns({
             <Button
               variant="outline"
               size="sm"
-              disabled={isBusy}
               onClick={() => onEdit(module)}
             >
               <Pencil />
@@ -95,12 +92,10 @@ export function getModuleColumns({
               title="确认删除？"
               description={`确定删除模块 ${module.name || module.permissionCode} 吗？此操作不可恢复。`}
               onConfirm={() => onDelete(module)}
-              disabled={isBusy}
               trigger={
                 <Button
                   variant="destructive"
                   size="sm"
-                  disabled={isBusy}
                 >
                   删除
                 </Button>
@@ -112,4 +107,3 @@ export function getModuleColumns({
     },
   ]
 }
-

@@ -87,7 +87,6 @@ export function CreateDialog({ onCreated }: { onCreated?: () => void }) {
             <Input
               {...form.register("username", { required: "请输入用户名" })}
               placeholder="请输入用户名"
-              disabled={isPending}
             />
           </FormField>
 
@@ -101,7 +100,6 @@ export function CreateDialog({ onCreated }: { onCreated?: () => void }) {
                 minLength: { value: 6, message: "密码至少 6 位" },
               })}
               placeholder="请输入密码"
-              disabled={isPending}
             />
           </FormField>
 
@@ -109,7 +107,6 @@ export function CreateDialog({ onCreated }: { onCreated?: () => void }) {
             <Input
               {...form.register("email")}
               placeholder="可选"
-              disabled={isPending}
             />
           </FormField>
 
@@ -117,7 +114,6 @@ export function CreateDialog({ onCreated }: { onCreated?: () => void }) {
             <Input
               {...form.register("phone")}
               placeholder="可选"
-              disabled={isPending}
             />
           </FormField>
         </FieldGroup>

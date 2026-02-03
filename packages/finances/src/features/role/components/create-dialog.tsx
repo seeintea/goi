@@ -1,5 +1,6 @@
 import { Plus } from "lucide-react"
 import { useEffect, useMemo, useState } from "react"
+import type { UseFormReturn } from "react-hook-form"
 import { useForm } from "react-hook-form"
 
 import { useCreateRole } from "@/api/react-query/role"
@@ -8,16 +9,61 @@ import { FieldGroup, FormField } from "@/components/base-field"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 
-type FormValues = {
+export type RoleFormValues = {
   roleCode: string
   roleName: string
+}
+
+export function RoleFormFields({
+  form,
+  submitText,
+  submitDisabled,
+}: {
+  form: UseFormReturn<RoleFormValues>
+  submitText: string
+  submitDisabled: boolean
+}) {
+  return (
+    <>
+      <FieldGroup>
+        <FormField
+          label="角色编码"
+          errors={[form.formState.errors.roleCode]}
+        >
+          <Input
+            {...form.register("roleCode", { required: "请输入角色编码" })}
+            placeholder="例如：Owner / Member"
+          />
+        </FormField>
+
+        <FormField
+          label="角色名称"
+          errors={[form.formState.errors.roleName]}
+        >
+          <Input
+            {...form.register("roleName", { required: "请输入角色名称" })}
+            placeholder="例如：拥有者 / 成员"
+          />
+        </FormField>
+      </FieldGroup>
+
+      <DialogFooter>
+        <Button
+          type="submit"
+          disabled={submitDisabled}
+        >
+          {submitText}
+        </Button>
+      </DialogFooter>
+    </>
+  )
 }
 
 export function CreateDialog({ onCreated }: { onCreated?: () => void }) {
   const [open, setOpen] = useState(false)
   const createRoleMutation = useCreateRole()
 
-  const defaultValues = useMemo<FormValues>(
+  const defaultValues = useMemo<RoleFormValues>(
     () => ({
       roleCode: "",
       roleName: "",
@@ -25,7 +71,7 @@ export function CreateDialog({ onCreated }: { onCreated?: () => void }) {
     [],
   )
 
-  const form = useForm<FormValues>({
+  const form = useForm<RoleFormValues>({
     defaultValues,
   })
 
@@ -71,38 +117,11 @@ export function CreateDialog({ onCreated }: { onCreated?: () => void }) {
         className="flex flex-col gap-4"
         onSubmit={onSubmit}
       >
-        <FieldGroup>
-          <FormField
-            label="角色编码"
-            errors={[form.formState.errors.roleCode]}
-          >
-            <Input
-              {...form.register("roleCode", { required: "请输入角色编码" })}
-              placeholder="例如：Owner / Member"
-              disabled={isPending}
-            />
-          </FormField>
-
-          <FormField
-            label="角色名称"
-            errors={[form.formState.errors.roleName]}
-          >
-            <Input
-              {...form.register("roleName", { required: "请输入角色名称" })}
-              placeholder="例如：拥有者 / 成员"
-              disabled={isPending}
-            />
-          </FormField>
-        </FieldGroup>
-
-        <DialogFooter>
-          <Button
-            type="submit"
-            disabled={isPending}
-          >
-            创建
-          </Button>
-        </DialogFooter>
+        <RoleFormFields
+          form={form}
+          submitText="创建"
+          submitDisabled={isPending}
+        />
       </form>
     </BaseDialog>
   )

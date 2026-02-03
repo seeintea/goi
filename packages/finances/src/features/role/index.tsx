@@ -1,58 +1,66 @@
-import { useEffect, useMemo, useState } from "react"
+import { useCallback, useEffect, useMemo, useState } from "react"
 
 import type { Role as RoleModel } from "@/api/controllers/role"
 import { useDeleteRole, useRoleList, useUpdateRole } from "@/api/react-query/role"
 import { DataTable } from "@/components/data-table"
+import { usePagination } from "@/hooks/use-pagination"
 import { getRoleColumns } from "./columns"
 import { CreateDialog } from "./components/create-dialog"
 import { EditDialog } from "./components/edit-dialog"
 
 export function Role() {
-  const [page, setPage] = useState(1)
-  const [pageSize, setPageSize] = useState(10)
-
   const [editOpen, setEditOpen] = useState(false)
   const [editingRole, setEditingRole] = useState<RoleModel | null>(null)
 
   const updateRoleMutation = useUpdateRole()
   const deleteRoleMutation = useDeleteRole()
 
+  const pagination = usePagination({})
+
   const query = useMemo(() => {
     return {
-      page,
-      pageSize,
+      page: pagination.page,
+      pageSize: pagination.pageSize,
     }
-  }, [page, pageSize])
+  }, [pagination.page, pagination.pageSize])
 
   const { data, isLoading, isFetching } = useRoleList(query)
 
   useEffect(() => {
-    const total = data?.total ?? 0
-    const pageCount = Math.max(1, Math.ceil(total / pageSize))
-    if (page > pageCount) {
-      setPage(pageCount)
-    }
-  }, [data?.total, page, pageSize])
+    pagination.setTotal(data?.total ?? 0)
+  }, [data?.total, pagination.setTotal])
 
-  const isBusy = updateRoleMutation.isPending || deleteRoleMutation.isPending
+  const isBusy = updateRoleMutation.isPending
+
+  const handleEdit = useCallback((role: RoleModel) => {
+    setEditingRole(role)
+    setEditOpen(true)
+  }, [])
+
+  const handleToggleDisabled = useCallback(
+    (role: RoleModel) => {
+      updateRoleMutation.mutate({
+        roleId: role.roleId,
+        isDisabled: !role.isDisabled,
+      })
+    },
+    [updateRoleMutation],
+  )
+
+  const handleDelete = useCallback(
+    async (role: RoleModel) => {
+      await deleteRoleMutation.mutateAsync(role.roleId)
+    },
+    [deleteRoleMutation],
+  )
+
   const columns = useMemo(() => {
     return getRoleColumns({
-      isBusy,
-      onEdit: (role) => {
-        setEditingRole(role)
-        setEditOpen(true)
-      },
-      onToggleDisabled: (role) => {
-        updateRoleMutation.mutate({
-          roleId: role.roleId,
-          isDisabled: !role.isDisabled,
-        })
-      },
-      onDelete: async (role) => {
-        await deleteRoleMutation.mutateAsync(role.roleId)
-      },
+      onEdit: handleEdit,
+      onToggleDisabled: handleToggleDisabled,
+      onDelete: handleDelete,
     })
-  }, [deleteRoleMutation, isBusy, updateRoleMutation])
+  }, [handleDelete, handleEdit, handleToggleDisabled])
 
   return (
     <div className="flex flex-col gap-4">
@@ -60,7 +68,7 @@ export function Role() {
         <div className="text-lg font-medium">角色管理</div>
         <CreateDialog
           onCreated={() => {
-            setPage(1)
+            pagination.setPage(1)
           }}
         />
       </div>
@@ -69,17 +77,7 @@ export function Role() {
         columns={columns}
         data={data?.list ?? []}
         isLoading={isLoading || isFetching}
-        pagination={{
-          page,
-          pageSize,
-          total: data?.total ?? 0,
-          onPageChange: setPage,
-          onPageSizeChange: (nextPageSize) => {
-            setPageSize(nextPageSize)
-            setPage(1)
-          },
-          pageSizeOptions: [10, 20, 50, 100],
-        }}
+        pagination={pagination.pagination}
       />
 
       <EditDialog

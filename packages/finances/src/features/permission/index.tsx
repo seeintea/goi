@@ -1,28 +1,28 @@
-import { useEffect, useMemo, useState } from "react"
+import { useCallback, useEffect, useMemo, useState } from "react"
 import type { Permission as PermissionModel } from "@/api/controllers/permission"
 import { useModuleAll } from "@/api/react-query/module"
 import { useDeletePermission, usePermissionList, useUpdatePermission } from "@/api/react-query/permission"
 import { DataTable } from "@/components/data-table"
+import { usePagination } from "@/hooks/use-pagination"
 import { getPermissionColumns } from "./columns"
 import { CreateDialog } from "./components/create-dialog"
 import { EditDialog } from "./components/edit-dialog"
 
 export function Permission() {
-  const [page, setPage] = useState(1)
-  const [pageSize, setPageSize] = useState(10)
-
   const [editOpen, setEditOpen] = useState(false)
   const [editingPermission, setEditingPermission] = useState<PermissionModel | null>(null)
 
   const updatePermissionMutation = useUpdatePermission()
   const deletePermissionMutation = useDeletePermission()
 
+  const pagination = usePagination({})
+
   const query = useMemo(() => {
     return {
-      page,
-      pageSize,
+      page: pagination.page,
+      pageSize: pagination.pageSize,
     }
-  }, [page, pageSize])
+  }, [pagination.page, pagination.pageSize])
 
   const { data, isLoading, isFetching } = usePermissionList(query)
 
@@ -43,34 +43,41 @@ export function Permission() {
   }, [moduleList])
 
   useEffect(() => {
-    const total = data?.total ?? 0
-    const pageCount = Math.max(1, Math.ceil(total / pageSize))
-    if (page > pageCount) {
-      setPage(pageCount)
-    }
-  }, [data?.total, page, pageSize])
+    pagination.setTotal(data?.total ?? 0)
+  }, [data?.total, pagination.setTotal])
 
-  const isBusy = updatePermissionMutation.isPending || deletePermissionMutation.isPending
+  const isBusy = updatePermissionMutation.isPending
+
+  const handleEdit = useCallback((permission: PermissionModel) => {
+    setEditingPermission(permission)
+    setEditOpen(true)
+  }, [])
+
+  const handleToggleDisabled = useCallback(
+    (permission: PermissionModel) => {
+      updatePermissionMutation.mutate({
+        permissionId: permission.permissionId,
+        isDisabled: !permission.isDisabled,
+      })
+    },
+    [updatePermissionMutation],
+  )
+
+  const handleDelete = useCallback(
+    async (permission: PermissionModel) => {
+      await deletePermissionMutation.mutateAsync(permission.permissionId)
+    },
+    [deletePermissionMutation],
+  )
 
   const columns = useMemo(() => {
     return getPermissionColumns({
-      isBusy,
       moduleLabelById,
-      onEdit: (permission) => {
-        setEditingPermission(permission)
-        setEditOpen(true)
-      },
-      onToggleDisabled: (permission) => {
-        updatePermissionMutation.mutate({
-          permissionId: permission.permissionId,
-          isDisabled: !permission.isDisabled,
-        })
-      },
-      onDelete: async (permission) => {
-        await deletePermissionMutation.mutateAsync(permission.permissionId)
-      },
+      onEdit: handleEdit,
+      onToggleDisabled: handleToggleDisabled,
+      onDelete: handleDelete,
     })
-  }, [deletePermissionMutation, isBusy, moduleLabelById, updatePermissionMutation])
+  }, [handleDelete, handleEdit, handleToggleDisabled, moduleLabelById])
 
   return (
     <div className="flex flex-col gap-4">
@@ -79,7 +86,7 @@ export function Permission() {
         <CreateDialog
           moduleOptions={moduleOptions}
           onCreated={() => {
-            setPage(1)
+            pagination.setPage(1)
           }}
         />
       </div>
@@ -88,17 +95,7 @@ export function Permission() {
         columns={columns}
         data={data?.list ?? []}
         isLoading={isLoading || isFetching}
-        pagination={{
-          page,
-          pageSize,
-          total: data?.total ?? 0,
-          onPageChange: setPage,
-          onPageSizeChange: (nextPageSize) => {
-            setPageSize(nextPageSize)
-            setPage(1)
-          },
-          pageSizeOptions: [10, 20, 50, 100],
-        }}
+        pagination={pagination.pagination}
       />
 
       <EditDialog

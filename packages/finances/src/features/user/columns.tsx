@@ -6,11 +6,9 @@ import { ConfirmDialog } from "@/components/confirm-dialog"
 import { Button } from "@/components/ui/button"
 
 export function getUserColumns({
-  isBusy,
   onToggleDisabled,
   onDelete,
 }: {
-  isBusy: boolean
   onToggleDisabled: (user: User) => void
   onDelete: (user: User) => void | Promise<void>
 }): ColumnDef<User>[] {
@@ -76,7 +74,6 @@ export function getUserColumns({
             <Button
               variant="outline"
               size="sm"
-              disabled={isBusy}
               onClick={() => onToggleDisabled(user)}
             >
               {nextDisabled ? "禁用" : "启用"}
@@ -86,12 +83,10 @@ export function getUserColumns({
               title="确认删除？"
               description={`确定删除用户 ${user.username} 吗？此操作不可恢复。`}
               onConfirm={() => onDelete(user)}
-              disabled={isBusy}
               trigger={
                 <Button
                   variant="destructive"
                   size="sm"
-                  disabled={isBusy}
                 >
                   删除
                 </Button>

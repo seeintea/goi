@@ -1,32 +1,36 @@
-import { useEffect, useMemo, useState } from "react"
+import { useCallback, useEffect, useMemo, useState } from "react"
 
 import type { Module as ModuleModel } from "@/api/controllers/module"
 import { useDeleteModule, useModuleAll, useModuleList, useRootModules, useUpdateModule } from "@/api/react-query/module"
 import { DataTable } from "@/components/data-table"
+import { usePagination } from "@/hooks/use-pagination"
 import { getModuleColumns } from "./columns"
 import { CreateDialog } from "./components/create-dialog"
 import { EditDialog } from "./components/edit-dialog"
 
 export function Module() {
-  const [page, setPage] = useState(1)
-  const [pageSize, setPageSize] = useState(10)
-
   const [editOpen, setEditOpen] = useState(false)
   const [editingModule, setEditingModule] = useState<ModuleModel | null>(null)
 
   const updateModuleMutation = useUpdateModule()
   const deleteModuleMutation = useDeleteModule()
 
+  const pagination = usePagination({})
+
   const query = useMemo(() => {
     return {
-      page,
-      pageSize,
+      page: pagination.page,
+      pageSize: pagination.pageSize,
     }
-  }, [page, pageSize])
+  }, [pagination.page, pagination.pageSize])
 
   const { data, isLoading, isFetching } = useModuleList(query)
   const { data: allModules } = useModuleAll()
   const { data: rootModules } = useRootModules()
+
+  useEffect(() => {
+    pagination.setTotal(data?.total ?? 0)
+  }, [data?.total, pagination.setTotal])
 
   const moduleNameById = useMemo(() => {
     return (allModules ?? []).reduce<Record<string, string>>((prev, next) => {
@@ -40,28 +44,27 @@ export function Module() {
     return [{ value: "", label: "无" }, ...options]
   }, [rootModules])
 
-  useEffect(() => {
-    const total = data?.total ?? 0
-    const pageCount = Math.max(1, Math.ceil(total / pageSize))
-    if (page > pageCount) {
-      setPage(pageCount)
-    }
-  }, [data?.total, page, pageSize])
+  const isBusy = updateModuleMutation.isPending
 
-  const isBusy = updateModuleMutation.isPending || deleteModuleMutation.isPending
+  const handleEdit = useCallback((module: ModuleModel) => {
+    setEditingModule(module)
+    setEditOpen(true)
+  }, [])
+
+  const handleDelete = useCallback(
+    async (module: ModuleModel) => {
+      await deleteModuleMutation.mutateAsync(module.moduleId)
+    },
+    [deleteModuleMutation],
+  )
+
   const columns = useMemo(() => {
     return getModuleColumns({
-      isBusy,
       moduleNameById,
-      onEdit: (module) => {
-        setEditingModule(module)
-        setEditOpen(true)
-      },
-      onDelete: async (module) => {
-        await deleteModuleMutation.mutateAsync(module.moduleId)
-      },
+      onEdit: handleEdit,
+      onDelete: handleDelete,
     })
-  }, [deleteModuleMutation, isBusy, moduleNameById])
+  }, [handleDelete, handleEdit, moduleNameById])
 
   return (
     <div className="flex flex-col gap-4">
@@ -70,7 +73,7 @@ export function Module() {
         <CreateDialog
           parentOptions={parentOptions}
           onCreated={() => {
-            setPage(1)
+            pagination.setPage(1)
           }}
         />
       </div>
@@ -79,17 +82,7 @@ export function Module() {
         columns={columns}
         data={data?.list ?? []}
         isLoading={isLoading || isFetching}
-        pagination={{
-          page,
-          pageSize,
-          total: data?.total ?? 0,
-          onPageChange: setPage,
-          onPageSizeChange: (nextPageSize) => {
-            setPageSize(nextPageSize)
-            setPage(1)
-          },
-          pageSizeOptions: [10, 20, 50, 100],
-        }}
+        pagination={pagination.pagination}
       />
 
       <EditDialog

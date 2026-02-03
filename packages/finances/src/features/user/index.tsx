@@ -1,49 +1,53 @@
-import { useEffect, useMemo, useState } from "react"
-
+import { useCallback, useEffect, useMemo } from "react"
 import { useDeleteUser, useUpdateUser, useUserList } from "@/api"
+import type { User as UserModel } from "@/api/controllers/user"
 import { DataTable } from "@/components/data-table"
+import { usePagination } from "@/hooks/use-pagination"
 import { getUserColumns } from "./columns"
 import { CreateDialog } from "./components/create-dialog"
 
 export function User() {
-  const [page, setPage] = useState(1)
-  const [pageSize, setPageSize] = useState(10)
-
   const updateUserMutation = useUpdateUser()
   const deleteUserMutation = useDeleteUser()
 
+  const pagination = usePagination({})
+
   const query = useMemo(() => {
     return {
-      page,
-      pageSize,
+      page: pagination.page,
+      pageSize: pagination.pageSize,
     }
-  }, [page, pageSize])
+  }, [pagination.page, pagination.pageSize])
 
   const { data, isLoading, isFetching } = useUserList(query)
 
   useEffect(() => {
-    const total = data?.total ?? 0
-    const pageCount = Math.max(1, Math.ceil(total / pageSize))
-    if (page > pageCount) {
-      setPage(pageCount)
-    }
-  }, [data?.total, page, pageSize])
+    pagination.setTotal(data?.total ?? 0)
+  }, [data?.total, pagination.setTotal])
 
-  const isBusy = updateUserMutation.isPending || deleteUserMutation.isPending
+  const handleToggleDisabled = useCallback(
+    (user: UserModel) => {
+      updateUserMutation.mutate({
+        userId: user.userId,
+        isDisabled: !user.isDisabled,
+      })
+    },
+    [updateUserMutation],
+  )
+
+  const handleDelete = useCallback(
+    async (user: UserModel) => {
+      await deleteUserMutation.mutateAsync(user.userId)
+    },
+    [deleteUserMutation],
+  )
+
   const columns = useMemo(() => {
     return getUserColumns({
-      isBusy,
-      onToggleDisabled: (user) => {
-        updateUserMutation.mutate({
-          userId: user.userId,
-          isDisabled: !user.isDisabled,
-        })
-      },
-      onDelete: async (user) => {
-        await deleteUserMutation.mutateAsync(user.userId)
-      },
+      onToggleDisabled: handleToggleDisabled,
+      onDelete: handleDelete,
     })
-  }, [deleteUserMutation, isBusy, updateUserMutation])
+  }, [handleDelete, handleToggleDisabled])
 
   return (
     <div className="flex flex-col gap-4">
@@ -51,7 +55,7 @@ export function User() {
         <div className="text-lg font-medium">用户管理</div>
         <CreateDialog
           onCreated={() => {
-            setPage(1)
+            pagination.setPage(1)
           }}
         />
       </div>
@@ -59,17 +63,7 @@ export function User() {
         columns={columns}
         data={data?.list ?? []}
         isLoading={isLoading || isFetching}
-        pagination={{
-          page,
-          pageSize,
-          total: data?.total ?? 0,
-          onPageChange: setPage,
-          onPageSizeChange: (nextPageSize) => {
-            setPageSize(nextPageSize)
-            setPage(1)
-          },
-          pageSizeOptions: [10, 20, 50, 100],
-        }}
+        pagination={pagination.pagination}
       />
     </div>
   )

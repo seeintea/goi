@@ -1,5 +1,6 @@
 import { Plus } from "lucide-react"
 import { useEffect, useMemo, useState } from "react"
+import type { UseFormReturn } from "react-hook-form"
 import { useForm } from "react-hook-form"
 
 import { useCreateModule } from "@/api/react-query/module"
@@ -9,12 +10,98 @@ import { Select } from "@/components/select"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 
-type FormValues = {
+export type ModuleFormValues = {
   name: string
   routePath: string
   permissionCode: string
   parentId: string
   sort: number
+}
+
+export function ModuleFormFields({
+  form,
+  parentOptions,
+  submitText,
+  submitDisabled,
+}: {
+  form: UseFormReturn<ModuleFormValues>
+  parentOptions: { label: string; value: string }[]
+  submitText: string
+  submitDisabled: boolean
+}) {
+  return (
+    <>
+      <FieldGroup>
+        <FormField
+          label="模块名称"
+          errors={[form.formState.errors.name]}
+        >
+          <Input
+            {...form.register("name", { required: "请输入模块名称" })}
+            placeholder="例如：系统管理"
+          />
+        </FormField>
+
+        <FormField
+          label="前端路由路径"
+          errors={[form.formState.errors.routePath]}
+        >
+          <Input
+            {...form.register("routePath", { required: "请输入前端路由路径" })}
+            placeholder="例如：/sys-manage/role"
+          />
+        </FormField>
+
+        <FormField
+          label="页面权限编码"
+          errors={[form.formState.errors.permissionCode]}
+        >
+          <Input
+            {...form.register("permissionCode", { required: "请输入页面权限编码" })}
+            placeholder="例如：role / user / permission"
+          />
+        </FormField>
+
+        <FormField
+          label="父模块"
+          errors={[form.formState.errors.parentId]}
+        >
+          <input
+            type="hidden"
+            {...form.register("parentId")}
+          />
+          <Select
+            options={parentOptions}
+            value={form.watch("parentId")}
+            onValueChange={(next) => {
+              form.setValue("parentId", String(next), { shouldValidate: true })
+            }}
+          />
+        </FormField>
+
+        <FormField
+          label="排序"
+          errors={[form.formState.errors.sort]}
+        >
+          <Input
+            type="number"
+            min={0}
+            step={1}
+            {...form.register("sort", { valueAsNumber: true })}
+          />
+        </FormField>
+      </FieldGroup>
+
+      <DialogFooter>
+        <Button
+          type="submit"
+          disabled={submitDisabled}
+        >
+          {submitText}
+        </Button>
+      </DialogFooter>
+    </>
+  )
 }
 
 export function CreateDialog({
@@ -27,7 +114,7 @@ export function CreateDialog({
   const [open, setOpen] = useState(false)
   const createModuleMutation = useCreateModule()
 
-  const defaultValues = useMemo<FormValues>(
+  const defaultValues = useMemo<ModuleFormValues>(
     () => ({
       name: "",
       routePath: "",
@@ -38,7 +125,7 @@ export function CreateDialog({
     [],
   )
 
-  const form = useForm<FormValues>({
+  const form = useForm<ModuleFormValues>({
     defaultValues,
   })
 
@@ -93,80 +180,12 @@ export function CreateDialog({
         className="flex flex-col gap-4"
         onSubmit={onSubmit}
       >
-        <FieldGroup>
-          <FormField
-            label="模块名称"
-            errors={[form.formState.errors.name]}
-          >
-            <Input
-              {...form.register("name", { required: "请输入模块名称" })}
-              placeholder="例如：系统管理"
-              disabled={isPending}
-            />
-          </FormField>
-
-          <FormField
-            label="前端路由路径"
-            errors={[form.formState.errors.routePath]}
-          >
-            <Input
-              {...form.register("routePath", { required: "请输入前端路由路径" })}
-              placeholder="例如：/sys-manage/role"
-              disabled={isPending}
-            />
-          </FormField>
-
-          <FormField
-            label="页面权限编码"
-            errors={[form.formState.errors.permissionCode]}
-          >
-            <Input
-              {...form.register("permissionCode", { required: "请输入页面权限编码" })}
-              placeholder="例如：role / user / permission"
-              disabled={isPending}
-            />
-          </FormField>
-
-          <FormField
-            label="父模块"
-            errors={[form.formState.errors.parentId]}
-          >
-            <input
-              type="hidden"
-              {...form.register("parentId")}
-            />
-            <Select
-              options={parentOptions}
-              value={form.watch("parentId")}
-              onValueChange={(next) => {
-                form.setValue("parentId", String(next), { shouldValidate: true })
-              }}
-              disabled={isPending}
-            />
-          </FormField>
-
-          <FormField
-            label="排序"
-            errors={[form.formState.errors.sort]}
-          >
-            <Input
-              type="number"
-              min={0}
-              step={1}
-              {...form.register("sort", { valueAsNumber: true })}
-              disabled={isPending}
-            />
-          </FormField>
-        </FieldGroup>
-
-        <DialogFooter>
-          <Button
-            type="submit"
-            disabled={isPending}
-          >
-            创建
-          </Button>
-        </DialogFooter>
+        <ModuleFormFields
+          form={form}
+          parentOptions={parentOptions}
+          submitText="创建"
+          submitDisabled={isPending}
+        />
       </form>
     </BaseDialog>
   )
