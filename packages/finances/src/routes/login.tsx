@@ -4,9 +4,9 @@ import { useUser } from "@/stores"
 
 export const Route = createFileRoute("/login")({
   beforeLoad: () => {
-    const { token, userId } = useUser.getState()
+    const { token, userId, bookId } = useUser.getState()
     if (token || userId) {
-      throw redirect({ to: "/" })
+      throw redirect({ to: bookId ? "/dashboard" : "/", replace: true })
     }
   },
   component: Login,

@@ -52,9 +52,12 @@ export function Login() {
     async (values: RegisterFormValues) => {
       clearMessages()
       try {
+        const username = values.username.trim()
+        const password = await sha1Hex(values.password)
+
         const resp = await registerMutation.mutateAsync({
-          username: values.username.trim(),
-          password: await sha1Hex(values.password),
+          username,
+          password,
           email: values.email.trim() ? values.email.trim() : undefined,
           phone: values.phone.trim() ? values.phone.trim() : undefined,
         })
@@ -64,15 +67,23 @@ export function Login() {
           return
         }
 
-        setSubmitSuccess("注册成功，请登录")
-        setPrefillUsername(values.username.trim())
-        setMode("login")
+        setSubmitSuccess("注册成功，正在登录...")
+        const loginResp = await loginMutation.mutateAsync({ username, password })
+        if (loginResp.code !== 200) {
+          setSubmitError(loginResp.message || "登录失败")
+          setSubmitSuccess("")
+          setPrefillUsername(username)
+          setMode("login")
+          return
+        }
+
+        navigate({ to: "/", replace: true })
       } catch (error) {
         const e = error as Error
         setSubmitError(e.message || "注册失败")
       }
     },
-    [clearMessages, registerMutation],
+    [clearMessages, loginMutation, navigate, registerMutation],
   )
 
   return (

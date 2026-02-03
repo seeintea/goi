@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as SysManageRouteRouteImport } from './routes/sys-manage/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as SysManageUserRouteImport } from './routes/sys-manage/user'
@@ -20,6 +21,11 @@ import { Route as SysManageModuleRouteImport } from './routes/sys-manage/module'
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardRoute = DashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SysManageRouteRoute = SysManageRouteRouteImport.update({
@@ -56,6 +62,7 @@ const SysManageModuleRoute = SysManageModuleRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/sys-manage': typeof SysManageRouteRouteWithChildren
+  '/dashboard': typeof DashboardRoute
   '/login': typeof LoginRoute
   '/sys-manage/module': typeof SysManageModuleRoute
   '/sys-manage/permission': typeof SysManagePermissionRoute
@@ -65,6 +72,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/sys-manage': typeof SysManageRouteRouteWithChildren
+  '/dashboard': typeof DashboardRoute
   '/login': typeof LoginRoute
   '/sys-manage/module': typeof SysManageModuleRoute
   '/sys-manage/permission': typeof SysManagePermissionRoute
@@ -75,6 +83,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/sys-manage': typeof SysManageRouteRouteWithChildren
+  '/dashboard': typeof DashboardRoute
   '/login': typeof LoginRoute
   '/sys-manage/module': typeof SysManageModuleRoute
   '/sys-manage/permission': typeof SysManagePermissionRoute
@@ -86,6 +95,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/sys-manage'
+    | '/dashboard'
     | '/login'
     | '/sys-manage/module'
     | '/sys-manage/permission'
@@ -95,6 +105,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/sys-manage'
+    | '/dashboard'
     | '/login'
     | '/sys-manage/module'
     | '/sys-manage/permission'
@@ -104,6 +115,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/sys-manage'
+    | '/dashboard'
     | '/login'
     | '/sys-manage/module'
     | '/sys-manage/permission'
@@ -114,6 +126,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   SysManageRouteRoute: typeof SysManageRouteRouteWithChildren
+  DashboardRoute: typeof DashboardRoute
   LoginRoute: typeof LoginRoute
 }
 
@@ -124,6 +137,13 @@ declare module '@tanstack/react-router' {
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dashboard': {
+      id: '/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof DashboardRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/sys-manage': {
@@ -192,6 +212,7 @@ const SysManageRouteRouteWithChildren = SysManageRouteRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   SysManageRouteRoute: SysManageRouteRouteWithChildren,
+  DashboardRoute: DashboardRoute,
   LoginRoute: LoginRoute,
 }
 export const routeTree = rootRouteImport

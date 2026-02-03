@@ -8,7 +8,7 @@ import { Sidebar } from "./sidebar"
 export function Layout() {
   const { pathname } = useLocation()
 
-  if (pathname === "/login") {
+  if (pathname === "/login" || pathname === "/") {
     return <Outlet />
   }
 
