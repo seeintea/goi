@@ -4,8 +4,8 @@ import type { UseFormReturn } from "react-hook-form"
 import { useForm } from "react-hook-form"
 
 import { useCreateRole } from "@/api/react-query/role"
-import { BaseDialog, DialogFooter } from "@/components/base-dialog"
-import { FieldGroup, FormField } from "@/components/base-field"
+import { BaseDialog, DialogFooter } from "@/components/base/base-dialog"
+import { FieldGroup, FormField } from "@/components/base/base-field"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 

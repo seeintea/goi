@@ -4,9 +4,9 @@ import type { UseFormReturn } from "react-hook-form"
 import { useForm } from "react-hook-form"
 
 import { useCreatePermission } from "@/api/react-query/permission"
-import { BaseDialog, DialogFooter } from "@/components/base-dialog"
-import { FieldGroup, FormField } from "@/components/base-field"
-import { Select } from "@/components/select"
+import { BaseDialog, DialogFooter } from "@/components/base/base-dialog"
+import { FieldGroup, FormField } from "@/components/base/base-field"
+import { Select } from "@/components/base/select"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 

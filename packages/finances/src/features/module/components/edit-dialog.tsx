@@ -2,7 +2,7 @@ import { useEffect, useMemo } from "react"
 import { useForm } from "react-hook-form"
 
 import type { Module } from "@/api/controllers/module"
-import { BaseDialog } from "@/components/base-dialog"
+import { BaseDialog } from "@/components/base/base-dialog"
 import { ModuleFormFields, type ModuleFormValues } from "./create-dialog"
 
 export function EditDialog({

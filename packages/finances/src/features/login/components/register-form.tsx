@@ -1,7 +1,7 @@
 import { useForm } from "react-hook-form"
 
-import { FieldGroup, FormField } from "@/components/base-field"
-import { PasswordInput } from "@/components/password-input"
+import { FieldGroup, FormField } from "@/components/base/base-field"
+import { PasswordInput } from "@/components/base/password-input"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 

@@ -1,6 +1,6 @@
 import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from "lucide-react"
 import { useMemo } from "react"
-import { Select } from "@/components/select"
+import { Select } from "@/components/base/select"
 import { Button } from "@/components/ui/button"
 import type { PaginationState } from "@/hooks/use-pagination"
 

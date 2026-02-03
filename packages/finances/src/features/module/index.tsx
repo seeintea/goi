@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from "react"
 
 import type { Module as ModuleModel } from "@/api/controllers/module"
 import { useDeleteModule, useModuleAll, useModuleList, useRootModules, useUpdateModule } from "@/api/react-query/module"
-import { DataTable } from "@/components/data-table"
+import { DataTable } from "@/components/base/data-table"
 import { usePagination } from "@/hooks/use-pagination"
 import { getModuleColumns } from "./columns"
 import { CreateDialog } from "./components/create-dialog"

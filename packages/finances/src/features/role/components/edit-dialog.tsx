@@ -2,7 +2,7 @@ import { useEffect, useMemo } from "react"
 import { useForm } from "react-hook-form"
 
 import type { Role } from "@/api/controllers/role"
-import { BaseDialog } from "@/components/base-dialog"
+import { BaseDialog } from "@/components/base/base-dialog"
 import { RoleFormFields, type RoleFormValues } from "./create-dialog"
 
 export function EditDialog({

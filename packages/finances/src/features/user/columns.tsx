@@ -2,7 +2,7 @@ import type { ColumnDef } from "@tanstack/react-table"
 import { format } from "date-fns"
 
 import type { User } from "@/api/controllers/user"
-import { ConfirmDialog } from "@/components/confirm-dialog"
+import { ConfirmDialog } from "@/components/base/confirm-dialog"
 import { Button } from "@/components/ui/button"
 
 export function getUserColumns({

@@ -3,7 +3,7 @@ import { format } from "date-fns"
 import { Pencil } from "lucide-react"
 
 import type { Role } from "@/api/controllers/role"
-import { ConfirmDialog } from "@/components/confirm-dialog"
+import { ConfirmDialog } from "@/components/base/confirm-dialog"
 import { Button } from "@/components/ui/button"
 
 export function getRoleColumns({
