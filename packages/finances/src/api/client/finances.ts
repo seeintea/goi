@@ -1,4 +1,3 @@
-import { redirect } from "@tanstack/react-router"
 import { useUser } from "@/stores"
 import { FetchInstance, withHeader } from "./core"
 
@@ -31,8 +30,11 @@ api.addRequestInterceptor(({ url, options }) => {
 })
 
 api.addResponseInterceptor((response) => {
-  if (response.status === 401) {
-    redirect({ to: "/login" })
+  if (response.status === 401 || response.status === 403) {
+    useUser.getState().reset()
+    if (typeof window !== "undefined" && window.location.pathname !== "/login") {
+      window.location.assign("/login")
+    }
   }
   return response
 })
