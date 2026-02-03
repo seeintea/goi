@@ -2,10 +2,10 @@ import { useEffect, useMemo } from "react"
 import { useForm } from "react-hook-form"
 
 import type { Permission } from "@/api/controllers/permission"
+import { BaseDialog, DialogFooter } from "@/components/base-dialog"
+import { FieldGroup, FormField } from "@/components/base-field"
 import { Select } from "@/components/select"
 import { Button } from "@/components/ui/button"
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { Field, FieldContent, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 
 type FormValues = {
@@ -46,75 +46,67 @@ export function EditDialog({
   }, [defaultValues, form])
 
   return (
-    <Dialog
+    <BaseDialog
       open={open}
       onOpenChange={(next) => {
         if (isBusy) return
         onOpenChange(next)
       }}
+      title="编辑权限"
     >
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>编辑权限</DialogTitle>
-        </DialogHeader>
+      <form
+        className="flex flex-col gap-4"
+        onSubmit={form.handleSubmit(onSubmit)}
+      >
+        <FieldGroup>
+          <FormField
+            label="权限编码"
+            errors={[form.formState.errors.code]}
+          >
+            <Input
+              {...form.register("code", { required: "请输入权限编码" })}
+              disabled={isBusy}
+            />
+          </FormField>
 
-        <form
-          className="flex flex-col gap-4"
-          onSubmit={form.handleSubmit(onSubmit)}
-        >
-          <FieldGroup>
-            <Field>
-              <FieldLabel>权限编码</FieldLabel>
-              <FieldContent>
-                <Input
-                  {...form.register("code", { required: "请输入权限编码" })}
-                  disabled={isBusy}
-                />
-                <FieldError errors={[form.formState.errors.code]} />
-              </FieldContent>
-            </Field>
+          <FormField
+            label="权限名称"
+            errors={[form.formState.errors.name]}
+          >
+            <Input
+              {...form.register("name")}
+              disabled={isBusy}
+            />
+          </FormField>
 
-            <Field>
-              <FieldLabel>权限名称</FieldLabel>
-              <FieldContent>
-                <Input
-                  {...form.register("name")}
-                  disabled={isBusy}
-                />
-                <FieldError errors={[form.formState.errors.name]} />
-              </FieldContent>
-            </Field>
+          <FormField
+            label="模块"
+            errors={[form.formState.errors.moduleId]}
+          >
+            <input
+              type="hidden"
+              {...form.register("moduleId")}
+            />
+            <Select
+              options={moduleOptions}
+              value={form.watch("moduleId")}
+              onValueChange={(next) => {
+                form.setValue("moduleId", String(next), { shouldValidate: true })
+              }}
+              disabled={isBusy}
+            />
+          </FormField>
+        </FieldGroup>
 
-            <Field>
-              <FieldLabel>模块</FieldLabel>
-              <FieldContent>
-                <input
-                  type="hidden"
-                  {...form.register("moduleId")}
-                />
-                <Select
-                  options={moduleOptions}
-                  value={form.watch("moduleId")}
-                  onValueChange={(next) => {
-                    form.setValue("moduleId", String(next), { shouldValidate: true })
-                  }}
-                  disabled={isBusy}
-                />
-                <FieldError errors={[form.formState.errors.moduleId]} />
-              </FieldContent>
-            </Field>
-          </FieldGroup>
-
-          <DialogFooter>
-            <Button
-              type="submit"
-              disabled={isBusy || !permission}
-            >
-              保存
-            </Button>
-          </DialogFooter>
-        </form>
-      </DialogContent>
-    </Dialog>
+        <DialogFooter>
+          <Button
+            type="submit"
+            disabled={isBusy || !permission}
+          >
+            保存
+          </Button>
+        </DialogFooter>
+      </form>
+    </BaseDialog>
   )
 }

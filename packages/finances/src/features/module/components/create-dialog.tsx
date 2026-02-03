@@ -3,10 +3,10 @@ import { useEffect, useMemo, useState } from "react"
 import { useForm } from "react-hook-form"
 
 import { useCreateModule } from "@/api/react-query/module"
+import { BaseDialog, DialogFooter } from "@/components/base-dialog"
+import { FieldGroup, FormField } from "@/components/base-field"
 import { Select } from "@/components/select"
 import { Button } from "@/components/ui/button"
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
-import { Field, FieldContent, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 
 type FormValues = {
@@ -75,112 +75,99 @@ export function CreateDialog({
   })
 
   return (
-    <Dialog
+    <BaseDialog
       open={open}
       onOpenChange={(next) => {
         if (isPending) return
         setOpen(next)
       }}
+      title="新增模块"
+      trigger={
+        <Button>
+          <Plus />
+          新增模块
+        </Button>
+      }
     >
-      <DialogTrigger
-        render={
-          <Button>
-            <Plus />
-            新增模块
-          </Button>
-        }
-      />
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>新增模块</DialogTitle>
-        </DialogHeader>
-
-        <form
-          className="flex flex-col gap-4"
-          onSubmit={onSubmit}
-        >
-          <FieldGroup>
-            <Field>
-              <FieldLabel>模块名称</FieldLabel>
-              <FieldContent>
-                <Input
-                  {...form.register("name", { required: "请输入模块名称" })}
-                  placeholder="例如：系统管理"
-                  disabled={isPending}
-                />
-                <FieldError errors={[form.formState.errors.name]} />
-              </FieldContent>
-            </Field>
-
-            <Field>
-              <FieldLabel>前端路由路径</FieldLabel>
-              <FieldContent>
-                <Input
-                  {...form.register("routePath", { required: "请输入前端路由路径" })}
-                  placeholder="例如：/sys-manage/role"
-                  disabled={isPending}
-                />
-                <FieldError errors={[form.formState.errors.routePath]} />
-              </FieldContent>
-            </Field>
-
-            <Field>
-              <FieldLabel>页面权限编码</FieldLabel>
-              <FieldContent>
-                <Input
-                  {...form.register("permissionCode", { required: "请输入页面权限编码" })}
-                  placeholder="例如：role / user / permission"
-                  disabled={isPending}
-                />
-                <FieldError errors={[form.formState.errors.permissionCode]} />
-              </FieldContent>
-            </Field>
-
-            <Field>
-              <FieldLabel>父模块</FieldLabel>
-              <FieldContent>
-                <input
-                  type="hidden"
-                  {...form.register("parentId")}
-                />
-                <Select
-                  options={parentOptions}
-                  value={form.watch("parentId")}
-                  onValueChange={(next) => {
-                    form.setValue("parentId", String(next), { shouldValidate: true })
-                  }}
-                  disabled={isPending}
-                />
-                <FieldError errors={[form.formState.errors.parentId]} />
-              </FieldContent>
-            </Field>
-
-            <Field>
-              <FieldLabel>排序</FieldLabel>
-              <FieldContent>
-                <Input
-                  type="number"
-                  min={0}
-                  step={1}
-                  {...form.register("sort", { valueAsNumber: true })}
-                  disabled={isPending}
-                />
-                <FieldError errors={[form.formState.errors.sort]} />
-              </FieldContent>
-            </Field>
-          </FieldGroup>
-
-          <DialogFooter>
-            <Button
-              type="submit"
+      <form
+        className="flex flex-col gap-4"
+        onSubmit={onSubmit}
+      >
+        <FieldGroup>
+          <FormField
+            label="模块名称"
+            errors={[form.formState.errors.name]}
+          >
+            <Input
+              {...form.register("name", { required: "请输入模块名称" })}
+              placeholder="例如：系统管理"
               disabled={isPending}
-            >
-              创建
-            </Button>
-          </DialogFooter>
-        </form>
-      </DialogContent>
-    </Dialog>
+            />
+          </FormField>
+
+          <FormField
+            label="前端路由路径"
+            errors={[form.formState.errors.routePath]}
+          >
+            <Input
+              {...form.register("routePath", { required: "请输入前端路由路径" })}
+              placeholder="例如：/sys-manage/role"
+              disabled={isPending}
+            />
+          </FormField>
+
+          <FormField
+            label="页面权限编码"
+            errors={[form.formState.errors.permissionCode]}
+          >
+            <Input
+              {...form.register("permissionCode", { required: "请输入页面权限编码" })}
+              placeholder="例如：role / user / permission"
+              disabled={isPending}
+            />
+          </FormField>
+
+          <FormField
+            label="父模块"
+            errors={[form.formState.errors.parentId]}
+          >
+            <input
+              type="hidden"
+              {...form.register("parentId")}
+            />
+            <Select
+              options={parentOptions}
+              value={form.watch("parentId")}
+              onValueChange={(next) => {
+                form.setValue("parentId", String(next), { shouldValidate: true })
+              }}
+              disabled={isPending}
+            />
+          </FormField>
+
+          <FormField
+            label="排序"
+            errors={[form.formState.errors.sort]}
+          >
+            <Input
+              type="number"
+              min={0}
+              step={1}
+              {...form.register("sort", { valueAsNumber: true })}
+              disabled={isPending}
+            />
+          </FormField>
+        </FieldGroup>
+
+        <DialogFooter>
+          <Button
+            type="submit"
+            disabled={isPending}
+          >
+            创建
+          </Button>
+        </DialogFooter>
+      </form>
+    </BaseDialog>
   )
 }
-

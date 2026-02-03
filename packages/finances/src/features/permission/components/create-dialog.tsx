@@ -3,10 +3,10 @@ import { useEffect, useMemo, useState } from "react"
 import { useForm } from "react-hook-form"
 
 import { useCreatePermission } from "@/api/react-query/permission"
+import { BaseDialog, DialogFooter } from "@/components/base-dialog"
+import { FieldGroup, FormField } from "@/components/base-field"
 import { Select } from "@/components/select"
 import { Button } from "@/components/ui/button"
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
-import { Field, FieldContent, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 
 type FormValues = {
@@ -63,85 +63,75 @@ export function CreateDialog({
   })
 
   return (
-    <Dialog
+    <BaseDialog
       open={open}
       onOpenChange={(next) => {
         if (isPending) return
         setOpen(next)
       }}
+      title="新增权限"
+      trigger={
+        <Button>
+          <Plus />
+          新增权限
+        </Button>
+      }
     >
-      <DialogTrigger
-        render={
-          <Button>
-            <Plus />
-            新增权限
-          </Button>
-        }
-      />
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>新增权限</DialogTitle>
-        </DialogHeader>
-
-        <form
-          className="flex flex-col gap-4"
-          onSubmit={onSubmit}
-        >
-          <FieldGroup>
-            <Field>
-              <FieldLabel>权限编码</FieldLabel>
-              <FieldContent>
-                <Input
-                  {...form.register("code", { required: "请输入权限编码" })}
-                  placeholder="例如：role / user / permission"
-                  disabled={isPending}
-                />
-                <FieldError errors={[form.formState.errors.code]} />
-              </FieldContent>
-            </Field>
-
-            <Field>
-              <FieldLabel>权限名称</FieldLabel>
-              <FieldContent>
-                <Input
-                  {...form.register("name")}
-                  placeholder="例如：角色管理"
-                  disabled={isPending}
-                />
-                <FieldError errors={[form.formState.errors.name]} />
-              </FieldContent>
-            </Field>
-
-            <Field>
-              <FieldLabel>模块</FieldLabel>
-              <FieldContent>
-                <input
-                  type="hidden"
-                  {...form.register("moduleId", { required: "请选择模块" })}
-                />
-                <Select
-                  options={moduleOptions}
-                  value={form.watch("moduleId")}
-                  onValueChange={(next) => {
-                    form.setValue("moduleId", String(next), { shouldValidate: true })
-                  }}
-                  disabled={isPending}
-                />
-                <FieldError errors={[form.formState.errors.moduleId]} />
-              </FieldContent>
-            </Field>
-          </FieldGroup>
-
-          <DialogFooter>
-            <Button
-              type="submit"
+      <form
+        className="flex flex-col gap-4"
+        onSubmit={onSubmit}
+      >
+        <FieldGroup>
+          <FormField
+            label="权限编码"
+            errors={[form.formState.errors.code]}
+          >
+            <Input
+              {...form.register("code", { required: "请输入权限编码" })}
+              placeholder="例如：role / user / permission"
               disabled={isPending}
-            >
-              创建
-            </Button>
-          </DialogFooter>
-        </form>
-      </DialogContent>
-    </Dialog>
+            />
+          </FormField>
+
+          <FormField
+            label="权限名称"
+            errors={[form.formState.errors.name]}
+          >
+            <Input
+              {...form.register("name")}
+              placeholder="例如：角色管理"
+              disabled={isPending}
+            />
+          </FormField>
+
+          <FormField
+            label="模块"
+            errors={[form.formState.errors.moduleId]}
+          >
+            <input
+              type="hidden"
+              {...form.register("moduleId", { required: "请选择模块" })}
+            />
+            <Select
+              options={moduleOptions}
+              value={form.watch("moduleId")}
+              onValueChange={(next) => {
+                form.setValue("moduleId", String(next), { shouldValidate: true })
+              }}
+              disabled={isPending}
+            />
+          </FormField>
+        </FieldGroup>
+
+        <DialogFooter>
+          <Button
+            type="submit"
+            disabled={isPending}
+          >
+            创建
+          </Button>
+        </DialogFooter>
+      </form>
+    </BaseDialog>
   )
 }

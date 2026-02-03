@@ -3,9 +3,9 @@ import { useEffect, useMemo, useState } from "react"
 import { useForm } from "react-hook-form"
 
 import { useCreateRole } from "@/api/react-query/role"
+import { BaseDialog, DialogFooter } from "@/components/base-dialog"
+import { FieldGroup, FormField } from "@/components/base-field"
 import { Button } from "@/components/ui/button"
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
-import { Field, FieldContent, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 
 type FormValues = {
@@ -53,67 +53,57 @@ export function CreateDialog({ onCreated }: { onCreated?: () => void }) {
   })
 
   return (
-    <Dialog
+    <BaseDialog
       open={open}
       onOpenChange={(next) => {
         if (isPending) return
         setOpen(next)
       }}
+      title="新增角色"
+      trigger={
+        <Button>
+          <Plus />
+          新增角色
+        </Button>
+      }
     >
-      <DialogTrigger
-        render={
-          <Button>
-            <Plus />
-            新增角色
-          </Button>
-        }
-      />
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>新增角色</DialogTitle>
-        </DialogHeader>
-
-        <form
-          className="flex flex-col gap-4"
-          onSubmit={onSubmit}
-        >
-          <FieldGroup>
-            <Field>
-              <FieldLabel>角色编码</FieldLabel>
-              <FieldContent>
-                <Input
-                  {...form.register("roleCode", { required: "请输入角色编码" })}
-                  placeholder="例如：Owner / Member"
-                  disabled={isPending}
-                />
-                <FieldError errors={[form.formState.errors.roleCode]} />
-              </FieldContent>
-            </Field>
-
-            <Field>
-              <FieldLabel>角色名称</FieldLabel>
-              <FieldContent>
-                <Input
-                  {...form.register("roleName", { required: "请输入角色名称" })}
-                  placeholder="例如：拥有者 / 成员"
-                  disabled={isPending}
-                />
-                <FieldError errors={[form.formState.errors.roleName]} />
-              </FieldContent>
-            </Field>
-          </FieldGroup>
-
-          <DialogFooter>
-            <Button
-              type="submit"
+      <form
+        className="flex flex-col gap-4"
+        onSubmit={onSubmit}
+      >
+        <FieldGroup>
+          <FormField
+            label="角色编码"
+            errors={[form.formState.errors.roleCode]}
+          >
+            <Input
+              {...form.register("roleCode", { required: "请输入角色编码" })}
+              placeholder="例如：Owner / Member"
               disabled={isPending}
-            >
-              创建
-            </Button>
-          </DialogFooter>
-        </form>
-      </DialogContent>
-    </Dialog>
+            />
+          </FormField>
+
+          <FormField
+            label="角色名称"
+            errors={[form.formState.errors.roleName]}
+          >
+            <Input
+              {...form.register("roleName", { required: "请输入角色名称" })}
+              placeholder="例如：拥有者 / 成员"
+              disabled={isPending}
+            />
+          </FormField>
+        </FieldGroup>
+
+        <DialogFooter>
+          <Button
+            type="submit"
+            disabled={isPending}
+          >
+            创建
+          </Button>
+        </DialogFooter>
+      </form>
+    </BaseDialog>
   )
 }
-

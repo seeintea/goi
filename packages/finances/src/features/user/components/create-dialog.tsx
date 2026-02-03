@@ -3,10 +3,10 @@ import { useEffect, useMemo, useState } from "react"
 import { useForm } from "react-hook-form"
 
 import { useCreateUser } from "@/api"
+import { BaseDialog, DialogFooter } from "@/components/base-dialog"
+import { FieldGroup, FormField } from "@/components/base-field"
 import { PasswordInput } from "@/components/password-input"
 import { Button } from "@/components/ui/button"
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
-import { Field, FieldContent, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { sha1Hex } from "@/lib/crypto"
 
@@ -61,91 +61,76 @@ export function CreateDialog({ onCreated }: { onCreated?: () => void }) {
   const isPending = createUserMutation.isPending
 
   return (
-    <Dialog
+    <BaseDialog
       open={open}
       onOpenChange={(next) => {
         if (isPending) return
         setOpen(next)
       }}
+      title="新增用户"
+      trigger={
+        <Button>
+          <Plus />
+          新增用户
+        </Button>
+      }
     >
-      <DialogTrigger
-        render={
-          <Button>
-            <Plus />
-            新增用户
-          </Button>
-        }
-      />
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>新增用户</DialogTitle>
-        </DialogHeader>
-
-        <form
-          className="flex flex-col gap-4"
-          onSubmit={onSubmit}
-        >
-          <FieldGroup>
-            <Field>
-              <FieldLabel>用户名</FieldLabel>
-              <FieldContent>
-                <Input
-                  {...form.register("username", { required: "请输入用户名" })}
-                  placeholder="请输入用户名"
-                  disabled={isPending}
-                />
-                <FieldError errors={[form.formState.errors.username]} />
-              </FieldContent>
-            </Field>
-
-            <Field>
-              <FieldLabel>密码</FieldLabel>
-              <FieldContent>
-                <PasswordInput
-                  {...form.register("password", {
-                    required: "请输入密码",
-                    minLength: { value: 6, message: "密码至少 6 位" },
-                  })}
-                  placeholder="请输入密码"
-                  disabled={isPending}
-                />
-                <FieldError errors={[form.formState.errors.password]} />
-              </FieldContent>
-            </Field>
-
-            <Field>
-              <FieldLabel>邮箱</FieldLabel>
-              <FieldContent>
-                <Input
-                  {...form.register("email")}
-                  placeholder="可选"
-                  disabled={isPending}
-                />
-              </FieldContent>
-            </Field>
-
-            <Field>
-              <FieldLabel>手机</FieldLabel>
-              <FieldContent>
-                <Input
-                  {...form.register("phone")}
-                  placeholder="可选"
-                  disabled={isPending}
-                />
-              </FieldContent>
-            </Field>
-          </FieldGroup>
-
-          <DialogFooter>
-            <Button
-              type="submit"
+      <form
+        className="flex flex-col gap-4"
+        onSubmit={onSubmit}
+      >
+        <FieldGroup>
+          <FormField
+            label="用户名"
+            errors={[form.formState.errors.username]}
+          >
+            <Input
+              {...form.register("username", { required: "请输入用户名" })}
+              placeholder="请输入用户名"
               disabled={isPending}
-            >
-              创建
-            </Button>
-          </DialogFooter>
-        </form>
-      </DialogContent>
-    </Dialog>
+            />
+          </FormField>
+
+          <FormField
+            label="密码"
+            errors={[form.formState.errors.password]}
+          >
+            <PasswordInput
+              {...form.register("password", {
+                required: "请输入密码",
+                minLength: { value: 6, message: "密码至少 6 位" },
+              })}
+              placeholder="请输入密码"
+              disabled={isPending}
+            />
+          </FormField>
+
+          <FormField label="邮箱">
+            <Input
+              {...form.register("email")}
+              placeholder="可选"
+              disabled={isPending}
+            />
+          </FormField>
+
+          <FormField label="手机">
+            <Input
+              {...form.register("phone")}
+              placeholder="可选"
+              disabled={isPending}
+            />
+          </FormField>
+        </FieldGroup>
+
+        <DialogFooter>
+          <Button
+            type="submit"
+            disabled={isPending}
+          >
+            创建
+          </Button>
+        </DialogFooter>
+      </form>
+    </BaseDialog>
   )
 }

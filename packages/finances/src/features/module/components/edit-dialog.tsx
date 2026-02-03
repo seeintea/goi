@@ -2,10 +2,10 @@ import { useEffect, useMemo } from "react"
 import { useForm } from "react-hook-form"
 
 import type { Module } from "@/api/controllers/module"
+import { BaseDialog, DialogFooter } from "@/components/base-dialog"
+import { FieldGroup, FormField } from "@/components/base-field"
 import { Select } from "@/components/select"
 import { Button } from "@/components/ui/button"
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { Field, FieldContent, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 
 type FormValues = {
@@ -50,100 +50,90 @@ export function EditDialog({
   }, [defaultValues, form])
 
   return (
-    <Dialog
+    <BaseDialog
       open={open}
       onOpenChange={(next) => {
         if (isBusy) return
         onOpenChange(next)
       }}
+      title="编辑模块"
     >
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>编辑模块</DialogTitle>
-        </DialogHeader>
+      <form
+        className="flex flex-col gap-4"
+        onSubmit={form.handleSubmit(onSubmit)}
+      >
+        <FieldGroup>
+          <FormField
+            label="模块名称"
+            errors={[form.formState.errors.name]}
+          >
+            <Input
+              {...form.register("name", { required: "请输入模块名称" })}
+              disabled={isBusy}
+            />
+          </FormField>
 
-        <form
-          className="flex flex-col gap-4"
-          onSubmit={form.handleSubmit(onSubmit)}
-        >
-          <FieldGroup>
-            <Field>
-              <FieldLabel>模块名称</FieldLabel>
-              <FieldContent>
-                <Input
-                  {...form.register("name", { required: "请输入模块名称" })}
-                  disabled={isBusy}
-                />
-                <FieldError errors={[form.formState.errors.name]} />
-              </FieldContent>
-            </Field>
+          <FormField
+            label="前端路由路径"
+            errors={[form.formState.errors.routePath]}
+          >
+            <Input
+              {...form.register("routePath", { required: "请输入前端路由路径" })}
+              disabled={isBusy}
+            />
+          </FormField>
 
-            <Field>
-              <FieldLabel>前端路由路径</FieldLabel>
-              <FieldContent>
-                <Input
-                  {...form.register("routePath", { required: "请输入前端路由路径" })}
-                  disabled={isBusy}
-                />
-                <FieldError errors={[form.formState.errors.routePath]} />
-              </FieldContent>
-            </Field>
+          <FormField
+            label="页面权限编码"
+            errors={[form.formState.errors.permissionCode]}
+          >
+            <Input
+              {...form.register("permissionCode", { required: "请输入页面权限编码" })}
+              disabled={isBusy}
+            />
+          </FormField>
 
-            <Field>
-              <FieldLabel>页面权限编码</FieldLabel>
-              <FieldContent>
-                <Input
-                  {...form.register("permissionCode", { required: "请输入页面权限编码" })}
-                  disabled={isBusy}
-                />
-                <FieldError errors={[form.formState.errors.permissionCode]} />
-              </FieldContent>
-            </Field>
+          <FormField
+            label="父模块"
+            errors={[form.formState.errors.parentId]}
+          >
+            <input
+              type="hidden"
+              {...form.register("parentId")}
+            />
+            <Select
+              options={parentOptions}
+              value={form.watch("parentId")}
+              onValueChange={(next) => {
+                form.setValue("parentId", String(next), { shouldValidate: true })
+              }}
+              disabled={isBusy}
+            />
+          </FormField>
 
-            <Field>
-              <FieldLabel>父模块</FieldLabel>
-              <FieldContent>
-                <input
-                  type="hidden"
-                  {...form.register("parentId")}
-                />
-                <Select
-                  options={parentOptions}
-                  value={form.watch("parentId")}
-                  onValueChange={(next) => {
-                    form.setValue("parentId", String(next), { shouldValidate: true })
-                  }}
-                  disabled={isBusy}
-                />
-                <FieldError errors={[form.formState.errors.parentId]} />
-              </FieldContent>
-            </Field>
+          <FormField
+            label="排序"
+            errors={[form.formState.errors.sort]}
+          >
+            <Input
+              type="number"
+              min={0}
+              step={1}
+              {...form.register("sort", { valueAsNumber: true })}
+              disabled={isBusy}
+            />
+          </FormField>
+        </FieldGroup>
 
-            <Field>
-              <FieldLabel>排序</FieldLabel>
-              <FieldContent>
-                <Input
-                  type="number"
-                  min={0}
-                  step={1}
-                  {...form.register("sort", { valueAsNumber: true })}
-                  disabled={isBusy}
-                />
-                <FieldError errors={[form.formState.errors.sort]} />
-              </FieldContent>
-            </Field>
-          </FieldGroup>
-
-          <DialogFooter>
-            <Button
-              type="submit"
-              disabled={isBusy || !module}
-            >
-              保存
-            </Button>
-          </DialogFooter>
-        </form>
-      </DialogContent>
-    </Dialog>
+        <DialogFooter>
+          <Button
+            type="submit"
+            disabled={isBusy || !module}
+          >
+            保存
+          </Button>
+        </DialogFooter>
+      </form>
+    </BaseDialog>
   )
 }
