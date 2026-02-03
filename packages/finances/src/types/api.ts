@@ -15,4 +15,3 @@ export type PageQuery = {
   page?: number | string
   pageSize?: number | string
 }
-

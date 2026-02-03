@@ -124,4 +124,3 @@ export class FetchInstance {
     return this.request<ApiResponse<T>>(url, { ...options, method: "POST", headers, body })
   }
 }
-

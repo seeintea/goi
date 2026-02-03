@@ -34,18 +34,13 @@ export type BookMemberListQuery = PageQuery & {
   userId?: string
 }
 
-export const createBookMember = (body: CreateBookMember) =>
-  api.post<BookMember>("/api/ff/book-member/create", body)
+export const createBookMember = (body: CreateBookMember) => api.post<BookMember>("/api/ff/book-member/create", body)
 
-export const findBookMember = (memberId: string) =>
-  api.get<BookMember>("/api/ff/book-member/find", { memberId })
+export const findBookMember = (memberId: string) => api.get<BookMember>("/api/ff/book-member/find", { memberId })
 
 export const listBookMembers = (query?: BookMemberListQuery) =>
   api.get<PageResult<BookMember>>("/api/ff/book-member/list", query)
 
-export const updateBookMember = (body: UpdateBookMember) =>
-  api.post<BookMember>("/api/ff/book-member/update", body)
+export const updateBookMember = (body: UpdateBookMember) => api.post<BookMember>("/api/ff/book-member/update", body)
 
-export const deleteBookMember = (memberId: string) =>
-  api.post<boolean>("/api/ff/book-member/delete", { memberId })
-
+export const deleteBookMember = (memberId: string) => api.post<boolean>("/api/ff/book-member/delete", { memberId })

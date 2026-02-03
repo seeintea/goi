@@ -42,4 +42,3 @@ export const listBooks = (query?: BookListQuery) => api.get<PageResult<Book>>("/
 export const updateBook = (body: UpdateBook) => api.post<Book>("/api/ff/book/update", body)
 
 export const deleteBook = (bookId: string) => api.post<boolean>("/api/ff/book/delete", { bookId })
-

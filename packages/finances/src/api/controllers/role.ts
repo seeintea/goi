@@ -39,4 +39,3 @@ export const listRoles = (query?: RoleListQuery) => api.get<PageResult<Role>>("/
 export const updateRole = (body: UpdateRole) => api.post<Role>("/api/sys/role/update", body)
 
 export const deleteRole = (roleId: string) => api.post<boolean>("/api/sys/role/delete", { roleId })
-
