@@ -1,27 +1,25 @@
-import { Injectable, NotFoundException } from "@nestjs/common"
+import type {
+  CreateUserValues,
+  PageResult,
+  UpdateUserValues,
+  User,
+  UserListQuery,
+  UserRepository,
+} from "@goi/finances-shared/user"
+import { Injectable } from "@nestjs/common"
 import { and, desc, eq, like, sql } from "drizzle-orm"
 import { toIsoString } from "@/common/utils/date"
 import { normalizePage, toPageResult } from "@/common/utils/pagination"
 import { PgService, pgSchema } from "@/database/postgresql"
-import type { PageResult } from "@/types/response"
-import type { CreateUser, UpdateUser, User } from "./user.dto"
 
 const { user: userSchema } = pgSchema
-type AuthUser = {
-  userId: string
-  username: string
-  password: string
-  salt: string
-  isDisabled: boolean
-  isDeleted: boolean
-}
 
 @Injectable()
-export class UserService {
+export class DrizzleUserRepository implements UserRepository {
   constructor(private readonly pg: PgService) {}
 
-  async find(userId: string): Promise<User> {
-    const users = await this.pg.pdb
+  async find(userId: string): Promise<User | undefined> {
+    const rows = await this.pg.pdb
       .select({
         userId: userSchema.userId,
         username: userSchema.username,
@@ -34,16 +32,19 @@ export class UserService {
       })
       .from(userSchema)
       .where(and(eq(userSchema.userId, userId), eq(userSchema.isDeleted, false)))
-    const user = users[0]
-    if (!user) throw new NotFoundException("用户不存在")
+      .limit(1)
+
+    const row = rows[0]
+    if (!row) return undefined
+
     return {
-      ...user,
-      createTime: toIsoString(user.createTime),
-      updateTime: toIsoString(user.updateTime),
+      ...row,
+      createTime: toIsoString(row.createTime),
+      updateTime: toIsoString(row.updateTime),
     }
   }
 
-  async findAuthUserByUsername(username: string): Promise<AuthUser | undefined> {
+  async findAuthUserByUsername(username: string) {
     const rows = await this.pg.pdb
       .select({
         userId: userSchema.userId,
@@ -55,10 +56,11 @@ export class UserService {
       })
       .from(userSchema)
       .where(and(eq(userSchema.username, username), eq(userSchema.isDeleted, false)))
+      .limit(1)
     return rows[0]
   }
 
-  async create(values: CreateUser & { userId: string; salt: string }): Promise<User> {
+  async create(values: CreateUserValues): Promise<User> {
     await this.pg.pdb.insert(userSchema).values({
       userId: values.userId,
       username: values.username,
@@ -69,10 +71,12 @@ export class UserService {
       isDisabled: values.isDisabled ?? false,
       isDeleted: false,
     })
-    return this.find(values.userId)
+    const user = await this.find(values.userId)
+    if (!user) throw new Error("用户创建失败")
+    return user
   }
 
-  async update(values: UpdateUser): Promise<User> {
+  async update(values: UpdateUserValues): Promise<User> {
     await this.pg.pdb
       .update(userSchema)
       .set({
@@ -85,7 +89,10 @@ export class UserService {
         ...(values.isDeleted !== undefined ? { isDeleted: values.isDeleted } : {}),
       })
       .where(eq(userSchema.userId, values.userId))
-    return this.find(values.userId)
+
+    const user = await this.find(values.userId)
+    if (!user) throw new Error("用户更新失败")
+    return user
   }
 
   async delete(userId: string): Promise<boolean> {
@@ -93,19 +100,17 @@ export class UserService {
     return true
   }
 
-  async list(query: {
-    userId?: string
-    username?: string
-    page?: number | string
-    pageSize?: number | string
-  }): Promise<PageResult<User>> {
+  async list(query: UserListQuery): Promise<PageResult<User>> {
     const where: Parameters<typeof and> = [eq(userSchema.isDeleted, false)]
     if (query.userId) where.push(eq(userSchema.userId, query.userId))
     if (query.username) where.push(like(userSchema.username, `%${query.username}%`))
 
     const pageParams = normalizePage(query)
 
-    const totalRows = await this.pg.pdb.select({ count: sql<number>`count(*)` }).from(userSchema).where(and(...where))
+    const totalRows = await this.pg.pdb
+      .select({ count: sql<number>`count(*)` })
+      .from(userSchema)
+      .where(and(...where))
     const total = Number(totalRows[0]?.count ?? 0)
 
     const rows = await this.pg.pdb

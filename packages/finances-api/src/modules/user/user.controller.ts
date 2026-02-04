@@ -1,9 +1,3 @@
-import { Body, Controller, Get, Post, Query } from "@nestjs/common"
-import { ApiOperation, ApiTags } from "@nestjs/swagger"
-import { nanoid } from "nanoid"
-import { ZodResponse } from "nestjs-zod"
-import { Permission } from "@/common/decorators/permission.decorator"
-import { generateSalt, hashPassword } from "@/common/utils/password"
 import {
   CreateUserDto,
   DeleteUserDto,
@@ -11,8 +5,14 @@ import {
   UserListQueryDto,
   UserPageResponseDto,
   UserResponseDto,
-} from "./user.dto"
-import { UserService } from "./user.service"
+  UserService,
+} from "@goi/finances-shared/user"
+import { Body, Controller, Get, Post, Query } from "@nestjs/common"
+import { ApiOperation, ApiTags } from "@nestjs/swagger"
+import { nanoid } from "nanoid"
+import { ZodResponse } from "nestjs-zod"
+import { Permission } from "@/common/decorators/permission.decorator"
+import { generateSalt, hashPassword } from "@/common/utils/password"
 
 @ApiTags("用户")
 @Controller("sys/user")

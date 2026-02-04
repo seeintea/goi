@@ -1,3 +1,4 @@
+import { UserService } from "@goi/finances-shared/user"
 import { Injectable, UnauthorizedException } from "@nestjs/common"
 import { ConfigService } from "@nestjs/config"
 import { JwtService } from "@nestjs/jwt"
@@ -6,7 +7,6 @@ import { BusinessException } from "@/common/exceptions/business.exception"
 import { verifyPassword } from "@/common/utils/password"
 import { PgService, pgSchema } from "@/database/postgresql"
 import { RedisService } from "@/database/redis/redis.service"
-import { UserService } from "@/modules/user/user.service"
 import type { LoginResponse } from "./auth.dto"
 
 const { book: bookSchema, bookMember: bookMemberSchema, role: roleSchema } = pgSchema

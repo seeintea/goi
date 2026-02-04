@@ -1,12 +1,16 @@
+import { createUserCoreModule, USER_REPOSITORY, UserCoreModule } from "@goi/finances-shared/user"
 import { Module } from "@nestjs/common"
 import { UserController } from "./user.controller"
-import { UserService } from "./user.service"
+import { DrizzleUserRepository } from "./user.repository"
 
 @Module({
-  imports: [],
+  imports: [
+    createUserCoreModule({
+      userRepository: { provide: USER_REPOSITORY, useClass: DrizzleUserRepository },
+    }),
+  ],
   controllers: [UserController],
-  providers: [UserService],
-  exports: [UserService],
+  providers: [],
+  exports: [UserCoreModule],
 })
 export class UserModule {}
-
