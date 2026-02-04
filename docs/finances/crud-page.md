@@ -1,4 +1,15 @@
-## 通用交互约定
+## finances 通用 CRUD 交互页面约定
+
+### 交互 UI 组件选型约定
+
+目标：减少重复实现、保证一致性，并让后续重构更可控。
+
+优先级（从高到低）：
+
+1. 优先使用 `packages/finances/src/components/base` 下的组件（业务侧封装，交互约束更完整）
+2. 其次使用 `packages/finances/src/components/ui` 下的组件（基础 UI 组件层）
+3. 如果都没有，再去 shadcn-ui 查找是否已有同类组件/交互范式
+4. 仍然没有才自己实现（并优先沉淀到 `components/base` 或 `components/ui`，而不是散落在 feature 内）
 
 ### 表单提交中的 pending 行为
 

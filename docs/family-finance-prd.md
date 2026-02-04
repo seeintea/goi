@@ -1,231 +1,341 @@
-# 家庭财务管理系统（前后端分离）PRD（功能梳理版）
+# 家庭财务管理系统（Family Finance）PRD v1.3
 
-> 目标：帮助家庭成员统一记录收支/资产负债，形成预算与报表，提升记账效率与资金透明度，同时保证隐私与权限隔离。
+
+> **版本**：v1.3
+> **状态**：详细设计中
+> **更新日期**：2026-02-04
+> **目标**：打造一款支持多成员协作、隐私安全、数据可视化的现代家庭财务管理系统。
+
+---
 
 ## 1. 背景与目标
 
 ### 1.1 背景
-- 家庭收支来源多（工资、兼职、理财、红包、退款等），消费场景复杂（餐饮、育儿、房贷等），依靠手工表格维护成本高、口径难统一。
-- 家庭成员之间需要共享与协作（共同预算、共同支出、对账），但也存在隐私（个人收入、个人资产）与权限边界。
+
+随着家庭资产配置的多元化（工资、理财、房产、借贷等）和消费场景的复杂化，传统的 Excel 记账或单机版记账软件已无法满足以下需求：
+
+- **多人协作**：夫妻共同管理家庭账户，同时保留个人隐私账户。
+- **数据整合**：分散在微信、支付宝、银行卡的资金流向难以统一视图。
+- **资产全景**：缺乏对净资产（资产 - 负债）的实时监控。
+- **数据主权**：用户希望完全掌控自己的财务数据，避免隐私泄露。
 
 ### 1.2 产品目标
-- 低成本、可持续的记账：随手记、自动导入、模板化、提醒。
-- 可视化洞察：按月/按人/按类别/按账户的趋势、结构、预算执行。
-- 协作与权限：家庭账本共享、成员角色、可见范围可控。
-- 数据安全：加密、最小化授权、审计与可追溯、可备份与可导出。
 
-### 1.3 非目标（本阶段不做/后续再做）
-- 复杂投资组合分析（期权、期货、税务申报）
-- 个人征信/银行直连自动同步（可作为未来增强）
+1. **全景视图**：提供家庭视角的资产负债表和收支损益表。
+2. **高效协作**：支持多用户基于角色的权限管理（RBAC），实现“共同账本”与“私有账本”的隔离。
+3. **极致体验**：移动端优先的快速记账体验，支持离线记账（Offline-first），PC 端强大的报表分析能力。
+4. **技术先进**：采用前后端分离架构，确保系统的可扩展性与高性能。
+
+### 1.3 非目标（本阶段）
+
+- 复杂的股票/期货实盘交易追踪（仅记录市值变化）。
+- 银行接口直连（Open Banking 门槛高，暂通过账单导入解决）。
+
+---
 
 ## 2. 用户与角色
 
-### 2.1 角色
-- 家庭创建者（Owner）：创建家庭/账本、邀请成员、权限管理、数据导出与删除。
-- 管理员（Admin）：可管理分类、预算、账户等配置。
-- 成员（Member）：记账、查看被授权的数据。
-- 访客（Guest，可选）：只读（例如只看报表）。
+| 角色                 | 标识       | 权限描述                                              | 典型场景                         |
+| :------------------- | :--------- | :---------------------------------------------------- | :------------------------------- |
+| **家庭拥有者** | `OWNER`  | 最高权限，管理家庭生命周期、支付订阅、数据备份/销毁。 | 创建家庭，邀请配偶加入。         |
+| **管理员**     | `ADMIN`  | 管理公共配置（分类、标签、公共账户），管理普通成员。  | 设置家庭预算，整理公共分类树。   |
+| **成员**       | `MEMBER` | 记录交易，查看授权范围内的账本和报表。                | 日常记账，查看自己和公共的消费。 |
+| **访客**       | `GUEST`  | 仅只读权限，查看特定报表。                            | 给父母或理财顾问查看财务概况。   |
 
-### 2.2 核心场景
-- 日常随手记一笔（快速录入/语音转文本/模板）
-- 月度复盘（预算执行、结构分析、异常提醒）
-- 家庭协作（共同预算、共同账户、成员分摊）
-- 对账（银行流水导入、重复/遗漏识别、差异处理）
+---
 
-## 3. 产品信息架构（功能模块拆分）
+## 3. 功能模块详解
 
-### 3.1 账户与家庭
-- 家庭/账本管理
-  - 创建家庭（名称、默认币种、时区）
-  - 创建账本（家庭账本/个人账本/项目账本）
-  - 账本归属与共享策略
-- 成员管理
-  - 邀请/加入/移除成员
-  - 成员角色（Owner/Admin/Member/Guest）
-  - 成员可见范围（全部/仅本人/指定账户/指定分类）
-- 审计日志（关键操作记录）
-  - 邀请、权限变更、删除、导出、批量导入等
+### 3.1 核心业务模块
 
-### 3.2 账户体系（资金载体）
-- 账户（Account）
-  - 账户类型：现金、银行卡、信用卡、支付平台、储值卡、借贷账户等
-  - 余额与币种、信用卡账单日/还款日（可选）
-  - 账户状态：启用/停用
-- 转账（Transfer）
-  - 账户A -> 账户B 转账
-  - 手续费记录（可拆分为费用支出）
-- 余额校准（Balance Adjustment）
-  - 对账差异时的校准（记录原因与审计）
+1. **多账本体系**
+   - 支持“默认家庭账本”、“个人私房钱账本”、“装修专项账本”。
+   - 每个账本独立配置币种、成员权限。
+2. **账户管理 (Asset & Liability)**
+   - **资产账户**：现金、储蓄卡、支付宝/微信余额、投资账户（股票/基金市值）。
+   - **负债账户**：信用卡、房贷、车贷、借条。
+   - **功能**：余额校准（平账）、账户归档、卡号备注。
+3. **交易流水 (Transaction)**
+   - **支出 (Expense)**：餐饮、交通、购物等。
+   - **收入 (Income)**：工资、奖金、投资收益。
+   - **转账 (Transfer)**：账户间资金划转（不计入收支，但可计入手续费）。
+   - **余额调整 (Adjustment)**：盘点资金时的修正。
+   - **元数据**：多标签、图片附件、地理位置、关联人员（谁花的/花在谁身上）。
+4. **自动化与周期性交易 (Automation)**
+   - **周期性规则**：定义“每月1日自动生成房租支出”或“每月15日提醒记录工资”。
+   - **规则参数**：频率（日/周/月/年）、结束条件（次数/日期）、自动确认或仅提醒。
+5. **预算管理 (Budget)**
+   - **多维预算**：支持按月/按年、按分类（如餐饮）、按标签（如“旅游”）、按成员（如“老公零花钱”）设置预算。
+   - **滚动预算**：上月结余可自动转入下月预算（可选）。
+   - **预警**：进度条显示，超支提醒（App 推送/邮件）。
+6. **债务与信用 (Debt & Credit)**
+   - **借入/借出**：独立管理借条，关联对方姓名，记录还款进度。
+   - **分期管理**：针对大额消费（如装修、购买数码产品）设置分期计划，自动生成每月待还款项。
+7. **多币种支持 (Multi-Currency)**
+   - **汇率管理**：记录交易时的汇率，支持手动指定或自动拉取当日汇率（需外部API）。
+   - **本位币统计**：所有报表自动折算为家庭默认币种展示。
 
-### 3.3 分类与标签（口径）
-- 收入/支出分类（Category）
-  - 树形分类（一级/二级/多级）
-  - 系统默认分类 + 自定义分类
-  - 分类映射（导入时映射）
-- 标签（Tag）
-  - 多标签：育儿/旅行/车险/公司报销等
-  - 标签统计与热度
+### 3.2 报表与分析
 
-### 3.4 交易流水（核心业务）
-- 交易类型
-  - 支出（Expense）
-  - 收入（Income）
-  - 转账（Transfer）
-  - 调整（Adjustment）
-- 交易字段（统一模型）
-  - 金额、币种、时间、账户、分类、标签、成员（记账人/归属人）
-  - 备注、图片附件（小票）、位置（可选）
-  - 是否报销/待报销（可选）
-  - 关联交易（退款/冲正/分摊/分期）
-- 高级录入能力
-  - 快速模板（常用交易一键填充）
-  - 拆分交易（一次消费拆成多分类）
-  - 定期交易（房租/会员订阅自动生成）
-  - 批量编辑（改分类/标签/归属人）
-  - 搜索与过滤（时间、金额范围、账户、分类、标签、成员、关键字）
+- **概览 (Dashboard)**：当月收支、净资产趋势、预算执行率。
+- **收支分析**：分类饼图、趋势折线图、成员贡献对比。
+- **资产负债表**：特定时间点的资产分布与负债结构。
+- **现金流分析**：展示资金流入流出的时序图，辅助预测资金缺口。
 
-### 3.5 预算与目标
-- 预算（Budget）
-  - 按月预算：总预算、分类预算、成员预算（可选）
-  - 预算口径：仅支出/净支出（收入抵扣）等策略
-  - 预算告警：达到 80%/100% 推送
-- 目标（Goal，可选）
-  - 存钱目标（买车/旅游）：目标金额、截止日期、进度
+### 3.3 系统管理
 
-### 3.6 报表与分析
-- 概览 Dashboard
-  - 本月收/支/结余、同比/环比
-  - 预算执行（总/分类）
-  - 账户余额与变化
-- 结构报表
-  - 支出分类结构（饼图/旭日图）
-  - 标签结构
-- 趋势报表
-  - 月度趋势、周趋势、成员趋势
-- 明细报表
-  - 可导出 CSV/Excel
-- 异常洞察（可选）
-  - 大额支出提醒、重复扣款、订阅涨价等
+- **分类管理**：多级树形分类，支持图标与颜色自定义。
+- **数据导入**：支持支付宝、微信、银行账单 Excel/CSV 解析与映射。
+- **数据导出**：全量数据导出为 JSON/CSV。
+- **回收站**：误删数据保留 30 天可恢复。
 
-### 3.7 资产与负债（进阶）
-- 资产（Asset）
-  - 现金类/投资类/实物类（房产、车辆）
-  - 估值记录与折旧（可选）
-- 负债（Liability）
-  - 房贷/车贷/信用卡欠款/个人借贷
-  - 还款计划与提醒（可选）
-- 净资产（Net Worth）
-  - 按月快照、趋势
+---
 
-### 3.8 导入导出与对账
-- 导入
-  - 支持常见平台 CSV（支付宝/微信/银行卡）
-  - 字段映射、分类映射、去重规则（hash/时间+金额+描述）
-  - 预览与回滚
-- 对账
-  - 对账期选择、差异列表（缺失/重复/金额不一致）
-  - 一键补录/忽略/合并
-- 导出
-  - 账本导出（CSV/JSON），支持按时间区间
-  - 家庭数据备份与恢复（管理员权限）
+## 4. 技术架构方案
 
-### 3.9 通知与提醒
-- 预算告警
-- 定期交易生成提醒
-- 账单日/还款日提醒（信用卡）
-- 成员协作提醒（待确认分摊/待对账）
+### 4.1 总体架构
 
-### 3.10 权限与安全（后端核心）
-- 认证（Auth）
-  - 登录/登出/刷新（可选）
-  - 多端登录策略（单点/多点，策略可配置）
-- 授权（Authorization）
-  - 基于角色 + 资源范围（账本/账户/分类）
-  - 接口级权限点（如 `sys:menu:create` 这类）
-- 数据安全
-  - 传输加密（HTTPS）
-  - 敏感字段加密存储（可选：手机号、邮箱等）
-  - 操作审计、风控（登录失败次数、IP 黑名单可选）
+采用 **前后端分离 (SPA + API)** 架构，容器化部署。
 
-## 4. 前端（Web/移动端）功能拆分
+### 4.2 前端技术栈 (Web/PWA)
 
-### 4.1 页面与导航（建议）
-- 登录/注册（如需要）、验证码（如需要）
-- 家庭/账本切换
-- 首页概览（Dashboard）
-- 记一笔（快速录入/拆分/模板）
-- 流水列表（筛选/搜索/编辑/批量）
-- 账户管理（余额、转账、对账）
-- 分类与标签管理
-- 预算管理与提醒设置
-- 报表中心
-- 导入/导出
-- 成员与权限管理（Owner/Admin）
-- 系统设置（币种、时区、数据备份、隐私）
+- **框架**：React 18
+- **构建工具**：Vite
+- **语言**：TypeScript
+- **UI 组件库**：Ant Design 5.x (PC端) / Ant Design Mobile (移动端适配)
+- **状态管理**：Zustand (轻量级) + React Query (服务端状态同步)
+- **本地存储**：IndexedDB (LocalForage) - 用于离线缓存和草稿箱。
+- **PWA**：Service Worker 实现离线访问，Manifest 实现安装到桌面。
+- **路由**：React Router v6
+- **图表**：ECharts 或 Ant Design Charts
+- **表单**：React Hook Form
 
-### 4.2 交互与体验要点
-- 快速录入：默认账户/默认分类/最近一次输入记忆
-- 列表高性能：虚拟滚动、分页、增量加载
-- 可回滚：导入/批量操作提供撤销（后端保留批次号）
+### 4.3 后端技术栈 (Server)
 
-## 5. 后端（API）功能拆分（前后端分离）
+- **框架**：NestJS (Node.js 框架，模块化，易维护)
+- **语言**：TypeScript
+- **ORM**：Prisma (类型安全，Schema 定义清晰，自动生成迁移脚本)
+- **数据库**：PostgreSQL 15+ (稳定，支持 JSONB，适合复杂查询)
+- **缓存/队列**：Redis (可选，用于限流、异步任务如导入解析)
+- **认证**：Passport.js + JWT (Access Token + Refresh Token)
+- **验证**：class-validator + class-transformer
+- **文档**：Swagger (OpenAPI 3.0)
 
-### 5.1 领域服务建议（模块化）
-- Auth：登录、登出、Token、会话管理
-- Family/Book：家庭、账本、成员、权限范围
-- Account：账户、转账、余额校准
-- Category/Tag：分类、标签
-- Transaction：流水、拆分、搜索
-- Budget：预算、预算规则、告警
-- Report：聚合报表接口（按维度查询）
-- Import/Export：导入任务、导出任务、对账任务
-- Admin：系统字典、审计日志
+### 4.4 部署架构
 
-### 5.2 API 设计原则
-- REST 风格 + 分页统一（page/pageSize）
-- 写操作幂等（导入/批量建议提供 requestId）
-- 统一响应结构（code/message/data）
-- 权限点与资源范围同时校验
+- **Docker Compose**：编排前端 (Nginx)、后端 (Node.js)、数据库 (PostgreSQL)、Redis。
+- **CI/CD**：GitHub Actions 自动构建镜像并推送到 Registry。
 
-## 6. 数据模型（概念层）
+---
 
-> 仅列关键实体，便于前后端对齐字段与关系。
+## 5. 数据库设计 (Database Schema)
 
-- family(id, name, currency, timezone, ownerId, ...)
-- book(id, familyId, name, type, ...)
-- member(id, familyId, userId, role, scope, ...)
-- account(id, bookId, name, type, currency, balance, ...)
-- category(id, bookId, type[income/expense], parentId, name, ...)
-- tag(id, bookId, name, ...)
-- transaction(id, bookId, type, amount, currency, accountId, categoryId, tagIds, occurredAt, ownerUserId, createdBy, ...)
-- transaction_split(id, transactionId, categoryId, amount, ...)
-- budget(id, bookId, month, total, rules, ...)
-- import_task(id, bookId, source, status, mapping, ...)
-- audit_log(id, actorId, action, target, payload, createdAt, ...)
+基于 PostgreSQL 设计，采用 Snake Case (`snake_case`) 命名规范。
 
-## 7. 版本规划（建议）
+### 5.1 核心表设计
 
-### 7.1 MVP（1.0）
-- 账本/成员（基础协作）
-- 分类/账户（基础配置）
-- 收入/支出/转账流水（含搜索与过滤）
-- 月度概览 + 分类结构报表
-- CSV 导入（至少一种平台）+ 去重
-- 基础权限（账本级可见、接口权限点）
+#### 1. 用户表 (`users`)
 
-### 7.2 1.1
-- 预算与告警
-- 定期交易
-- 导出与审计日志
+全局用户中心。
 
-### 7.3 2.0
-- 资产负债与净资产
-- 对账中心（差异处理）
-- 异常洞察与订阅管理
+| 字段名               | 类型      | 约束             | 说明         |
+| :------------------- | :-------- | :--------------- | :----------- |
+| `id`               | UUID      | PK               | 用户唯一标识 |
+| `email`            | VARCHAR   | UNIQUE, NOT NULL | 登录邮箱     |
+| `password_hash`    | VARCHAR   | NOT NULL         | 加密密码     |
+| `nickname`         | VARCHAR   |                  | 用户昵称     |
+| `default_currency` | VARCHAR   | DEFAULT 'CNY'    | 个人偏好币种 |
+| `created_at`       | TIMESTAMP | DEFAULT NOW()    |              |
+| `updated_at`       | TIMESTAMP |                  |              |
+| `deleted_at`       | TIMESTAMP |                  | 软删除       |
 
-## 8. 关键边界与风控点
-- 多币种：MVP 可先单币种；后续再支持自动汇率与折算
-- 数据一致性：导入/批量操作需要事务或批次机制
-- 权限：必须同时校验接口权限 + 资源范围（账本/账户/分类）
-- 备份与删除：提供导出与“软删除 + 冷却期”策略（可选）
+#### 2. 家庭表 (`families`)
 
+租户隔离的核心单元。
+
+| 字段名            | 类型      | 约束           | 说明       |
+| :---------------- | :-------- | :------------- | :--------- |
+| `id`            | UUID      | PK             | 家庭ID     |
+| `name`          | VARCHAR   | NOT NULL       | 家庭名称   |
+| `owner_id`      | UUID      | FK -> users.id | 创建者     |
+| `base_currency` | VARCHAR   | DEFAULT 'CNY'  | 家庭本位币 |
+| `created_at`    | TIMESTAMP | DEFAULT NOW()  |            |
+
+#### 3. 家庭成员表 (`family_members`)
+
+| 字段名        | 类型    | 约束                                   | 说明 |
+| :------------ | :------ | :------------------------------------- | :--- |
+| `id`        | UUID    | PK                                     |      |
+| `family_id` | UUID    | FK -> families.id                      |      |
+| `user_id`   | UUID    | FK -> users.id                         |      |
+| `role`      | VARCHAR | ENUM('OWNER','ADMIN','MEMBER','GUEST') | 角色 |
+| `status`    | VARCHAR | ENUM('INVITED', 'ACTIVE', 'DISABLED')  | 状态 |
+
+#### 4. 账户表 (`accounts`)
+
+| 字段名                 | 类型    | 约束              | 说明                                 |
+| :--------------------- | :------ | :---------------- | :----------------------------------- |
+| `id`                 | UUID    | PK                |                                      |
+| `family_id`          | UUID    | FK -> families.id |                                      |
+| `name`               | VARCHAR | NOT NULL          | 账户名称                             |
+| `type`               | VARCHAR | NOT NULL          | CASH, BANK, CREDIT, INVESTMENT, LOAN |
+| `balance`            | DECIMAL | DEFAULT 0         | 当前余额                             |
+| `currency_code`      | VARCHAR | DEFAULT 'CNY'     | 币种                                 |
+| `credit_limit`       | DECIMAL |                   | 信用额度 (信用卡用)                  |
+| `billing_day`        | INT     |                   | 账单日                               |
+| `due_day`            | INT     |                   | 还款日                               |
+| `icon`               | VARCHAR |                   | 图标                                 |
+| `color`              | VARCHAR |                   | 颜色                                 |
+| `exclude_from_stats` | BOOLEAN | DEFAULT FALSE     | 不计入统计                           |
+| `archived`           | BOOLEAN | DEFAULT FALSE     | 归档/停用                            |
+
+#### 5. 分类表 (`categories`)
+
+| 字段名        | 类型    | 约束                      | 说明          |
+| :------------ | :------ | :------------------------ | :------------ |
+| `id`        | UUID    | PK                        |               |
+| `family_id` | UUID    | FK -> families.id         |               |
+| `name`      | VARCHAR | NOT NULL                  | 分类名称      |
+| `type`      | VARCHAR | ENUM('EXPENSE', 'INCOME') |               |
+| `parent_id` | UUID    | FK -> categories.id       |               |
+| `is_hidden` | BOOLEAN | DEFAULT FALSE             | 是否隐藏/归档 |
+| `icon`      | VARCHAR |                           | 图标          |
+
+#### 6. 交易流水表 (`transactions`)
+
+| 字段名                    | 类型      | 约束                                  | 说明                          |
+| :------------------------ | :-------- | :------------------------------------ | :---------------------------- |
+| `id`                    | UUID      | PK                                    |                               |
+| `family_id`             | UUID      | FK -> families.id                     |                               |
+| `type`                  | VARCHAR   | ENUM('EXPENSE', 'INCOME', 'TRANSFER') |                               |
+| `amount`                | DECIMAL   | NOT NULL                              | 交易原币种金额                |
+| `currency_code`         | VARCHAR   | DEFAULT 'CNY'                         | 交易币种                      |
+| `exchange_rate`         | DECIMAL   | DEFAULT 1.0                           | 对家庭本位币汇率              |
+| `account_id`            | UUID      | FK -> accounts.id                     | 源账户                        |
+| `target_account_id`     | UUID      | FK -> accounts.id                     | 目标账户 (转账用)             |
+| `fee`                   | DECIMAL   | DEFAULT 0                             | 手续费 (仅转账用)             |
+| `fee_account_id`        | UUID      | FK -> accounts.id                     | 手续费扣除账户 (通常同源账户) |
+| `category_id`           | UUID      | FK -> categories.id                   |                               |
+| `tag_ids`               | UUID[]    |                                       | 标签ID数组                    |
+| `description`           | TEXT      |                                       |                               |
+| `occurred_at`           | TIMESTAMP | NOT NULL                              | 交易时间                      |
+| `created_by`            | UUID      | FK -> users.id                        |                               |
+| `created_at`            | TIMESTAMP | DEFAULT NOW()                         |                               |
+| `updated_at`            | TIMESTAMP |                                       |                               |
+| `deleted_at`            | TIMESTAMP |                                       | 软删除 (回收站)               |
+| `parent_transaction_id` | UUID      | FK -> transactions.id                 | 关联父交易 (如分拆、退款)     |
+| `location`              | JSONB     |                                       | 地理位置 {lat, lng, name}     |
+| `attachments`           | TEXT[]    |                                       | 附件URL列表                   |
+
+#### 7. 周期性交易规则表 (`recurring_transactions`)
+
+| 字段名                | 类型    | 约束                                         | 说明                             |
+| :-------------------- | :------ | :------------------------------------------- | :------------------------------- |
+| `id`                | UUID    | PK                                           |                                  |
+| `family_id`         | UUID    | FK -> families.id                            |                                  |
+| `template_snapshot` | JSONB   | NOT NULL                                     | 交易模板 (金额, 分类, 账户等)    |
+| `frequency_type`    | VARCHAR | ENUM('DAILY', 'WEEKLY', 'MONTHLY', 'YEARLY') | 频率                             |
+| `interval`          | INT     | DEFAULT 1                                    | 间隔 (如每2个月)                 |
+| `start_date`        | DATE    | NOT NULL                                     | 开始日期                         |
+| `end_date`          | DATE    |                                              | 结束日期 (可选)                  |
+| `next_run_date`     | DATE    | NOT NULL                                     | 下次执行日期                     |
+| `auto_create`       | BOOLEAN | DEFAULT FALSE                                | 是否自动生成交易 (False则仅提醒) |
+
+#### 8. 预算表 (`budgets`)
+
+| 字段名              | 类型    | 约束                                | 说明           |
+| :------------------ | :------ | :---------------------------------- | :------------- |
+| `id`              | UUID    | PK                                  |                |
+| `family_id`       | UUID    | FK -> families.id                   |                |
+| `name`            | VARCHAR |                                     | 预算名称       |
+| `amount`          | DECIMAL | NOT NULL                            | 预算金额       |
+| `period_type`     | VARCHAR | ENUM('MONTHLY', 'YEARLY', 'CUSTOM') | 周期类型       |
+| `start_date`      | DATE    |                                     | 开始日期       |
+| `end_date`        | DATE    |                                     | 结束日期       |
+| `category_ids`    | UUID[]  |                                     | 关联分类ID列表 |
+| `tag_ids`         | UUID[]  |                                     | 关联标签ID列表 |
+| `alert_threshold` | DECIMAL | DEFAULT 0.8                         | 预警阈值       |
+
+#### 9. 汇率表 (`exchange_rates`)
+
+| 字段名            | 类型    | 约束           | 说明     |
+| :---------------- | :------ | :------------- | :------- |
+| `date`          | DATE    | PK (Composite) | 汇率日期 |
+| `from_currency` | VARCHAR | PK (Composite) | 源币种   |
+| `to_currency`   | VARCHAR | PK (Composite) | 目标币种 |
+| `rate`          | DECIMAL | NOT NULL       | 汇率值   |
+
+#### 10. 分期计划表 (`installments`) **[新增]**
+
+| 字段名            | 类型    | 约束                       | 说明                          |
+| :---------------- | :------ | :------------------------- | :---------------------------- |
+| `id`            | UUID    | PK                         |                               |
+| `family_id`     | UUID    | FK -> families.id          |                               |
+| `description`   | VARCHAR | NOT NULL                   | 分期描述 (如: iPhone 15 分期) |
+| `total_amount`  | DECIMAL | NOT NULL                   | 总金额                        |
+| `currency_code` | VARCHAR | DEFAULT 'CNY'              | 币种                          |
+| `total_periods` | INT     | NOT NULL                   | 总期数                        |
+| `start_date`    | DATE    | NOT NULL                   | 首期日期                      |
+| `account_id`    | UUID    | FK -> accounts.id          | 扣款账户 (通常是信用卡)       |
+| `category_id`   | UUID    | FK -> categories.id        | 分类                          |
+| `status`        | VARCHAR | ENUM('ACTIVE', 'FINISHED') | 状态                          |
+
+#### 11. 账户余额快照表 (`account_balance_snapshots`) **[新增]**
+
+用于快速生成净资产报表。
+
+| 字段名            | 类型    | 约束              | 说明     |
+| :---------------- | :------ | :---------------- | :------- |
+| `id`            | UUID    | PK                |          |
+| `account_id`    | UUID    | FK -> accounts.id |          |
+| `date`          | DATE    | NOT NULL          | 快照日期 |
+| `balance`       | DECIMAL | NOT NULL          | 当日余额 |
+| `currency_code` | VARCHAR |                   | 当日币种 |
+
+---
+
+## 6. API 接口设计概览
+
+### 6.1 认证 (Auth)
+
+- `POST /auth/register`
+- `POST /auth/login`
+- `POST /auth/refresh`
+
+### 6.2 账户 (Accounts)
+
+- `GET /families/:id/accounts`
+- `POST /families/:id/accounts`
+
+### 6.3 交易 (Transactions)
+
+- `GET /families/:id/transactions`
+  - Query: `startDate`, `endDate`, `type`, `categoryId`, `accountId`, `keyword`
+- `POST /families/:id/transactions`
+- `POST /families/:id/transactions/batch` (批量导入用)
+
+### 6.4 周期性规则 (Recurring)
+
+- `GET /families/:id/recurring`
+- `POST /families/:id/recurring`
+- `POST /families/:id/recurring/:ruleId/execute` (手动触发生成)
+
+### 6.5 预算 (Budgets)
+
+- `GET /families/:id/budgets`
+- `GET /families/:id/budgets/status` (获取预算执行进度)
+
+### 6.6 报表 (Reports)
+
+- `GET /families/:id/reports/cashflow` (现金流)
+- `GET /families/:id/reports/category-pie` (分类占比)
+- `GET /families/:id/reports/net-worth` (净资产趋势)
+
+---
+
+## 7. 下一步计划
+
+1. **环境准备**：初始化 NestJS 项目与 React 项目。
+2. **后端开发**：定义 Prisma Schema，生成数据库迁移，实现 Auth 模块。
+3. **前端开发**：搭建脚手架，实现登录页与主页布局。
+4. **联调**：打通登录与基础记账流程。
