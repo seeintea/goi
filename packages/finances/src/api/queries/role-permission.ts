@@ -1,11 +1,11 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import type { CreateRolePermission, RolePermissionListQuery } from "../controllers/role-permission"
+import type { CreateRolePermission, RolePermissionListQuery } from "../service/role-permission"
 import {
   createRolePermission,
   deleteRolePermission,
   findRolePermission,
   listRolePermissions,
-} from "../controllers/role-permission"
+} from "../service/role-permission"
 
 export const rolePermissionKeys = {
   all: ["role-permission"] as const,

@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from "react"
 import type { UseFormReturn } from "react-hook-form"
 import { useForm } from "react-hook-form"
 
-import { useCreateModule } from "@/api/react-query/module"
+import { useCreateModule } from "@/api"
 import { BaseDialog, DialogFooter } from "@/components/base/base-dialog"
 import { FieldGroup, FormField } from "@/components/base/base-field"
 import { Select } from "@/components/base/select"

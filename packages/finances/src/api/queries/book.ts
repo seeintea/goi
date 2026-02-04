@@ -9,7 +9,7 @@ import {
   listBooks,
   type UpdateBook,
   updateBook,
-} from "../controllers/book"
+} from "../service/book"
 
 export const bookKeys = {
   all: ["book"] as const,

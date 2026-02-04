@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react"
 
-import type { Module as ModuleModel } from "@/api/controllers/module"
-import { useDeleteModule, useModuleAll, useModuleList, useRootModules, useUpdateModule } from "@/api/react-query/module"
+import type { Module as ModuleModel } from "@/api"
+import { useDeleteModule, useModuleAll, useModuleList, useRootModules, useUpdateModule } from "@/api"
 import { DataTable } from "@/components/base/data-table"
 import { usePagination } from "@/hooks/use-pagination"
 import { getModuleColumns } from "./columns"

@@ -2,7 +2,7 @@ import type { ColumnDef } from "@tanstack/react-table"
 import { format } from "date-fns"
 import { Pencil } from "lucide-react"
 
-import type { Module } from "@/api/controllers/module"
+import type { Module } from "@/api"
 import { ConfirmDialog } from "@/components/base/confirm-dialog"
 import { Button } from "@/components/ui/button"
 

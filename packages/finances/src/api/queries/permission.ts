@@ -1,12 +1,12 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import type { CreatePermission, PermissionListQuery, UpdatePermission } from "../controllers/permission"
+import type { CreatePermission, PermissionListQuery, UpdatePermission } from "../service/permission"
 import {
   createPermission,
   deletePermission,
   findPermission,
   listPermissions,
   updatePermission,
-} from "../controllers/permission"
+} from "../service/permission"
 
 export const permissionKeys = {
   all: ["permission"] as const,

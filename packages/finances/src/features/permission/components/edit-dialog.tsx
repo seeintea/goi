@@ -1,7 +1,7 @@
 import { useEffect, useMemo } from "react"
 import { useForm } from "react-hook-form"
 
-import type { Permission } from "@/api/controllers/permission"
+import type { Permission } from "@/api"
 import { BaseDialog } from "@/components/base/base-dialog"
 import { PermissionFormFields, type PermissionFormValues } from "./create-dialog"
 

@@ -1,7 +1,7 @@
 import { useEffect, useMemo } from "react"
 import { useForm } from "react-hook-form"
 
-import type { Module } from "@/api/controllers/module"
+import type { Module } from "@/api"
 import { BaseDialog } from "@/components/base/base-dialog"
 import { ModuleFormFields, type ModuleFormValues } from "./create-dialog"
 

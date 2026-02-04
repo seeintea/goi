@@ -1,4 +1,4 @@
 export * from "@/types"
 export * from "./client"
-export * from "./controllers"
-export * from "./react-query"
+export * from "./queries"
+export * from "./service"

@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import type { CreateModule, ModuleListQuery, UpdateModule } from "../controllers/module"
+import type { CreateModule, ModuleListQuery, UpdateModule } from "../service/module"
 import {
   createModule,
   deleteModule,
@@ -8,7 +8,7 @@ import {
   listModules,
   listRootModules,
   updateModule,
-} from "../controllers/module"
+} from "../service/module"
 
 export const moduleKeys = {
   all: ["module"] as const,

@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useUser } from "@/stores"
-import { type LoginParams, login, logout } from "../controllers/auth"
+import { type LoginParams, login, logout } from "../service/auth"
 
 export const authKeys = {
   all: ["auth"] as const,

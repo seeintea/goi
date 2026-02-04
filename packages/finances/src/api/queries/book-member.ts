@@ -1,12 +1,12 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import type { BookMemberListQuery, CreateBookMember, UpdateBookMember } from "../controllers/book-member"
+import type { BookMemberListQuery, CreateBookMember, UpdateBookMember } from "../service/book-member"
 import {
   createBookMember,
   deleteBookMember,
   findBookMember,
   listBookMembers,
   updateBookMember,
-} from "../controllers/book-member"
+} from "../service/book-member"
 
 export const bookMemberKeys = {
   all: ["book-member"] as const,

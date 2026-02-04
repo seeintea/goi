@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from "react"
 import type { UseFormReturn } from "react-hook-form"
 import { useForm } from "react-hook-form"
 
-import { useCreatePermission } from "@/api/react-query/permission"
+import { useCreatePermission } from "@/api"
 import { BaseDialog, DialogFooter } from "@/components/base/base-dialog"
 import { FieldGroup, FormField } from "@/components/base/base-field"
 import { Select } from "@/components/base/select"

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo } from "react"
+import type { User as UserModel } from "@/api"
 import { useDeleteUser, useUpdateUser, useUserList } from "@/api"
-import type { User as UserModel } from "@/api/controllers/user"
 import { DataTable } from "@/components/base/data-table"
 import { usePagination } from "@/hooks/use-pagination"
 import { getUserColumns } from "./columns"

@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react"
-
-import type { Role as RoleModel } from "@/api/controllers/role"
-import { useDeleteRole, useRoleList, useUpdateRole } from "@/api/react-query/role"
+import type { Role as RoleModel } from "@/api"
+import { useDeleteRole, useRoleList, useUpdateRole } from "@/api"
 import { DataTable } from "@/components/base/data-table"
 import { usePagination } from "@/hooks/use-pagination"
 import { getRoleColumns } from "./columns"
