@@ -10,6 +10,7 @@ import {
 
 export const permissionKeys = {
   all: ["permission"] as const,
+  lists: () => [...permissionKeys.all, "list"] as const,
   list: (query?: PermissionListQuery) => [...permissionKeys.all, "list", query ?? null] as const,
   find: (permissionId: string) => [...permissionKeys.all, "find", permissionId] as const,
 }
@@ -43,7 +44,7 @@ export function useCreatePermission() {
       return resp.data
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: permissionKeys.all })
+      queryClient.invalidateQueries({ queryKey: permissionKeys.lists() })
     },
   })
 }
@@ -56,7 +57,7 @@ export function useUpdatePermission() {
       return resp.data
     },
     onSuccess: (permission) => {
-      queryClient.invalidateQueries({ queryKey: permissionKeys.list() })
+      queryClient.invalidateQueries({ queryKey: permissionKeys.lists() })
       queryClient.invalidateQueries({ queryKey: permissionKeys.find(permission.permissionId) })
     },
   })
@@ -70,7 +71,7 @@ export function useDeletePermission() {
       return resp.data
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: permissionKeys.all })
+      queryClient.invalidateQueries({ queryKey: permissionKeys.lists() })
     },
   })
 }

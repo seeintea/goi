@@ -4,6 +4,7 @@ import { createRole, deleteRole, findRole, listRoles, updateRole } from "../serv
 
 export const roleKeys = {
   all: ["role"] as const,
+  lists: () => [...roleKeys.all, "list"] as const,
   list: (query?: RoleListQuery) => [...roleKeys.all, "list", query ?? null] as const,
   find: (roleId: string) => [...roleKeys.all, "find", roleId] as const,
 }
@@ -37,7 +38,7 @@ export function useCreateRole() {
       return resp.data
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: roleKeys.all })
+      queryClient.invalidateQueries({ queryKey: roleKeys.lists() })
     },
   })
 }
@@ -50,7 +51,7 @@ export function useUpdateRole() {
       return resp.data
     },
     onSuccess: (role) => {
-      queryClient.invalidateQueries({ queryKey: roleKeys.list() })
+      queryClient.invalidateQueries({ queryKey: roleKeys.lists() })
       queryClient.invalidateQueries({ queryKey: roleKeys.find(role.roleId) })
     },
   })
@@ -64,7 +65,7 @@ export function useDeleteRole() {
       return resp.data
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: roleKeys.all })
+      queryClient.invalidateQueries({ queryKey: roleKeys.lists() })
     },
   })
 }

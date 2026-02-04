@@ -9,6 +9,7 @@ import {
 
 export const rolePermissionKeys = {
   all: ["role-permission"] as const,
+  lists: () => [...rolePermissionKeys.all, "list"] as const,
   list: (query?: RolePermissionListQuery) => [...rolePermissionKeys.all, "list", query ?? null] as const,
   find: (roleId: string, permissionId: string) => [...rolePermissionKeys.all, "find", roleId, permissionId] as const,
 }
@@ -42,7 +43,7 @@ export function useCreateRolePermission() {
       return resp.data
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: rolePermissionKeys.all })
+      queryClient.invalidateQueries({ queryKey: rolePermissionKeys.lists() })
     },
   })
 }
@@ -55,7 +56,7 @@ export function useDeleteRolePermission() {
       return resp.data
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: rolePermissionKeys.all })
+      queryClient.invalidateQueries({ queryKey: rolePermissionKeys.lists() })
     },
   })
 }

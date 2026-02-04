@@ -4,6 +4,7 @@ import { createUser, deleteUser, findUser, listUsers, updateUser } from "../serv
 
 export const userKeys = {
   all: ["user"] as const,
+  lists: () => [...userKeys.all, "list"] as const,
   list: (query?: UserListQuery) => [...userKeys.all, "list", query ?? null] as const,
   find: (userId: string) => [...userKeys.all, "find", userId] as const,
 }
@@ -37,7 +38,7 @@ export function useCreateUser() {
       return resp.data
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: userKeys.all })
+      queryClient.invalidateQueries({ queryKey: userKeys.lists() })
     },
   })
 }
@@ -50,7 +51,7 @@ export function useUpdateUser() {
       return resp.data
     },
     onSuccess: (user) => {
-      queryClient.invalidateQueries({ queryKey: userKeys.all })
+      queryClient.invalidateQueries({ queryKey: userKeys.lists() })
       queryClient.invalidateQueries({ queryKey: userKeys.find(user.userId) })
     },
   })
@@ -64,7 +65,7 @@ export function useDeleteUser() {
       return resp.data
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: userKeys.all })
+      queryClient.invalidateQueries({ queryKey: userKeys.lists() })
     },
   })
 }

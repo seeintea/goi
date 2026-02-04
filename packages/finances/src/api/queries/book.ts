@@ -13,6 +13,7 @@ import {
 
 export const bookKeys = {
   all: ["book"] as const,
+  lists: () => [...bookKeys.all, "list"] as const,
   list: (query?: BookListQuery) => [...bookKeys.all, "list", query ?? null] as const,
   find: (bookId: string) => [...bookKeys.all, "find", bookId] as const,
 }
@@ -46,7 +47,7 @@ export function useCreateBook() {
       return resp.data
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: bookKeys.all })
+      queryClient.invalidateQueries({ queryKey: bookKeys.lists() })
     },
   })
 }
@@ -59,7 +60,7 @@ export function useUpdateBook() {
       return resp.data
     },
     onSuccess: (book) => {
-      queryClient.invalidateQueries({ queryKey: bookKeys.list() })
+      queryClient.invalidateQueries({ queryKey: bookKeys.lists() })
       queryClient.invalidateQueries({ queryKey: bookKeys.find(book.bookId) })
     },
   })
@@ -73,7 +74,7 @@ export function useDeleteBook() {
       return resp.data
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: bookKeys.all })
+      queryClient.invalidateQueries({ queryKey: bookKeys.lists() })
     },
   })
 }

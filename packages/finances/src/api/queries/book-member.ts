@@ -10,6 +10,7 @@ import {
 
 export const bookMemberKeys = {
   all: ["book-member"] as const,
+  lists: () => [...bookMemberKeys.all, "list"] as const,
   list: (query?: BookMemberListQuery) => [...bookMemberKeys.all, "list", query ?? null] as const,
   find: (memberId: string) => [...bookMemberKeys.all, "find", memberId] as const,
 }
@@ -43,7 +44,7 @@ export function useCreateBookMember() {
       return resp.data
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: bookMemberKeys.all })
+      queryClient.invalidateQueries({ queryKey: bookMemberKeys.lists() })
     },
   })
 }
@@ -56,7 +57,7 @@ export function useUpdateBookMember() {
       return resp.data
     },
     onSuccess: (member) => {
-      queryClient.invalidateQueries({ queryKey: bookMemberKeys.list() })
+      queryClient.invalidateQueries({ queryKey: bookMemberKeys.lists() })
       queryClient.invalidateQueries({ queryKey: bookMemberKeys.find(member.memberId) })
     },
   })
@@ -70,7 +71,7 @@ export function useDeleteBookMember() {
       return resp.data
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: bookMemberKeys.all })
+      queryClient.invalidateQueries({ queryKey: bookMemberKeys.lists() })
     },
   })
 }

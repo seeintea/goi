@@ -12,7 +12,9 @@ import {
 
 export const moduleKeys = {
   all: ["module"] as const,
+  lists: () => [...moduleKeys.all, "list"] as const,
   list: (query?: ModuleListQuery) => [...moduleKeys.all, "list", query ?? null] as const,
+  allLists: () => [...moduleKeys.all, "all"] as const,
   allList: (query?: Omit<ModuleListQuery, "page" | "pageSize">) => [...moduleKeys.all, "all", query ?? null] as const,
   roots: () => [...moduleKeys.all, "roots"] as const,
   find: (moduleId: string) => [...moduleKeys.all, "find", moduleId] as const,
@@ -67,7 +69,9 @@ export function useCreateModule() {
       return resp.data
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: moduleKeys.all })
+      queryClient.invalidateQueries({ queryKey: moduleKeys.lists() })
+      queryClient.invalidateQueries({ queryKey: moduleKeys.allLists() })
+      queryClient.invalidateQueries({ queryKey: moduleKeys.roots() })
     },
   })
 }
@@ -80,7 +84,9 @@ export function useUpdateModule() {
       return resp.data
     },
     onSuccess: (module) => {
-      queryClient.invalidateQueries({ queryKey: moduleKeys.list() })
+      queryClient.invalidateQueries({ queryKey: moduleKeys.lists() })
+      queryClient.invalidateQueries({ queryKey: moduleKeys.allLists() })
+      queryClient.invalidateQueries({ queryKey: moduleKeys.roots() })
       queryClient.invalidateQueries({ queryKey: moduleKeys.find(module.moduleId) })
     },
   })
@@ -94,7 +100,9 @@ export function useDeleteModule() {
       return resp.data
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: moduleKeys.all })
+      queryClient.invalidateQueries({ queryKey: moduleKeys.lists() })
+      queryClient.invalidateQueries({ queryKey: moduleKeys.allLists() })
+      queryClient.invalidateQueries({ queryKey: moduleKeys.roots() })
     },
   })
 }
