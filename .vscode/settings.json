@@ -1,10 +1,10 @@
 {
-  "cSpell.words": ["goi", "rsbuild", "tinyint", "rspack", "rsdoctor", "magicui", "autoincrement", "gonic"],
+  "cSpell.words": ["goi", "rsbuild", "tinyint", "rspack", "rsdoctor", "magicui", "autoincrement", "gonic", "tanstack"],
   "editor.formatOnSave": true,
   "[typescript]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
-  "[typescriptreact]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
   "editor.codeActionsOnSave": {
     "source.organizeImports.biome": "explicit"
   },

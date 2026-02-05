@@ -88,9 +88,11 @@ shared 的“contracts/domain/infra/adapter”分层是边界语义，并不强�
   - 优点：物理隔离最强，依赖不易串；适合团队变大、边界经常被破坏的阶段
   - 代价：包数量增加，开发/发布/依赖治理成本更高
 
-### shared 的子域划分（推荐）
+### shared 的模块划分（推荐）
 
-在 `contracts/domain/infra/adapter` 四层之下，再按“业务子域”落一层，优先覆盖现有能力：identity（user+auth）、book（book+book-member）、rbac（sys 管理域），以及 common（跨域通用）。
+在 `contracts/domain/infra/adapter` 四层之下，采用“产品面”划分为两棵树：`app` 与 `admin`。每棵树下面各 feature module 平级存放（例如 `user`、`book`、`rbac` 等），便于从“我在做哪个应用”这个视角快速定位代码。
+
+infra 层不做 `app/admin` 划分，保持按技术维度组织（db/cache/third-party），避免把同一份基础设施实现拆成两份而漂移。
 
 推荐目录形态（单包多入口）：
 
@@ -98,55 +100,33 @@ shared 的“contracts/domain/infra/adapter”分层是边界语义，并不强�
 packages/shared/
   contracts/
     common/
-    identity/
-    book/
-    rbac/
+    app/
+      user/
+    admin/
+      user/
   domain/
     common/
-    identity/
-    book/
-    rbac/
+    app/
+      user/
+    admin/
+      user/
   infra/
     db/
-      identity/
-      book/
-      rbac/
+      postgresql/
     cache/
-      identity/
+      redis/
   adapter/
-    nest/
-      common/
-      identity/
-      book/
-      rbac/
+    app/
+      user/
+    admin/
+      user/
 ```
 
-子域归层口径：
-
-- common（跨域）
-  - contracts：分页/列表查询结构、错误码、通用响应结构等
-  - domain：通用领域错误（可选）
-- identity（user + auth）
-  - contracts：Login / LoginResponse、User 相关 DTO/Schema/类型（Web/RN/API 共用）
-  - domain：UserRepository 等 ports、认证与用户用例的纯业务规则
-  - infra：UserRepository 的 drizzle 实现、token 存储（如 redis）实现
-  - adapter：Nest module/provider、ZodDto 与 swagger 等框架胶水
-- book（book + book-member）
-  - contracts：Book/BookMember DTO/Schema/类型
-  - domain：账本与成员协作规则、BookRepository/BookMemberRepository ports
-  - infra：drizzle schema + repository 实现
-  - adapter：Nest wiring 与 controller 所需装配
-- rbac（module/permission/role/role-permission）
-  - contracts：管理域 CRUD 的 DTO/Schema/类型
-  - domain：权限模型与规则、RBAC 用例与 ports
-  - infra：`sys_*` drizzle schema + repository 实现
-  - adapter：仅用于管理态 API 的 Nest 装配
-
-引用约束（用“层 + 子域”防止 ToC/ToB/RN 污染）：
+引用约束（用“层 + app/admin”防止污染）：
 
 - Web（ToC/ToB）与 RN：只允许引用 `shared/contracts/**` + `packages/utils/**`
-- ToC API：允许引用 `contracts + domain + infra + adapter`，但只暴露 ToC 语义路由（identity/book）
-- ToB API：允许引用 `contracts + domain + infra + adapter`，并额外暴露管理域路由（rbac 等）
+- app API：允许引用 `contracts + domain + infra + adapter`，但只暴露 app 语义路由
+- admin API：允许引用 `contracts + domain + infra + adapter`，并仅暴露管理态路由与语义
 
 ## ToC / ToB 模块划分（以现有模块为参照）
 

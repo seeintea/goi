@@ -14,7 +14,7 @@
     "useIgnoreFile": true
   },
   "files": {
-    "includes": ["**/packages/**"],
+    "includes": ["**/packages/**", "**/apps/**"],
     "ignoreUnknown": true
   },
   "formatter": {
@@ -23,11 +23,6 @@
   "css": {
     "parser": {
       "cssModules": true
-    }
-  },
-  "javascript": {
-    "parser": {
-      "unsafeParameterDecoratorsEnabled": true
     }
   },
   "linter": {
