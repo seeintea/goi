@@ -13,7 +13,7 @@ import { and, eq, inArray } from "drizzle-orm"
 import type { Request } from "express"
 import { PERMISSION_DECORATOR, PUBLIC_DECORATOR } from "@/constants/auth.constants"
 import { PgService, pgSchema } from "@/database/postgresql"
-import { RedisService } from "@/database/redis/redis.service"
+import { RedisService } from "@/database/redis"
 
 type JwtPayload = { userId?: string; exp?: number; iat?: number }
 type AuthUser = { userId: string; username: string }

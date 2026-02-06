@@ -1,0 +1,30 @@
+{
+  "name": "@goi/contracts",
+  "version": "0.0.0",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./app/*": {
+      "types": "./dist/app/*/index.d.ts",
+      "default": "./dist/app/*/index.js"
+    },
+    "./admin/*": {
+      "types": "./dist/admin/*/index.d.ts",
+      "default": "./dist/admin/*/index.js"
+    }
+  },
+  "scripts": {
+    "dev": "tsc -w -p tsconfig.json",
+    "build": "tsc -p tsconfig.json",
+    "format": "prettier . --write",
+    "lint": "biome lint",
+    "check": "biome check"
+  },
+  "dependencies": {
+    "zod": "^4.3.6"
+  }
+}

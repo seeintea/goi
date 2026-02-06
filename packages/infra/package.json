@@ -1,0 +1,40 @@
+{
+  "name": "@goi/infra",
+  "version": "0.0.0",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./postgresql": {
+      "types": "./dist/postgresql/index.d.ts",
+      "default": "./dist/postgresql/index.js"
+    },
+    "./redis": {
+      "types": "./dist/redis/index.d.ts",
+      "default": "./dist/redis/index.js"
+    }
+  },
+  "scripts": {
+    "dev": "tsc -w -p tsconfig.json",
+    "build": "tsc -p tsconfig.json",
+    "format": "prettier . --write",
+    "lint": "biome lint",
+    "check": "biome check",
+    "db:gen": "drizzle-kit generate",
+    "db:push": "drizzle-kit migrate",
+    "db:update": "drizzle-kit push",
+    "db:studio": "drizzle-kit studio"
+  },
+  "dependencies": {
+    "drizzle-orm": "^0.45.1",
+    "ioredis": "^5.9.2",
+    "pg": "^8.18.0"
+  },
+  "devDependencies": {
+    "@types/pg": "^8.16.0",
+    "drizzle-kit": "^0.31.8"
+  }
+}

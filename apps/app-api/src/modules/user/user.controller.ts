@@ -1,18 +1,11 @@
-import {
-  CreateUserDto,
-  DeleteUserDto,
-  UpdateUserDto,
-  UserListQueryDto,
-  UserPageResponseDto,
-  UserResponseDto,
-  UserService,
-} from "@goi/shared/user"
 import { Body, Controller, Get, Post, Query } from "@nestjs/common"
 import { ApiOperation, ApiTags } from "@nestjs/swagger"
 import { nanoid } from "nanoid"
 import { ZodResponse } from "nestjs-zod"
 import { Permission } from "@/common/decorators/permission.decorator"
 import { generateSalt, hashPassword } from "@/common/utils/password"
+import { CreateUserDto, DeleteUserDto, UpdateUserDto, UserListQueryDto, UserPageResponseDto, UserResponseDto } from "./user.dto"
+import { UserService } from "./user.service"
 
 @ApiTags("用户")
 @Controller("sys/user")

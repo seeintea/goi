@@ -1,10 +1,10 @@
+import type { CreatePermission, Permission, UpdatePermission } from "@goi/contracts/app/permission"
 import { Injectable, NotFoundException } from "@nestjs/common"
 import { and, desc, eq, like, sql } from "drizzle-orm"
 import { toIsoString } from "@/common/utils/date"
 import { normalizePage, toPageResult } from "@/common/utils/pagination"
 import { PgService, pgSchema } from "@/database/postgresql"
 import type { PageResult } from "@/types/response"
-import type { CreatePermission, Permission, UpdatePermission } from "./permission.dto"
 
 const { permission: permissionSchema } = pgSchema
 
@@ -26,8 +26,11 @@ export class PermissionService {
       })
       .from(permissionSchema)
       .where(and(eq(permissionSchema.permissionId, permissionId), eq(permissionSchema.isDeleted, false)))
+      .limit(1)
+
     const permission = permissions[0]
     if (!permission) throw new NotFoundException("权限不存在")
+
     return {
       ...permission,
       createTime: toIsoString(permission.createTime),
@@ -58,14 +61,12 @@ export class PermissionService {
         ...(values.isDeleted !== undefined ? { isDeleted: values.isDeleted } : {}),
       })
       .where(eq(permissionSchema.permissionId, values.permissionId))
+
     return this.find(values.permissionId)
   }
 
   async delete(permissionId: string): Promise<boolean> {
-    await this.pg.pdb
-      .update(permissionSchema)
-      .set({ isDeleted: true })
-      .where(eq(permissionSchema.permissionId, permissionId))
+    await this.pg.pdb.update(permissionSchema).set({ isDeleted: true }).where(eq(permissionSchema.permissionId, permissionId))
     return true
   }
 

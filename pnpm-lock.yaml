@@ -70,9 +70,6 @@ importers:
 
   apps/admin-api:
     dependencies:
-      '@goi/shared':
-        specifier: workspace:*
-        version: link:../../packages/shared
       '@nestjs/common':
         specifier: ^11.1.12
         version: 11.1.12(reflect-metadata@0.2.2)(rxjs@7.8.2)
@@ -204,9 +201,12 @@ importers:
 
   apps/app-api:
     dependencies:
-      '@goi/shared':
+      '@goi/contracts':
         specifier: workspace:*
-        version: link:../../packages/shared
+        version: link:../../packages/contracts
+      '@goi/nest-kit':
+        specifier: workspace:*
+        version: link:../../packages/nest-kit
       '@nestjs/common':
         specifier: ^11.1.12
         version: 11.1.12(reflect-metadata@0.2.2)(rxjs@7.8.2)
@@ -228,9 +228,6 @@ importers:
       drizzle-orm:
         specifier: ^0.45.1
         version: 0.45.1(@types/pg@8.16.0)(mysql2@3.16.0)(pg@8.18.0)
-      ioredis:
-        specifier: ^5.9.2
-        version: 5.9.2
       nanoid:
         specifier: ^5.1.6
         version: 5.1.6
@@ -266,26 +263,23 @@ importers:
         specifier: ^4.2.0
         version: 4.2.0
 
-  packages/shared:
+  packages/contracts:
     dependencies:
-      '@nestjs/common':
-        specifier: ^11.1.12
-        version: 11.1.12(reflect-metadata@0.2.2)(rxjs@7.8.2)
-      '@nestjs/config':
-        specifier: ^4.0.2
-        version: 4.0.2(@nestjs/common@11.1.12(reflect-metadata@0.2.2)(rxjs@7.8.2))(rxjs@7.8.2)
-      drizzle-orm:
-        specifier: ^0.45.1
-        version: 0.45.1(@types/pg@8.16.0)(mysql2@3.16.0)(pg@8.18.0)
-      nestjs-zod:
-        specifier: ^5.1.1
-        version: 5.1.1(@nestjs/common@11.1.12(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/swagger@11.2.5(@nestjs/common@11.1.12(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.12)(reflect-metadata@0.2.2))(rxjs@7.8.2)(zod@4.3.6)
-      pg:
-        specifier: ^8.18.0
-        version: 8.18.0
       zod:
         specifier: ^4.3.6
         version: 4.3.6
+
+  packages/infra:
+    dependencies:
+      drizzle-orm:
+        specifier: ^0.45.1
+        version: 0.45.1(@types/pg@8.16.0)(mysql2@3.16.0)(pg@8.18.0)
+      ioredis:
+        specifier: ^5.9.2
+        version: 5.9.2
+      pg:
+        specifier: ^8.18.0
+        version: 8.18.0
     devDependencies:
       '@types/pg':
         specifier: ^8.16.0
@@ -293,6 +287,24 @@ importers:
       drizzle-kit:
         specifier: ^0.31.8
         version: 0.31.8
+
+  packages/nest-kit:
+    dependencies:
+      '@goi/contracts':
+        specifier: workspace:*
+        version: link:../contracts
+      '@goi/infra':
+        specifier: workspace:*
+        version: link:../infra
+      '@nestjs/common':
+        specifier: ^11.1.12
+        version: 11.1.12(reflect-metadata@0.2.2)(rxjs@7.8.2)
+      '@nestjs/config':
+        specifier: ^4.0.2
+        version: 4.0.2(@nestjs/common@11.1.12(reflect-metadata@0.2.2)(rxjs@7.8.2))(rxjs@7.8.2)
+      nestjs-zod:
+        specifier: ^5.1.1
+        version: 5.1.1(@nestjs/common@11.1.12(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/swagger@11.2.5(@nestjs/common@11.1.12(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.12)(reflect-metadata@0.2.2))(rxjs@7.8.2)(zod@4.3.6)
 
 packages:
 

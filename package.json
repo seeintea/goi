@@ -4,7 +4,7 @@
   "description": "",
   "scripts": {
     "dev": "pnpm -r --parallel run dev",
-    "build": "pnpm -r --filter @goi/shared --filter @goi/app-api --filter @goi/app run build"
+    "build": "pnpm -r --filter @goi/app-api... --filter @goi/app run build"
   },
   "keywords": [],
   "author": "leviegu <leviegu@gmail.com>",

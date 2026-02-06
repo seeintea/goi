@@ -15,7 +15,6 @@
     "check": "biome check"
   },
   "dependencies": {
-    "@goi/shared": "workspace:*",
     "@nestjs/common": "^11.1.12",
     "@nestjs/config": "^4.0.2",
     "@nestjs/core": "^11.1.12",
