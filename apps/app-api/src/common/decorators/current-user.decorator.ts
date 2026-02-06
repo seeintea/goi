@@ -1,10 +1,5 @@
 import { createParamDecorator, ExecutionContext } from "@nestjs/common"
 
-export const CurrentUser = createParamDecorator((_: unknown, ctx: ExecutionContext) => {
-  const request = ctx.switchToHttp().getRequest()
-  return request.user
-})
-
 export const BookId = createParamDecorator((_: unknown, ctx: ExecutionContext) => {
   const request = ctx.switchToHttp().getRequest()
   if (typeof request.bookId === "string" && request.bookId.length > 0) return request.bookId

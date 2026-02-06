@@ -2,8 +2,7 @@ import { Body, Controller, Get, Post, Query } from "@nestjs/common"
 import { ApiOperation, ApiTags } from "@nestjs/swagger"
 import { nanoid } from "nanoid"
 import { ZodResponse } from "nestjs-zod"
-import { CurrentUser } from "@/common/decorators/current-user.decorator"
-import { Permission } from "@/common/decorators/permission.decorator"
+import { CurrentUser, Permission } from "@goi/nest-kit/auth"
 import {
   BookListQueryDto,
   BookPageResponseDto,

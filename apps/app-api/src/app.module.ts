@@ -1,9 +1,8 @@
 import { Module } from "@nestjs/common"
 import { ConfigModule } from "@nestjs/config"
 import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR } from "@nestjs/core"
-import { AllExceptionsFilter } from "@/common/filters/all-exception.filter"
+import { AllExceptionsFilter, TransformResponseInterceptor } from "@goi/nest-kit/http"
 import { AuthGuard } from "@/common/guards/auth.guard"
-import { TransformResponseInterceptor } from "@/common/interceptors/transform-response.interceptor"
 import { PgModule } from "@/database/postgresql"
 import { RedisModule } from "@/database/redis"
 import {

@@ -1,3 +1,4 @@
+import { PERMISSION_DECORATOR, PUBLIC_DECORATOR } from "@goi/nest-kit/auth"
 import {
   BadRequestException,
   CanActivate,
@@ -11,7 +12,6 @@ import { Reflector } from "@nestjs/core"
 import { JwtService } from "@nestjs/jwt"
 import { and, eq, inArray } from "drizzle-orm"
 import type { Request } from "express"
-import { PERMISSION_DECORATOR, PUBLIC_DECORATOR } from "@/constants/auth.constants"
 import { PgService, pgSchema } from "@/database/postgresql"
 import { RedisService } from "@/database/redis"
 

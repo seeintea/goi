@@ -1,8 +1,7 @@
 import { ArgumentsHost, Catch, ExceptionFilter, HttpException, HttpStatus, Logger } from "@nestjs/common"
-import { Response } from "express"
-import { BusinessException } from "@/common/exceptions/business.exception"
-import { ErrorMsgReflect, ErrorStatusEnum } from "@/constants/response.constants"
-import type { ApiResponse } from "@/types/response"
+import { BusinessException } from "./business.exception"
+import { ErrorMsgReflect, ErrorStatusEnum } from "./http.constants"
+import type { ApiResponse } from "./response"
 
 @Catch()
 export class AllExceptionsFilter implements ExceptionFilter {
@@ -10,7 +9,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
 
   catch(exception: unknown, host: ArgumentsHost) {
     const ctx = host.switchToHttp()
-    const response = ctx.getResponse<Response>()
+    const response: { status: (code: number) => { json: (body: unknown) => unknown } } = ctx.getResponse()
 
     let statusCode = HttpStatus.INTERNAL_SERVER_ERROR
     let businessCode: number = ErrorStatusEnum.INTERNAL_ERROR
@@ -35,7 +34,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
 
     const errorResponse: ApiResponse<null> = {
       code: businessCode,
-      message: message,
+      message,
       data: null,
     }
 

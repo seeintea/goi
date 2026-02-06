@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Post, Query } from "@nestjs/common"
 import { ApiOperation, ApiTags } from "@nestjs/swagger"
 import { ZodResponse } from "nestjs-zod"
-import { Permission } from "@/common/decorators/permission.decorator"
+import { Permission } from "@goi/nest-kit/auth"
 import {
   CreateRolePermissionDto,
   DeleteRolePermissionDto,

@@ -250,9 +250,6 @@ importers:
       '@types/pg':
         specifier: ^8.16.0
         version: 8.16.0
-      drizzle-kit:
-        specifier: ^0.31.8
-        version: 0.31.8
       nodemon:
         specifier: ^3.1.11
         version: 3.1.11
@@ -305,6 +302,9 @@ importers:
       nestjs-zod:
         specifier: ^5.1.1
         version: 5.1.1(@nestjs/common@11.1.12(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/swagger@11.2.5(@nestjs/common@11.1.12(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.12)(reflect-metadata@0.2.2))(rxjs@7.8.2)(zod@4.3.6)
+      rxjs:
+        specifier: ^7.8.2
+        version: 7.8.2
 
 packages:
 

@@ -1,8 +1,8 @@
+import { Public } from "@goi/nest-kit/auth"
 import { Body, Controller, Post, Req } from "@nestjs/common"
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger"
 import type { Request } from "express"
 import { ZodResponse } from "nestjs-zod"
-import { Public } from "@/common/decorators/public.decorator"
 import { LoginDto, LoginResponseDto } from "./auth.dto"
 import { AuthService } from "./auth.service"
 
