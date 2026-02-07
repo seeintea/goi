@@ -3,7 +3,7 @@ import { ApiOperation, ApiTags } from "@nestjs/swagger"
 import { nanoid } from "nanoid"
 import { ZodResponse } from "nestjs-zod"
 import { BookId } from "@/common/decorators/current-user.decorator"
-import { Permission } from "@goi/nest-kit/auth"
+import { Permission } from "@goi/nest-kit/security"
 import {
   BookMemberListQueryDto,
   BookMemberPageResponseDto,

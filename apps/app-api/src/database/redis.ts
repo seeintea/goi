@@ -1,1 +1,1 @@
-export { RedisModule, RedisService } from "@goi/nest-kit/redis"
+export { RedisModule, RedisService } from "@goi/nest-kit/data"

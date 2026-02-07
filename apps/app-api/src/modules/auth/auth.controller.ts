@@ -1,4 +1,4 @@
-import { Public } from "@goi/nest-kit/auth"
+import { Public } from "@goi/nest-kit/security"
 import { Body, Controller, Post, Req } from "@nestjs/common"
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger"
 import type { Request } from "express"
