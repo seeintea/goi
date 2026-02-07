@@ -6,4 +6,4 @@ import { RolePermissionService } from "./role-permission.service"
   controllers: [RolePermissionController],
   providers: [RolePermissionService],
 })
-export class RolePermissionModule {}
+export class AppRolePermissionModule {}

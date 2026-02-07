@@ -14,12 +14,12 @@ import {
 import { PermissionService } from "./permission.service"
 
 @ApiTags("权限")
-@Controller("sys/permission")
+@Controller("app/permission")
 export class PermissionController {
   constructor(private readonly permissionService: PermissionService) {}
 
   @Post("create")
-  @Permission("sys:permission:create")
+  @Permission("app:permission:create")
   @ApiOperation({ summary: "创建权限" })
   @ZodResponse({ type: PermissionResponseDto })
   async create(@Body() body: CreatePermissionDto) {
@@ -27,7 +27,7 @@ export class PermissionController {
   }
 
   @Get("find")
-  @Permission("sys:permission:read")
+  @Permission("app:permission:read")
   @ApiOperation({ summary: "查询权限" })
   @ZodResponse({ type: PermissionResponseDto })
   async find(@Query("permissionId") permissionId: string) {
@@ -35,7 +35,7 @@ export class PermissionController {
   }
 
   @Get("list")
-  @Permission("sys:permission:read")
+  @Permission("app:permission:read")
   @ApiOperation({ summary: "查询权限列表" })
   @ZodResponse({ type: PermissionPageResponseDto })
   async list(@Query() query: PermissionListQueryDto) {
@@ -43,7 +43,7 @@ export class PermissionController {
   }
 
   @Post("update")
-  @Permission("sys:permission:update")
+  @Permission("app:permission:update")
   @ApiOperation({ summary: "更新权限" })
   @ZodResponse({ type: PermissionResponseDto })
   async update(@Body() body: UpdatePermissionDto) {
@@ -51,7 +51,7 @@ export class PermissionController {
   }
 
   @Post("delete")
-  @Permission("sys:permission:delete")
+  @Permission("app:permission:delete")
   @ApiOperation({ summary: "删除权限" })
   async delete(@Body() body: DeletePermissionDto) {
     return this.permissionService.delete(body.permissionId)

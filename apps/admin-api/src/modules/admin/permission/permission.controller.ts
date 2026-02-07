@@ -10,20 +10,20 @@ import {
   CreateAdminPermissionDto,
   DeleteAdminPermissionDto,
   UpdateAdminPermissionDto,
-} from "./admin-permission.dto"
-import { AdminPermissionService } from "./admin-permission.service"
+} from "./permission.dto"
+import { PermissionService } from "./permission.service"
 
 @ApiTags("管理员权限")
-@Controller("admin/sys/permission")
-export class AdminPermissionController {
-  constructor(private readonly adminPermissionService: AdminPermissionService) {}
+@Controller("admin/permission")
+export class PermissionController {
+  constructor(private readonly permissionService: PermissionService) {}
 
   @Post("create")
   @Permission("admin:permission:create")
   @ApiOperation({ summary: "创建管理员权限" })
   @ZodResponse({ type: AdminPermissionResponseDto })
   async create(@Body() body: CreateAdminPermissionDto) {
-    return this.adminPermissionService.create({ ...body, permissionId: nanoid(32) })
+    return this.permissionService.create({ ...body, permissionId: nanoid(32) })
   }
 
   @Get("find")
@@ -31,7 +31,7 @@ export class AdminPermissionController {
   @ApiOperation({ summary: "查询管理员权限" })
   @ZodResponse({ type: AdminPermissionResponseDto })
   async find(@Query("permissionId") permissionId: string) {
-    return this.adminPermissionService.find(permissionId)
+    return this.permissionService.find(permissionId)
   }
 
   @Get("list")
@@ -39,7 +39,7 @@ export class AdminPermissionController {
   @ApiOperation({ summary: "查询管理员权限列表" })
   @ZodResponse({ type: AdminPermissionPageResponseDto })
   async list(@Query() query: AdminPermissionListQueryDto) {
-    return this.adminPermissionService.list(query)
+    return this.permissionService.list(query)
   }
 
   @Post("update")
@@ -47,13 +47,13 @@ export class AdminPermissionController {
   @ApiOperation({ summary: "更新管理员权限" })
   @ZodResponse({ type: AdminPermissionResponseDto })
   async update(@Body() body: UpdateAdminPermissionDto) {
-    return this.adminPermissionService.update(body)
+    return this.permissionService.update(body)
   }
 
   @Post("delete")
   @Permission("admin:permission:delete")
   @ApiOperation({ summary: "删除管理员权限" })
   async delete(@Body() body: DeleteAdminPermissionDto) {
-    return this.adminPermissionService.delete(body.permissionId)
+    return this.permissionService.delete(body.permissionId)
   }
 }

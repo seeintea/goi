@@ -9,7 +9,7 @@ import type { PageResult } from "@/types/response"
 const { adminPermission: adminPermissionSchema } = pgSchema
 
 @Injectable()
-export class AdminPermissionService {
+export class PermissionService {
   constructor(private readonly pg: PgService) {}
 
   async find(permissionId: string): Promise<AdminPermission> {

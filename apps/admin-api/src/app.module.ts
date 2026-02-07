@@ -7,13 +7,14 @@ import { AdminAuthenticator } from "@/common/guards/auth.guard"
 import { PgModule } from "@/database/postgresql"
 import { RedisModule } from "@/database/redis"
 import {
-  AdminSysModuleModule,
-  AdminSysPermissionModule,
+  AppModuleModule,
+  AppPermissionModule,
+  AppRoleModule,
+  AppRolePermissionModule,
+  AppUserModule,
   AuthModule,
   ModuleModule,
   PermissionModule,
-  RoleModule,
-  RolePermissionModule,
   UserModule,
 } from "@/modules"
 import { HealthController } from "./health.controller"
@@ -25,12 +26,13 @@ import { HealthController } from "./health.controller"
     RedisModule,
     AuthModule,
     UserModule,
+    AppUserModule,
+    AppModuleModule,
+    AppPermissionModule,
+    AppRoleModule,
+    AppRolePermissionModule,
     ModuleModule,
     PermissionModule,
-    RoleModule,
-    RolePermissionModule,
-    AdminSysModuleModule,
-    AdminSysPermissionModule,
   ],
   controllers: [HealthController],
   providers: [

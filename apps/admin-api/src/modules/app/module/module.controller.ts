@@ -16,12 +16,12 @@ import {
 import { ModuleService } from "./module.service"
 
 @ApiTags("模块")
-@Controller("sys/module")
+@Controller("app/module")
 export class ModuleController {
   constructor(private readonly moduleService: ModuleService) {}
 
   @Post("create")
-  @Permission("sys:module:create")
+  @Permission("app:module:create")
   @ApiOperation({ summary: "创建模块" })
   @ZodResponse({ type: ModuleResponseDto })
   async create(@Body() body: CreateModuleDto) {
@@ -29,7 +29,7 @@ export class ModuleController {
   }
 
   @Get("find")
-  @Permission("sys:module:read")
+  @Permission("app:module:read")
   @ApiOperation({ summary: "查询模块" })
   @ZodResponse({ type: ModuleResponseDto })
   async find(@Query("moduleId") moduleId: string) {
@@ -37,7 +37,7 @@ export class ModuleController {
   }
 
   @Get("list")
-  @Permission("sys:module:read")
+  @Permission("app:module:read")
   @ApiOperation({ summary: "查询模块列表" })
   @ZodResponse({ type: ModulePageResponseDto })
   async list(@Query() query: ModuleListQueryDto) {
@@ -45,7 +45,7 @@ export class ModuleController {
   }
 
   @Get("all")
-  @Permission("sys:module:read")
+  @Permission("app:module:read")
   @ApiOperation({ summary: "查询模块全量列表" })
   @ZodResponse({ type: ModuleListResponseDto })
   async all(@Query() query: ModuleAllQueryDto) {
@@ -53,7 +53,7 @@ export class ModuleController {
   }
 
   @Get("roots")
-  @Permission("sys:module:read")
+  @Permission("app:module:read")
   @ApiOperation({ summary: "查询根模块列表" })
   @ZodResponse({ type: ModuleListResponseDto })
   async roots() {
@@ -61,7 +61,7 @@ export class ModuleController {
   }
 
   @Post("update")
-  @Permission("sys:module:update")
+  @Permission("app:module:update")
   @ApiOperation({ summary: "更新模块" })
   @ZodResponse({ type: ModuleResponseDto })
   async update(@Body() body: UpdateModuleDto) {
@@ -69,7 +69,7 @@ export class ModuleController {
   }
 
   @Post("delete")
-  @Permission("sys:module:delete")
+  @Permission("app:module:delete")
   @ApiOperation({ summary: "删除模块" })
   async delete(@Body() body: DeleteModuleDto) {
     return this.moduleService.delete(body.moduleId)

@@ -7,12 +7,12 @@ import { CreateRoleDto, DeleteRoleDto, RoleListQueryDto, RolePageResponseDto, Ro
 import { RoleService } from "./role.service"
 
 @ApiTags("角色")
-@Controller("sys/role")
+@Controller("app/role")
 export class RoleController {
   constructor(private readonly roleService: RoleService) {}
 
   @Post("create")
-  @Permission("sys:role:create")
+  @Permission("app:role:create")
   @ApiOperation({ summary: "创建角色" })
   @ZodResponse({ type: RoleResponseDto })
   async create(@Body() body: CreateRoleDto) {
@@ -20,7 +20,7 @@ export class RoleController {
   }
 
   @Get("find")
-  @Permission("sys:role:read")
+  @Permission("app:role:read")
   @ApiOperation({ summary: "查询角色" })
   @ZodResponse({ type: RoleResponseDto })
   async find(@Query("roleId") roleId: string) {
@@ -28,7 +28,7 @@ export class RoleController {
   }
 
   @Get("list")
-  @Permission("sys:role:read")
+  @Permission("app:role:read")
   @ApiOperation({ summary: "查询角色列表" })
   @ZodResponse({ type: RolePageResponseDto })
   async list(@Query() query: RoleListQueryDto) {
@@ -36,7 +36,7 @@ export class RoleController {
   }
 
   @Post("update")
-  @Permission("sys:role:update")
+  @Permission("app:role:update")
   @ApiOperation({ summary: "更新角色" })
   @ZodResponse({ type: RoleResponseDto })
   async update(@Body() body: UpdateRoleDto) {
@@ -44,7 +44,7 @@ export class RoleController {
   }
 
   @Post("delete")
-  @Permission("sys:role:delete")
+  @Permission("app:role:delete")
   @ApiOperation({ summary: "删除角色" })
   async delete(@Body() body: DeleteRoleDto) {
     return this.roleService.delete(body.roleId)

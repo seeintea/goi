@@ -12,20 +12,20 @@ import {
   CreateAdminModuleDto,
   DeleteAdminModuleDto,
   UpdateAdminModuleDto,
-} from "./admin-module.dto"
-import { AdminModuleService } from "./admin-module.service"
+} from "./module.dto"
+import { ModuleService } from "./module.service"
 
 @ApiTags("管理员模块")
-@Controller("admin/sys/module")
-export class AdminModuleController {
-  constructor(private readonly adminModuleService: AdminModuleService) {}
+@Controller("admin/module")
+export class ModuleController {
+  constructor(private readonly moduleService: ModuleService) {}
 
   @Post("create")
   @Permission("admin:module:create")
   @ApiOperation({ summary: "创建管理员模块" })
   @ZodResponse({ type: AdminModuleResponseDto })
   async create(@Body() body: CreateAdminModuleDto) {
-    return this.adminModuleService.create({ ...body, moduleId: nanoid(32) })
+    return this.moduleService.create({ ...body, moduleId: nanoid(32) })
   }
 
   @Get("find")
@@ -33,7 +33,7 @@ export class AdminModuleController {
   @ApiOperation({ summary: "查询管理员模块" })
   @ZodResponse({ type: AdminModuleResponseDto })
   async find(@Query("moduleId") moduleId: string) {
-    return this.adminModuleService.find(moduleId)
+    return this.moduleService.find(moduleId)
   }
 
   @Get("list")
@@ -41,7 +41,7 @@ export class AdminModuleController {
   @ApiOperation({ summary: "查询管理员模块列表" })
   @ZodResponse({ type: AdminModulePageResponseDto })
   async list(@Query() query: AdminModuleListQueryDto) {
-    return this.adminModuleService.list(query)
+    return this.moduleService.list(query)
   }
 
   @Get("all")
@@ -49,7 +49,7 @@ export class AdminModuleController {
   @ApiOperation({ summary: "查询管理员模块全量列表" })
   @ZodResponse({ type: AdminModuleListResponseDto })
   async all(@Query() query: AdminModuleAllQueryDto) {
-    return this.adminModuleService.all(query)
+    return this.moduleService.all(query)
   }
 
   @Get("roots")
@@ -57,7 +57,7 @@ export class AdminModuleController {
   @ApiOperation({ summary: "查询管理员根模块列表" })
   @ZodResponse({ type: AdminModuleListResponseDto })
   async roots() {
-    return this.adminModuleService.roots()
+    return this.moduleService.roots()
   }
 
   @Post("update")
@@ -65,13 +65,13 @@ export class AdminModuleController {
   @ApiOperation({ summary: "更新管理员模块" })
   @ZodResponse({ type: AdminModuleResponseDto })
   async update(@Body() body: UpdateAdminModuleDto) {
-    return this.adminModuleService.update(body)
+    return this.moduleService.update(body)
   }
 
   @Post("delete")
   @Permission("admin:module:delete")
   @ApiOperation({ summary: "删除管理员模块" })
   async delete(@Body() body: DeleteAdminModuleDto) {
-    return this.adminModuleService.delete(body.moduleId)
+    return this.moduleService.delete(body.moduleId)
   }
 }

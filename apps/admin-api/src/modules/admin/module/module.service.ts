@@ -9,7 +9,7 @@ import type { PageResult } from "@/types/response"
 const { adminModule: adminModuleSchema } = pgSchema
 
 @Injectable()
-export class AdminModuleService {
+export class ModuleService {
   constructor(private readonly pg: PgService) {}
 
   async find(moduleId: string): Promise<AdminModule> {

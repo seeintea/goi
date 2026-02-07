@@ -7,4 +7,4 @@ import { RoleService } from "./role.service"
   providers: [RoleService],
   exports: [RoleService],
 })
-export class RoleModule {}
+export class AppRoleModule {}

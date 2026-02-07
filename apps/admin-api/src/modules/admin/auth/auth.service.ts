@@ -3,7 +3,7 @@ import { Injectable } from "@nestjs/common"
 import { ConfigService } from "@nestjs/config"
 import { JwtService } from "@nestjs/jwt"
 import { RedisService } from "@/database/redis"
-import { UserService } from "@/modules/user/user.service"
+import { UserService } from "@/modules/admin/user/user.service"
 import type { AdminLoginResponseDto } from "./auth.dto"
 
 @Injectable()
