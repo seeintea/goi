@@ -4,7 +4,10 @@
   "description": "",
   "scripts": {
     "dev": "pnpm -r --parallel run dev",
-    "build": "pnpm -r --filter @goi/app-api... --filter @goi/app run build"
+    "build": "pnpm -r --filter @goi/app-api... --filter @goi/app run build",
+    "format": "pnpm -r run format",
+    "lint": "pnpm -r run lint",
+    "check": "pnpm -r run check"
   },
   "keywords": [],
   "author": "leviegu <leviegu@gmail.com>",

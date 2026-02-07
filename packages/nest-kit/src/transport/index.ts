@@ -1,3 +1,4 @@
+export type { ApiResponse } from "../http"
 export {
   AllExceptionsFilter,
   BusinessException,
@@ -5,4 +6,3 @@ export {
   ErrorStatusEnum,
   TransformResponseInterceptor,
 } from "../http"
-export type { ApiResponse } from "../http"

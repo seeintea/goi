@@ -1,14 +1,8 @@
 {
-  "extends": "../../tsconfig.base.json",
+  "extends": "../../tsconfig.browser.json",
   "compilerOptions": {
-    "lib": ["ESNext", "DOM", "DOM.Iterable"],
-    "jsx": "react-jsx",
-    "module": "ESNext",
     "outDir": "./dist",
     "rootDir": "./src",
-    "types": ["node", "vite/client"],
-    "allowJs": true,
-    "checkJs": false,
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"]
