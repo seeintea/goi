@@ -16,15 +16,24 @@
     "format": "prettier . --write"
   },
   "dependencies": {
+    "@goi/contracts": "workspace:*",
+    "@goi/nest-kit": "workspace:*",
     "@nestjs/common": "^11.1.12",
     "@nestjs/config": "^4.0.2",
     "@nestjs/core": "^11.1.12",
+    "@nestjs/jwt": "^11.0.2",
     "@nestjs/platform-express": "^11.1.12",
+    "@nestjs/swagger": "^11.2.5",
+    "drizzle-orm": "^0.45.1",
+    "nanoid": "^5.1.6",
+    "nestjs-zod": "^5.1.1",
+    "pg": "^8.18.0",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.2"
   },
   "devDependencies": {
     "@types/express": "^5.0.6",
+    "@types/pg": "^8.16.0",
     "nodemon": "^3.1.11",
     "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0"

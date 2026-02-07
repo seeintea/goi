@@ -1,0 +1,8 @@
+export { AdminSysModuleModule } from "./admin-module/admin-module.module"
+export { AdminSysPermissionModule } from "./admin-permission/admin-permission.module"
+export { AuthModule } from "./auth/auth.module"
+export { ModuleModule } from "./module/module.module"
+export { PermissionModule } from "./permission/permission.module"
+export { RoleModule } from "./role/role.module"
+export { RolePermissionModule } from "./role-permission/role-permission.module"
+export { UserModule } from "./user/user.module"

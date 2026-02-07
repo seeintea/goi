@@ -1,12 +1,22 @@
-import { book } from "./book.entity"
-import { bookMember } from "./book-member.entity"
-import { sysModule } from "./module.entity"
-import { permission } from "./permission.entity"
-import { role } from "./role.entity"
-import { rolePermission } from "./role-permission.entity"
-import { user } from "./user.entity"
+import { adminUser } from "./admin/user.entity"
+import { adminModule } from "./admin/module.entity"
+import { adminPermission } from "./admin/permission.entity"
+import { adminRole } from "./admin/role.entity"
+import { adminRolePermission } from "./admin/role-permission.entity"
+import { book } from "./app/book.entity"
+import { bookMember } from "./app/book-member.entity"
+import { sysModule } from "./app/module.entity"
+import { permission } from "./app/permission.entity"
+import { role } from "./app/role.entity"
+import { rolePermission } from "./app/role-permission.entity"
+import { user } from "./app/user.entity"
 
 export const schema = {
+  adminUser,
+  adminModule,
+  adminPermission,
+  adminRole,
+  adminRolePermission,
   book,
   bookMember,
   sysModule,
