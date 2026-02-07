@@ -10,7 +10,10 @@
   "scripts": {
     "dev": "nodemon",
     "build": "tsc -p tsconfig.json",
-    "prod": "node dist/main.js"
+    "prod": "node dist/main.js",
+    "lint": "biome lint",
+    "check": "biome check",
+    "format": "prettier . --write"
   },
   "dependencies": {
     "@goi/contracts": "workspace:*",

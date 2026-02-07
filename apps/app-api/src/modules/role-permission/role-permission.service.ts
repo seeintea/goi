@@ -73,7 +73,10 @@ export class RolePermissionService {
     if (where.length) {
       qb.where(and(...where))
     }
-    const rows = await qb.orderBy(desc(rolePermissionSchema.createTime)).limit(pageParams.limit).offset(pageParams.offset)
+    const rows = await qb
+      .orderBy(desc(rolePermissionSchema.createTime))
+      .limit(pageParams.limit)
+      .offset(pageParams.offset)
 
     const list = rows.map((row) => ({
       ...row,

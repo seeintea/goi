@@ -1,8 +1,8 @@
+import { CurrentUser, Permission } from "@goi/nest-kit/security"
 import { Body, Controller, Get, Post, Query } from "@nestjs/common"
 import { ApiOperation, ApiTags } from "@nestjs/swagger"
 import { nanoid } from "nanoid"
 import { ZodResponse } from "nestjs-zod"
-import { CurrentUser, Permission } from "@goi/nest-kit/security"
 import {
   BookListQueryDto,
   BookPageResponseDto,

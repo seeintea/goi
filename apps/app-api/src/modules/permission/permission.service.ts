@@ -66,7 +66,10 @@ export class PermissionService {
   }
 
   async delete(permissionId: string): Promise<boolean> {
-    await this.pg.pdb.update(permissionSchema).set({ isDeleted: true }).where(eq(permissionSchema.permissionId, permissionId))
+    await this.pg.pdb
+      .update(permissionSchema)
+      .set({ isDeleted: true })
+      .where(eq(permissionSchema.permissionId, permissionId))
     return true
   }
 

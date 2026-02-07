@@ -27,7 +27,11 @@ export class BookMemberService {
       })
       .from(bookMemberSchema)
       .where(
-        and(eq(bookMemberSchema.bookId, bookId), eq(bookMemberSchema.memberId, memberId), eq(bookMemberSchema.isDeleted, false)),
+        and(
+          eq(bookMemberSchema.bookId, bookId),
+          eq(bookMemberSchema.memberId, memberId),
+          eq(bookMemberSchema.isDeleted, false),
+        ),
       )
     const member = members[0]
     if (!member) throw new NotFoundException("账本成员不存在")
@@ -75,9 +79,9 @@ export class BookMemberService {
   async list(
     bookId: string,
     query: {
-    userId?: string
-    page?: number | string
-    pageSize?: number | string
+      userId?: string
+      page?: number | string
+      pageSize?: number | string
     },
   ): Promise<PageResult<BookMember>> {
     const where: Parameters<typeof and> = [eq(bookMemberSchema.isDeleted, false), eq(bookMemberSchema.bookId, bookId)]

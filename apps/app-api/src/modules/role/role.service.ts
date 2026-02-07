@@ -75,7 +75,10 @@ export class RoleService {
 
     const pageParams = normalizePage(query)
 
-    const totalRows = await this.pg.pdb.select({ count: sql<number>`count(*)` }).from(roleSchema).where(and(...where))
+    const totalRows = await this.pg.pdb
+      .select({ count: sql<number>`count(*)` })
+      .from(roleSchema)
+      .where(and(...where))
     const total = Number(totalRows[0]?.count ?? 0)
 
     const rows = await this.pg.pdb

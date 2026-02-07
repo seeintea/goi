@@ -42,6 +42,10 @@ export const normalizePage = (query: PageQuery, options: PageOptions = {}): Page
   return { page, pageSize, limit, offset }
 }
 
-export const toPageResult = <T>(params: Pick<PageParams, "page" | "pageSize">, total: number, list: T[]): PageResult<T> => {
+export const toPageResult = <T>(
+  params: Pick<PageParams, "page" | "pageSize">,
+  total: number,
+  list: T[],
+): PageResult<T> => {
   return { list, total, page: params.page, pageSize: params.pageSize }
 }

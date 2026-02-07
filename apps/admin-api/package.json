@@ -12,7 +12,8 @@
     "build": "tsc -p tsconfig.json",
     "prod": "node dist/main.js",
     "lint": "biome lint",
-    "check": "biome check"
+    "check": "biome check",
+    "format": "prettier . --write"
   },
   "dependencies": {
     "@nestjs/common": "^11.1.12",
