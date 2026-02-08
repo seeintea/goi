@@ -1,11 +1,11 @@
-export type { CreateModule, Module, UpdateModule } from "./module.schema"
+export type { AppModule, CreateAppModule, UpdateAppModule } from "./module.schema"
 export {
-  createModuleSchema,
-  deleteModuleSchema,
-  moduleAllQuerySchema,
-  moduleListQuerySchema,
-  moduleListResponseSchema,
-  modulePageResponseSchema,
-  moduleResponseSchema,
-  updateModuleSchema,
+  appModuleAllQuerySchema,
+  appModuleListQuerySchema,
+  appModuleListResponseSchema,
+  appModulePageResponseSchema,
+  appModuleResponseSchema,
+  createAppModuleSchema,
+  deleteAppModuleSchema,
+  updateAppModuleSchema,
 } from "./module.schema"

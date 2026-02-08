@@ -1,9 +1,9 @@
-export type { CreateUser, UpdateUser, User } from "./user.schema"
+export type { AppUser, CreateAppUser, UpdateAppUser } from "./user.schema"
 export {
-  createUserSchema,
-  deleteUserSchema,
-  updateUserSchema,
-  userListQuerySchema,
-  userPageResponseSchema,
-  userResponseSchema,
+  appUserListQuerySchema,
+  appUserPageResponseSchema,
+  appUserResponseSchema,
+  createAppUserSchema,
+  deleteAppUserSchema,
+  updateAppUserSchema,
 } from "./user.schema"

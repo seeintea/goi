@@ -1,4 +1,4 @@
-import type { CreateUser, UpdateUser, User } from "@goi/contracts/app/user"
+import type { AppUser, CreateAppUser, UpdateAppUser } from "@goi/contracts/app/user"
 import { Injectable, NotFoundException } from "@nestjs/common"
 import { and, desc, eq, like, sql } from "drizzle-orm"
 import { toIsoString } from "@/common/utils/date"
@@ -12,7 +12,7 @@ const { user: userSchema } = pgSchema
 export class UserService {
   constructor(private readonly pg: PgService) {}
 
-  async find(userId: string): Promise<User> {
+  async find(userId: string): Promise<AppUser> {
     const rows = await this.pg.pdb
       .select({
         userId: userSchema.userId,
@@ -63,7 +63,7 @@ export class UserService {
     return rows[0]
   }
 
-  async create(values: CreateUser & { userId: string; salt: string; password: string }): Promise<User> {
+  async create(values: CreateAppUser & { userId: string; salt: string; password: string }): Promise<AppUser> {
     await this.pg.pdb.insert(userSchema).values({
       userId: values.userId,
       username: values.username,
@@ -77,7 +77,7 @@ export class UserService {
     return this.find(values.userId)
   }
 
-  async update(values: UpdateUser): Promise<User> {
+  async update(values: UpdateAppUser): Promise<AppUser> {
     await this.pg.pdb
       .update(userSchema)
       .set({
@@ -103,7 +103,7 @@ export class UserService {
     username?: string
     page?: number | string
     pageSize?: number | string
-  }): Promise<PageResult<User>> {
+  }): Promise<PageResult<AppUser>> {
     const where: Parameters<typeof and> = [eq(userSchema.isDeleted, false)]
     if (query.userId) where.push(eq(userSchema.userId, query.userId))
     if (query.username) where.push(like(userSchema.username, `%${query.username}%`))

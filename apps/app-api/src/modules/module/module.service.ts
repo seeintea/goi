@@ -1,4 +1,4 @@
-import type { CreateModule, Module, UpdateModule } from "@goi/contracts/app/module"
+import type { AppModule, CreateAppModule, UpdateAppModule } from "@goi/contracts/app/module"
 import { Injectable, NotFoundException } from "@nestjs/common"
 import { and, asc, desc, eq, isNull, like, sql } from "drizzle-orm"
 import { toIsoString } from "@/common/utils/date"
@@ -12,7 +12,7 @@ const { sysModule: sysModuleSchema } = pgSchema
 export class ModuleService {
   constructor(private readonly pg: PgService) {}
 
-  async find(moduleId: string): Promise<Module> {
+  async find(moduleId: string): Promise<AppModule> {
     const modules = await this.pg.pdb
       .select({
         moduleId: sysModuleSchema.moduleId,
@@ -39,7 +39,7 @@ export class ModuleService {
     }
   }
 
-  async create(values: CreateModule & { moduleId: string }): Promise<Module> {
+  async create(values: CreateAppModule & { moduleId: string }): Promise<AppModule> {
     await this.pg.pdb.insert(sysModuleSchema).values({
       moduleId: values.moduleId,
       parentId: values.parentId ?? null,
@@ -52,7 +52,7 @@ export class ModuleService {
     return this.find(values.moduleId)
   }
 
-  async update(values: UpdateModule): Promise<Module> {
+  async update(values: UpdateAppModule): Promise<AppModule> {
     await this.pg.pdb
       .update(sysModuleSchema)
       .set({
@@ -78,7 +78,7 @@ export class ModuleService {
     name?: string
     routePath?: string
     permissionCode?: string
-  }): Promise<Module[]> {
+  }): Promise<AppModule[]> {
     const where: Parameters<typeof and> = [eq(sysModuleSchema.isDeleted, false)]
     if (query.parentId === null) where.push(isNull(sysModuleSchema.parentId))
     if (query.parentId) where.push(eq(sysModuleSchema.parentId, query.parentId))
@@ -109,7 +109,7 @@ export class ModuleService {
     }))
   }
 
-  async roots(): Promise<Module[]> {
+  async roots(): Promise<AppModule[]> {
     return this.all({ parentId: null })
   }
 
@@ -120,7 +120,7 @@ export class ModuleService {
     permissionCode?: string
     page?: number | string
     pageSize?: number | string
-  }): Promise<PageResult<Module>> {
+  }): Promise<PageResult<AppModule>> {
     const where: Parameters<typeof and> = [eq(sysModuleSchema.isDeleted, false)]
     if (query.parentId === null) where.push(isNull(sysModuleSchema.parentId))
     if (query.parentId) where.push(eq(sysModuleSchema.parentId, query.parentId))

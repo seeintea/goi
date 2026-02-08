@@ -14,7 +14,7 @@ const shape = {
   pageSize: z.coerce.number().int().min(1).max(100).describe("每页数量"),
 } satisfies z.ZodRawShape
 
-export const moduleResponseSchema = z
+export const appModuleResponseSchema = z
   .object({
     moduleId: shape.moduleId,
     parentId: shape.parentId,
@@ -28,7 +28,7 @@ export const moduleResponseSchema = z
   })
   .meta({ id: "模块响应类型" })
 
-export const createModuleSchema = z
+export const createAppModuleSchema = z
   .object({
     name: shape.name,
     routePath: shape.routePath,
@@ -38,7 +38,7 @@ export const createModuleSchema = z
   })
   .meta({ id: "创建模块请求" })
 
-export const updateModuleSchema = z
+export const updateAppModuleSchema = z
   .object({
     moduleId: shape.moduleId,
     parentId: shape.parentId.optional(),
@@ -50,13 +50,13 @@ export const updateModuleSchema = z
   })
   .meta({ id: "更新模块请求" })
 
-export const deleteModuleSchema = z
+export const deleteAppModuleSchema = z
   .object({
     moduleId: shape.moduleId,
   })
   .meta({ id: "删除模块请求" })
 
-export const moduleListQuerySchema = z
+export const appModuleListQuerySchema = z
   .object({
     parentId: shape.parentId.optional(),
     name: shape.name.optional(),
@@ -67,7 +67,7 @@ export const moduleListQuerySchema = z
   })
   .meta({ id: "查询模块分页列表请求" })
 
-export const moduleAllQuerySchema = z
+export const appModuleAllQuerySchema = z
   .object({
     parentId: shape.parentId.optional(),
     name: shape.name.optional(),
@@ -76,7 +76,7 @@ export const moduleAllQuerySchema = z
   })
   .meta({ id: "查询模块全量列表请求" })
 
-const modulePageItemSchema = z.object({
+const appModulePageItemSchema = z.object({
   moduleId: shape.moduleId,
   parentId: shape.parentId,
   name: shape.name,
@@ -88,17 +88,17 @@ const modulePageItemSchema = z.object({
   updateTime: shape.updateTime,
 })
 
-export const modulePageResponseSchema = z
+export const appModulePageResponseSchema = z
   .object({
-    list: z.array(modulePageItemSchema),
+    list: z.array(appModulePageItemSchema),
     total: z.number().int().min(0),
     page: shape.page,
     pageSize: shape.pageSize,
   })
   .meta({ id: "模块分页响应" })
 
-export const moduleListResponseSchema = z.array(moduleResponseSchema).meta({ id: "模块列表响应" })
+export const appModuleListResponseSchema = z.array(appModuleResponseSchema).meta({ id: "模块列表响应" })
 
-export type Module = z.infer<typeof moduleResponseSchema>
-export type CreateModule = z.infer<typeof createModuleSchema>
-export type UpdateModule = z.infer<typeof updateModuleSchema>
+export type AppModule = z.infer<typeof appModuleResponseSchema>
+export type CreateAppModule = z.infer<typeof createAppModuleSchema>
+export type UpdateAppModule = z.infer<typeof updateAppModuleSchema>

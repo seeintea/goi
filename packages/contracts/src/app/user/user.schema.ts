@@ -15,7 +15,7 @@ const shape = {
   pageSize: z.coerce.number().int().min(1).max(100).describe("每页数量"),
 } satisfies z.ZodRawShape
 
-export const userResponseSchema = z
+export const appUserResponseSchema = z
   .object({
     userId: shape.userId,
     username: shape.username,
@@ -28,7 +28,7 @@ export const userResponseSchema = z
   })
   .meta({ id: "用户响应类型" })
 
-export const createUserSchema = z
+export const createAppUserSchema = z
   .object({
     username: shape.username,
     password: shape.password,
@@ -38,7 +38,7 @@ export const createUserSchema = z
   })
   .meta({ id: "创建用户请求" })
 
-export const updateUserSchema = z
+export const updateAppUserSchema = z
   .object({
     userId: shape.userId,
     username: shape.username.optional(),
@@ -51,13 +51,13 @@ export const updateUserSchema = z
   })
   .meta({ id: "更新用户请求" })
 
-export const deleteUserSchema = z
+export const deleteAppUserSchema = z
   .object({
     userId: shape.userId,
   })
   .meta({ id: "删除用户请求" })
 
-export const userListQuerySchema = z
+export const appUserListQuerySchema = z
   .object({
     userId: shape.userId.optional(),
     username: shape.username.optional(),
@@ -66,7 +66,7 @@ export const userListQuerySchema = z
   })
   .meta({ id: "查询用户分页列表请求" })
 
-const userPageItemSchema = z.object({
+const appUserPageItemSchema = z.object({
   userId: shape.userId,
   username: shape.username,
   email: shape.email,
@@ -77,15 +77,15 @@ const userPageItemSchema = z.object({
   updateTime: shape.updateTime,
 })
 
-export const userPageResponseSchema = z
+export const appUserPageResponseSchema = z
   .object({
-    list: z.array(userPageItemSchema),
+    list: z.array(appUserPageItemSchema),
     total: z.number().int().min(0),
     page: shape.page,
     pageSize: shape.pageSize,
   })
   .meta({ id: "用户分页响应" })
 
-export type User = z.infer<typeof userResponseSchema>
-export type CreateUser = z.infer<typeof createUserSchema>
-export type UpdateUser = z.infer<typeof updateUserSchema>
+export type AppUser = z.infer<typeof appUserResponseSchema>
+export type CreateAppUser = z.infer<typeof createAppUserSchema>
+export type UpdateAppUser = z.infer<typeof updateAppUserSchema>

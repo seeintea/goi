@@ -1,4 +1,4 @@
-import type { CreatePermission, Permission, UpdatePermission } from "@goi/contracts/app/permission"
+import type { AppPermission, CreateAppPermission, UpdateAppPermission } from "@goi/contracts/app/permission"
 import { Injectable, NotFoundException } from "@nestjs/common"
 import { and, desc, eq, like, sql } from "drizzle-orm"
 import { toIsoString } from "@/common/utils/date"
@@ -12,7 +12,7 @@ const { permission: permissionSchema } = pgSchema
 export class PermissionService {
   constructor(private readonly pg: PgService) {}
 
-  async find(permissionId: string): Promise<Permission> {
+  async find(permissionId: string): Promise<AppPermission> {
     const permissions = await this.pg.pdb
       .select({
         permissionId: permissionSchema.permissionId,
@@ -38,7 +38,7 @@ export class PermissionService {
     }
   }
 
-  async create(values: CreatePermission & { permissionId: string }): Promise<Permission> {
+  async create(values: CreateAppPermission & { permissionId: string }): Promise<AppPermission> {
     await this.pg.pdb.insert(permissionSchema).values({
       permissionId: values.permissionId,
       code: values.code,
@@ -50,7 +50,7 @@ export class PermissionService {
     return this.find(values.permissionId)
   }
 
-  async update(values: UpdatePermission): Promise<Permission> {
+  async update(values: UpdateAppPermission): Promise<AppPermission> {
     await this.pg.pdb
       .update(permissionSchema)
       .set({
@@ -78,7 +78,7 @@ export class PermissionService {
     moduleId?: string
     page?: number | string
     pageSize?: number | string
-  }): Promise<PageResult<Permission>> {
+  }): Promise<PageResult<AppPermission>> {
     const where: Parameters<typeof and> = [eq(permissionSchema.isDeleted, false)]
     if (query.code) where.push(like(permissionSchema.code, `%${query.code}%`))
     if (query.moduleId) where.push(eq(permissionSchema.moduleId, query.moduleId))

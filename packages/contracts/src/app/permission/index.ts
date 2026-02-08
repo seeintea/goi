@@ -1,9 +1,9 @@
-export type { CreatePermission, Permission, UpdatePermission } from "./permission.schema"
+export type { AppPermission, CreateAppPermission, UpdateAppPermission } from "./permission.schema"
 export {
-  createPermissionSchema,
-  deletePermissionSchema,
-  permissionListQuerySchema,
-  permissionPageResponseSchema,
-  permissionResponseSchema,
-  updatePermissionSchema,
+  appPermissionListQuerySchema,
+  appPermissionPageResponseSchema,
+  appPermissionResponseSchema,
+  createAppPermissionSchema,
+  deleteAppPermissionSchema,
+  updateAppPermissionSchema,
 } from "./permission.schema"

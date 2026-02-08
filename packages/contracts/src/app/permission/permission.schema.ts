@@ -13,7 +13,7 @@ const shape = {
   pageSize: z.coerce.number().int().min(1).max(100).describe("每页数量"),
 } satisfies z.ZodRawShape
 
-export const permissionResponseSchema = z
+export const appPermissionResponseSchema = z
   .object({
     permissionId: shape.permissionId,
     code: shape.code,
@@ -26,7 +26,7 @@ export const permissionResponseSchema = z
   })
   .meta({ id: "权限响应类型" })
 
-export const createPermissionSchema = z
+export const createAppPermissionSchema = z
   .object({
     code: shape.code,
     name: shape.name.optional(),
@@ -35,7 +35,7 @@ export const createPermissionSchema = z
   })
   .meta({ id: "创建权限请求" })
 
-export const updatePermissionSchema = z
+export const updateAppPermissionSchema = z
   .object({
     permissionId: shape.permissionId,
     code: shape.code.optional(),
@@ -46,13 +46,13 @@ export const updatePermissionSchema = z
   })
   .meta({ id: "更新权限请求" })
 
-export const deletePermissionSchema = z
+export const deleteAppPermissionSchema = z
   .object({
     permissionId: shape.permissionId,
   })
   .meta({ id: "删除权限请求" })
 
-export const permissionListQuerySchema = z
+export const appPermissionListQuerySchema = z
   .object({
     code: shape.code.optional(),
     moduleId: shape.moduleId.optional(),
@@ -61,7 +61,7 @@ export const permissionListQuerySchema = z
   })
   .meta({ id: "查询权限分页列表请求" })
 
-const permissionPageItemSchema = z.object({
+const appPermissionPageItemSchema = z.object({
   permissionId: shape.permissionId,
   code: shape.code,
   name: shape.name,
@@ -72,15 +72,15 @@ const permissionPageItemSchema = z.object({
   updateTime: shape.updateTime,
 })
 
-export const permissionPageResponseSchema = z
+export const appPermissionPageResponseSchema = z
   .object({
-    list: z.array(permissionPageItemSchema),
+    list: z.array(appPermissionPageItemSchema),
     total: z.number().int().min(0),
     page: shape.page,
     pageSize: shape.pageSize,
   })
   .meta({ id: "权限分页响应" })
 
-export type Permission = z.infer<typeof permissionResponseSchema>
-export type CreatePermission = z.infer<typeof createPermissionSchema>
-export type UpdatePermission = z.infer<typeof updatePermissionSchema>
+export type AppPermission = z.infer<typeof appPermissionResponseSchema>
+export type CreateAppPermission = z.infer<typeof createAppPermissionSchema>
+export type UpdateAppPermission = z.infer<typeof updateAppPermissionSchema>

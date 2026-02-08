@@ -1,23 +1,23 @@
-import type { CreateUser, UpdateUser, User } from "@goi/contracts/app/user"
+import type { AppUser, CreateAppUser, UpdateAppUser } from "@goi/contracts/app/user"
 import {
-  createUserSchema,
-  deleteUserSchema,
-  updateUserSchema,
-  userListQuerySchema,
-  userPageResponseSchema,
-  userResponseSchema,
+  appUserListQuerySchema,
+  appUserPageResponseSchema,
+  appUserResponseSchema,
+  createAppUserSchema,
+  deleteAppUserSchema,
+  updateAppUserSchema,
 } from "@goi/contracts/app/user"
 import { createZodDto } from "nestjs-zod"
 import { z } from "zod"
 
-const typedUserResponseSchema = userResponseSchema as z.ZodType<User>
-const typedCreateUserSchema = createUserSchema as z.ZodType<CreateUser>
-const typedUpdateUserSchema = updateUserSchema as z.ZodType<UpdateUser>
-const typedDeleteUserSchema = deleteUserSchema as z.ZodType<{ userId: string }>
+const typedUserResponseSchema = appUserResponseSchema as z.ZodType<AppUser>
+const typedCreateUserSchema = createAppUserSchema as z.ZodType<CreateAppUser>
+const typedUpdateUserSchema = updateAppUserSchema as z.ZodType<UpdateAppUser>
+const typedDeleteUserSchema = deleteAppUserSchema as z.ZodType<{ userId: string }>
 
 export class UserResponseDto extends createZodDto(typedUserResponseSchema) {}
 export class CreateUserDto extends createZodDto(typedCreateUserSchema) {}
 export class UpdateUserDto extends createZodDto(typedUpdateUserSchema) {}
 export class DeleteUserDto extends createZodDto(typedDeleteUserSchema) {}
-export class UserListQueryDto extends createZodDto(userListQuerySchema) {}
-export class UserPageResponseDto extends createZodDto(userPageResponseSchema) {}
+export class UserListQueryDto extends createZodDto(appUserListQuerySchema) {}
+export class UserPageResponseDto extends createZodDto(appUserPageResponseSchema) {}

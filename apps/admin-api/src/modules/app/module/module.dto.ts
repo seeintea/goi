@@ -1,28 +1,28 @@
-import type { CreateModule, Module, UpdateModule } from "@goi/contracts/app/module"
+import type { AppModule, CreateAppModule, UpdateAppModule } from "@goi/contracts/app/module"
 import {
-  createModuleSchema,
-  deleteModuleSchema,
-  moduleAllQuerySchema,
-  moduleListQuerySchema,
-  moduleListResponseSchema,
-  modulePageResponseSchema,
-  moduleResponseSchema,
-  updateModuleSchema,
+  appModuleAllQuerySchema,
+  appModuleListQuerySchema,
+  appModuleListResponseSchema,
+  appModulePageResponseSchema,
+  appModuleResponseSchema,
+  createAppModuleSchema,
+  deleteAppModuleSchema,
+  updateAppModuleSchema,
 } from "@goi/contracts/app/module"
 import { createZodDto } from "nestjs-zod"
 import { z } from "zod"
 
-const typedModuleResponseSchema = moduleResponseSchema as z.ZodType<Module>
-const typedCreateModuleSchema = createModuleSchema as z.ZodType<CreateModule>
-const typedUpdateModuleSchema = updateModuleSchema as z.ZodType<UpdateModule>
-const typedDeleteModuleSchema = deleteModuleSchema as z.ZodType<{ moduleId: string }>
-const typedModuleListResponseSchema = moduleListResponseSchema as z.ZodType<Module[]>
+const typedModuleResponseSchema = appModuleResponseSchema as z.ZodType<AppModule>
+const typedCreateModuleSchema = createAppModuleSchema as z.ZodType<CreateAppModule>
+const typedUpdateModuleSchema = updateAppModuleSchema as z.ZodType<UpdateAppModule>
+const typedDeleteModuleSchema = deleteAppModuleSchema as z.ZodType<{ moduleId: string }>
+const typedModuleListResponseSchema = appModuleListResponseSchema as z.ZodType<AppModule[]>
 
 export class ModuleResponseDto extends createZodDto(typedModuleResponseSchema) {}
 export class CreateModuleDto extends createZodDto(typedCreateModuleSchema) {}
 export class UpdateModuleDto extends createZodDto(typedUpdateModuleSchema) {}
 export class DeleteModuleDto extends createZodDto(typedDeleteModuleSchema) {}
-export class ModuleListQueryDto extends createZodDto(moduleListQuerySchema) {}
-export class ModuleAllQueryDto extends createZodDto(moduleAllQuerySchema) {}
-export class ModulePageResponseDto extends createZodDto(modulePageResponseSchema) {}
+export class ModuleListQueryDto extends createZodDto(appModuleListQuerySchema) {}
+export class ModuleAllQueryDto extends createZodDto(appModuleAllQuerySchema) {}
+export class ModulePageResponseDto extends createZodDto(appModulePageResponseSchema) {}
 export class ModuleListResponseDto extends createZodDto(typedModuleListResponseSchema) {}
