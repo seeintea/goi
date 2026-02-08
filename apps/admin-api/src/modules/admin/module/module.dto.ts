@@ -1,14 +1,4 @@
-import type { AdminModule, CreateAdminModule, UpdateAdminModule } from "@goi/contracts/admin/module"
-import {
-  adminModuleAllQuerySchema,
-  adminModuleListQuerySchema,
-  adminModuleListResponseSchema,
-  adminModulePageResponseSchema,
-  adminModuleResponseSchema,
-  createAdminModuleSchema,
-  deleteAdminModuleSchema,
-  updateAdminModuleSchema,
-} from "@goi/contracts/admin/module"
+import { AdminModule, CreateAdminModule, UpdateAdminModule, adminModuleAllQuerySchema, adminModuleListQuerySchema, adminModuleListResponseSchema, adminModulePageResponseSchema, adminModuleResponseSchema, createAdminModuleSchema, deleteAdminModuleSchema, updateAdminModuleSchema } from "@goi/contracts";
 import { createZodDto } from "nestjs-zod"
 import { z } from "zod"
 

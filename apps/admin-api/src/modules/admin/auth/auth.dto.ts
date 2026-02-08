@@ -1,5 +1,4 @@
-import type { AdminLogin, AdminLoginResponse } from "@goi/contracts/admin/auth"
-import { adminLoginResponseSchema, adminLoginSchema } from "@goi/contracts/admin/auth"
+import { AdminLogin, AdminLoginResponse, adminLoginResponseSchema, adminLoginSchema } from "@goi/contracts";
 import { createZodDto } from "nestjs-zod"
 import { z } from "zod"
 

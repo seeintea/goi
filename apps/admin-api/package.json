@@ -10,7 +10,7 @@
   "scripts": {
     "dev": "nodemon",
     "build": "tsc -p tsconfig.json",
-    "prod": "node dist/main.js",
+    "prod": "node dist/apps/admin-api/src/main.js",
     "fmt": "prettier . --check",
     "fmt:write": "prettier . --write",
     "lint": "biome check",

@@ -22,7 +22,6 @@ import {
   PermissionModule,
   UserModule,
 } from "@/modules"
-import { HealthController } from "./health.controller"
 
 @Module({
   imports: [
@@ -39,7 +38,7 @@ import { HealthController } from "./health.controller"
     ModuleModule,
     PermissionModule,
   ],
-  controllers: [HealthController],
+  controllers: [],
   providers: [
     { provide: APP_GUARD, useClass: AuthGuard },
     { provide: NEST_KIT_AUTHENTICATOR, useClass: AdminAuthenticator },

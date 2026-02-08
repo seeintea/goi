@@ -1,4 +1,4 @@
-import type { AppPermission, CreateAppPermission, UpdateAppPermission } from "@goi/contracts/app/permission"
+import { AppPermission, CreateAppPermission, UpdateAppPermission } from "@goi/contracts";
 import type { PageQuery, PageResult } from "@/types/api"
 import { api } from "../../client"
 

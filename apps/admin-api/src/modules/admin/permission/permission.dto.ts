@@ -1,12 +1,4 @@
-import type { AdminPermission, CreateAdminPermission, UpdateAdminPermission } from "@goi/contracts/admin/permission"
-import {
-  adminPermissionListQuerySchema,
-  adminPermissionPageResponseSchema,
-  adminPermissionResponseSchema,
-  createAdminPermissionSchema,
-  deleteAdminPermissionSchema,
-  updateAdminPermissionSchema,
-} from "@goi/contracts/admin/permission"
+import { AdminPermission, CreateAdminPermission, UpdateAdminPermission, adminPermissionListQuerySchema, adminPermissionPageResponseSchema, adminPermissionResponseSchema, createAdminPermissionSchema, deleteAdminPermissionSchema, updateAdminPermissionSchema } from "@goi/contracts";
 import { createZodDto } from "nestjs-zod"
 import { z } from "zod"
 

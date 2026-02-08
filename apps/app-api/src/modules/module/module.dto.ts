@@ -1,14 +1,4 @@
-import type { AppModule, CreateAppModule, UpdateAppModule } from "@goi/contracts/app/module"
-import {
-  appModuleAllQuerySchema,
-  appModuleListQuerySchema,
-  appModuleListResponseSchema,
-  appModulePageResponseSchema,
-  appModuleResponseSchema,
-  createAppModuleSchema,
-  deleteAppModuleSchema,
-  updateAppModuleSchema,
-} from "@goi/contracts/app/module"
+import { AppModule, CreateAppModule, UpdateAppModule, appModuleAllQuerySchema, appModuleListQuerySchema, appModuleListResponseSchema, appModulePageResponseSchema, appModuleResponseSchema, createAppModuleSchema, deleteAppModuleSchema, updateAppModuleSchema } from "@goi/contracts";
 import { createZodDto } from "nestjs-zod"
 import { z } from "zod"
 

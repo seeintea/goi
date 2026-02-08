@@ -1,12 +1,4 @@
-import type { AppPermission, CreateAppPermission, UpdateAppPermission } from "@goi/contracts/app/permission"
-import {
-  appPermissionListQuerySchema,
-  appPermissionPageResponseSchema,
-  appPermissionResponseSchema,
-  createAppPermissionSchema,
-  deleteAppPermissionSchema,
-  updateAppPermissionSchema,
-} from "@goi/contracts/app/permission"
+import { AppPermission, CreateAppPermission, UpdateAppPermission, appPermissionListQuerySchema, appPermissionPageResponseSchema, appPermissionResponseSchema, createAppPermissionSchema, deleteAppPermissionSchema, updateAppPermissionSchema } from "@goi/contracts";
 import { createZodDto } from "nestjs-zod"
 import { z } from "zod"
 

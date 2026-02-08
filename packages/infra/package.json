@@ -1,25 +1,10 @@
 {
   "name": "@goi/infra",
   "version": "0.0.0",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "default": "./dist/index.js"
-    },
-    "./postgresql": {
-      "types": "./dist/postgresql/index.d.ts",
-      "default": "./dist/postgresql/index.js"
-    },
-    "./redis": {
-      "types": "./dist/redis/index.d.ts",
-      "default": "./dist/redis/index.js"
-    }
-  },
+  "main": "src/index.ts",
+  "types": "src/index.ts",
   "scripts": {
-    "dev": "tsc -w -p tsconfig.json",
-    "build": "tsc -p tsconfig.json",
+    "build": "tsc -p tsconfig.json --noEmit",
     "fmt": "prettier . --check",
     "fmt:write": "prettier . --write",
     "lint": "biome check",

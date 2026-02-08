@@ -1,4 +1,4 @@
-import { createPgDatabase, type PgDatabase } from "@goi/infra/postgresql"
+import { createPgDatabase, type PgDatabase } from "@goi/infra"
 import type { Provider } from "@nestjs/common"
 import { ConfigService } from "@nestjs/config"
 import { POSTGRESQL_TOKEN } from "./postgresql.tokens"

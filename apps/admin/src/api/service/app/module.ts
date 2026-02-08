@@ -1,4 +1,4 @@
-import type { AppModule, CreateAppModule, UpdateAppModule } from "@goi/contracts/app/module"
+import { AppModule, CreateAppModule, UpdateAppModule } from "@goi/contracts";
 import type { PageQuery, PageResult } from "@/types/api"
 import { api } from "../../client"
 

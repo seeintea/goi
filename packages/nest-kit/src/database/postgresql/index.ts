@@ -1,4 +1,4 @@
-import { type Schema as PgSchema, schema as pgSchema } from "@goi/infra/postgresql"
+import { type Schema as PgSchema, schema as pgSchema } from "@goi/infra"
 import { PgModule } from "./postgresql.module"
 import { type PgDatabase, PgProvider } from "./postgresql.provider"
 import { PgService } from "./postgresql.service"

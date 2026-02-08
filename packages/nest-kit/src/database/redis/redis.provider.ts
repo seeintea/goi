@@ -1,4 +1,4 @@
-import { createRedisClient, type RedisClient } from "@goi/infra/redis"
+import { createRedisClient, type RedisClient } from "@goi/infra"
 import type { Provider } from "@nestjs/common"
 import { ConfigService } from "@nestjs/config"
 import { REDIS_TOKEN } from "./redis.tokens"

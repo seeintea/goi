@@ -1,4 +1,4 @@
-import type { AppPermission, CreateAppPermission, UpdateAppPermission } from "@goi/contracts/app/permission"
+import { AppPermission, CreateAppPermission, UpdateAppPermission } from "@goi/contracts";
 import { Injectable, NotFoundException } from "@nestjs/common"
 import { and, desc, eq, like, sql } from "drizzle-orm"
 import { toIsoString } from "@/common/utils/date"

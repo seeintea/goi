@@ -1,12 +1,4 @@
-import type { AdminUser, CreateAdminUser, UpdateAdminUser } from "@goi/contracts/admin/user"
-import {
-  adminUserListQuerySchema,
-  adminUserPageResponseSchema,
-  adminUserResponseSchema,
-  createAdminUserSchema,
-  deleteAdminUserSchema,
-  updateAdminUserSchema,
-} from "@goi/contracts/admin/user"
+import { AdminUser, CreateAdminUser, UpdateAdminUser, adminUserListQuerySchema, adminUserPageResponseSchema, adminUserResponseSchema, createAdminUserSchema, deleteAdminUserSchema, updateAdminUserSchema } from "@goi/contracts";
 import { createZodDto } from "nestjs-zod"
 import { z } from "zod"
 

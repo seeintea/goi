@@ -1,4 +1,4 @@
-import type { AppUser, CreateAppUser, UpdateAppUser } from "@goi/contracts/app/user"
+import { AppUser, CreateAppUser, UpdateAppUser } from "@goi/contracts";
 import type { PageQuery, PageResult } from "@/types/api"
 import { api } from "../../client"
 

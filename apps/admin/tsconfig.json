@@ -1,14 +1,13 @@
 {
   "extends": "../../tsconfig.browser.json",
   "compilerOptions": {
-    "outDir": "./dist",
-    "rootDir": "../..",
     "baseUrl": ".",
+    "noEmit": true,
     "paths": {
       "@/*": ["./src/*"],
-      "@goi/contracts/*": ["../../packages/contracts/src/*"]
+      "@goi/contracts": ["../../packages/contracts/src/index.ts"]
     }
   },
-  "include": ["src", "../../packages/contracts/src"],
+  "include": ["src", "../../packages/contracts/src/**/*"],
   "exclude": ["node_modules", "dist", "**/*.spec.ts", "**/*.test.ts"]
 }

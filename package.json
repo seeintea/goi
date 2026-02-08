@@ -7,6 +7,7 @@
     "dev": "nx run-many -t dev",
     "dev:admin": "nx run-many -t dev -p admin admin-api",
     "build": "nx run-many -t build",
+    "build:packages": "nx run-many -t build -p contracts infra nest-kit",
     "fmt": "pnpm -r run fmt",
     "fmt:write": "pnpm -r run fmt:write",
     "lint": "nx run-many -t lint",
