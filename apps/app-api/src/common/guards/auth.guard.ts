@@ -3,7 +3,7 @@ import type {
   NestKitAuthorizer,
   NestKitAuthResult,
   NestKitAuthUser,
-} from "@goi/nest-kit/security"
+} from "@goi/nest-kit"
 import {
   BadRequestException,
   ExecutionContext,

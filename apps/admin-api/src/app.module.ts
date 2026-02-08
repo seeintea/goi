@@ -1,5 +1,10 @@
-import { AuthGuard, NEST_KIT_AUTH_GUARD_OPTIONS, NEST_KIT_AUTHENTICATOR } from "@goi/nest-kit/security"
-import { AllExceptionsFilter, TransformResponseInterceptor } from "@goi/nest-kit/transport"
+import {
+  AllExceptionsFilter,
+  AuthGuard,
+  NEST_KIT_AUTH_GUARD_OPTIONS,
+  NEST_KIT_AUTHENTICATOR,
+  TransformResponseInterceptor,
+} from "@goi/nest-kit"
 import { Module } from "@nestjs/common"
 import { ConfigModule } from "@nestjs/config"
 import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR } from "@nestjs/core"

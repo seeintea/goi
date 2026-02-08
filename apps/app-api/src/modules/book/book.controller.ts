@@ -1,4 +1,4 @@
-import { CurrentUser, Permission } from "@goi/nest-kit/security"
+import { CurrentUser, Permission } from "@goi/nest-kit"
 import { Body, Controller, Get, Post, Query } from "@nestjs/common"
 import { ApiOperation, ApiTags } from "@nestjs/swagger"
 import { nanoid } from "nanoid"

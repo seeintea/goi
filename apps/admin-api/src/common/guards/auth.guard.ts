@@ -1,4 +1,4 @@
-import type { NestKitAuthenticator, NestKitAuthResult, NestKitAuthUser } from "@goi/nest-kit/security"
+import type { NestKitAuthenticator, NestKitAuthResult, NestKitAuthUser } from "@goi/nest-kit"
 import { ExecutionContext, Injectable, UnauthorizedException } from "@nestjs/common"
 import { JwtService } from "@nestjs/jwt"
 import type { Request } from "express"
