@@ -4,6 +4,7 @@
   "description": "",
   "scripts": {
     "dev": "pnpm -r --parallel run dev",
+    "dev:admin": "pnpm -r --filter admin --filter @goi/admin-api --parallel run dev",
     "build": "pnpm -r --filter @goi/app-api... --filter @goi/app run build",
     "fmt": "pnpm -r run fmt",
     "fmt:write": "pnpm -r run fmt:write",

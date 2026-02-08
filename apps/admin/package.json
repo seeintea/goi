@@ -14,9 +14,13 @@
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
+    "@goi/contracts": "workspace:*",
+    "@tanstack/react-router": "^1.157.18",
+    "@tanstack/router-plugin": "^1.157.18",
     "antd": "^6.2.3",
     "react": "^19.2.0",
-    "react-dom": "^19.2.0"
+    "react-dom": "^19.2.0",
+    "zustand": "^5.0.11"
   },
   "devDependencies": {
     "@types/node": "^24.10.1",
