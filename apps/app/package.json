@@ -11,9 +11,11 @@
     "dev": "vite --port 3000",
     "build": "vite build && tsc",
     "preview": "vite preview",
-    "format": "prettier . --write",
-    "lint": "biome lint",
-    "check": "biome check"
+    "fmt": "prettier . --check",
+    "fmt:write": "prettier . --write",
+    "lint": "biome check",
+    "lint:write": "biome check --write",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
     "@base-ui/react": "^1.1.0",

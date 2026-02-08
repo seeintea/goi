@@ -20,9 +20,11 @@
   "scripts": {
     "dev": "tsc -w -p tsconfig.json",
     "build": "tsc -p tsconfig.json",
-    "format": "prettier . --write",
-    "lint": "biome lint",
-    "check": "biome check"
+    "fmt": "prettier . --check",
+    "fmt:write": "prettier . --write",
+    "lint": "biome check",
+    "lint:write": "biome check --write",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
     "zod": "^4.3.6"

@@ -5,9 +5,11 @@
   "scripts": {
     "dev": "pnpm -r --parallel run dev",
     "build": "pnpm -r --filter @goi/app-api... --filter @goi/app run build",
-    "format": "pnpm -r run format",
+    "fmt": "pnpm -r run fmt",
+    "fmt:write": "pnpm -r run fmt:write",
     "lint": "pnpm -r run lint",
-    "check": "pnpm -r run check"
+    "lint:write": "pnpm -r run lint:write",
+    "typecheck": "pnpm -r run typecheck"
   },
   "keywords": [],
   "author": "leviegu <leviegu@gmail.com>",
