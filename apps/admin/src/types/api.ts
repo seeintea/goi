@@ -1,8 +1,4 @@
-export interface ApiResponse<T = unknown> {
-  code: number
-  message: string
-  data: T
-}
+export type { ApiResponse } from "@goi/utils-web"
 
 export interface PageResult<T> {
   list: T[]

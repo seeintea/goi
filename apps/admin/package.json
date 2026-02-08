@@ -12,13 +12,18 @@
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
+    "@ant-design/cssinjs": "^2.0.3",
+    "@ant-design/icons": "^6.1.0",
     "@goi/contracts": "workspace:*",
+    "@goi/utils-web": "workspace:*",
     "@tanstack/react-router": "^1.157.18",
     "@tanstack/router-plugin": "^1.157.18",
     "antd": "^6.2.3",
+    "clsx": "^2.1.1",
     "lucide-react": "^0.563.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
+    "tailwind-merge": "^3.4.0",
     "zustand": "^5.0.11"
   },
   "devDependencies": {

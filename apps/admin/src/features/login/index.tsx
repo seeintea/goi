@@ -1,3 +1,4 @@
+import { sha1Hex } from "@goi/utils-web"
 import { useNavigate } from "@tanstack/react-router"
 import { Button, Card, Form, Input, message, Typography } from "antd"
 import { useState } from "react"
@@ -18,7 +19,11 @@ export function Login() {
   const handleFinish = async (values: LoginFormValues) => {
     try {
       setSubmitting(true)
-      const resp = await login(values)
+      const { username, password } = values
+      const resp = await login({
+        username,
+        password: await sha1Hex(password),
+      })
       if (resp.code !== 200) {
         messageApi.error(resp.message || "登录失败")
         return

@@ -1,4 +1,8 @@
-import type { ApiResponse } from "@/types/api"
+export interface ApiResponse<T = unknown> {
+  code: number
+  message: string
+  data: T
+}
 
 export type RequestContext = { url: string; options: RequestInit }
 export type RequestInterceptor = (ctx: RequestContext) => RequestContext

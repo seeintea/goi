@@ -5,7 +5,7 @@
   "scripts": {
     "nx": "nx",
     "dev": "nx run-many -t dev",
-    "dev:admin": "nx run-many -t dev -p admin admin-api",
+    "dev:admin": "nx run-many -t dev -p admin admin-api --output-style=stream",
     "build": "nx run-many -t build",
     "build:packages": "nx run-many -t build -p contracts infra nest-kit",
     "fmt": "prettier . --check",

@@ -1,13 +1,13 @@
+import { StyleProvider } from "@ant-design/cssinjs"
 import { createRouter, RouterProvider } from "@tanstack/react-router"
 import { StrictMode } from "react"
 import ReactDOM from "react-dom/client"
 
 import "./styles.css"
 
+import { ConfigProvider } from "antd"
 // Import the generated route tree
 import { routeTree } from "./routeTree.gen"
-
-// import "./styles.css"
 
 // Create a new router instance
 
@@ -32,7 +32,19 @@ if (rootElement && !rootElement.innerHTML) {
   const root = ReactDOM.createRoot(rootElement)
   root.render(
     <StrictMode>
-      <RouterProvider router={router} />
+      <StyleProvider layer>
+        <ConfigProvider
+          theme={{
+            components: {
+              Menu: {
+                collapsedWidth: 63,
+              },
+            },
+          }}
+        >
+          <RouterProvider router={router} />
+        </ConfigProvider>
+      </StyleProvider>
     </StrictMode>,
   )
 }

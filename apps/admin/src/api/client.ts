@@ -1,5 +1,7 @@
+import { FetchInstance, withHeader } from "@goi/utils-web"
 import { useUser } from "@/stores/useUser"
-import { FetchInstance, withHeader } from "./core"
+
+export * from "@goi/utils-web"
 
 function getToken(): string {
   if (typeof window === "undefined") return ""
