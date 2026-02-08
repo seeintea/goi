@@ -127,6 +127,5 @@ packages/
    - 在 CI 中把 build/test/lint/typecheck 切换为 Nx 执行
    - 逐步配置 inputs/outputs 以获得稳定缓存命中
 4. 引入边界治理
-   - 增加依赖边界规则，保证 shared/contracts 跨端安全
-     5.（可选）远程缓存与更精细的 project 粒度
+   - 增加依赖边界规则，保证 shared/contracts 跨端安全 5.（可选）远程缓存与更精细的 project 粒度
    - 团队规模或 CI 压力上升时再做

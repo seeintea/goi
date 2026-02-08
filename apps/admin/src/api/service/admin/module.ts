@@ -1,4 +1,4 @@
-import { AdminModule, CreateAdminModule, UpdateAdminModule } from "@goi/contracts";
+import { AdminModule, CreateAdminModule, UpdateAdminModule } from "@goi/contracts"
 import type { PageQuery, PageResult } from "@/types/api"
 import { api } from "../../client"
 
@@ -11,8 +11,7 @@ export type AdminModuleListQuery = PageQuery & {
 
 export type AdminModuleAllQuery = Omit<AdminModuleListQuery, "page" | "pageSize">
 
-export const createAdminModule = (body: CreateAdminModule) =>
-  api.post<AdminModule>("/api/admin/module/create", body)
+export const createAdminModule = (body: CreateAdminModule) => api.post<AdminModule>("/api/admin/module/create", body)
 
 export const findAdminModule = (moduleId: string) => api.get<AdminModule>("/api/admin/module/find", { moduleId })
 

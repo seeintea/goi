@@ -1,4 +1,4 @@
-import { AdminUser, CreateAdminUser, UpdateAdminUser } from "@goi/contracts";
+import { AdminUser, CreateAdminUser, UpdateAdminUser } from "@goi/contracts"
 import type { PageQuery, PageResult } from "@/types/api"
 import { api } from "../../client"
 

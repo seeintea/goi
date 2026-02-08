@@ -3,7 +3,14 @@ import { Body, Controller, Get, Post, Query } from "@nestjs/common"
 import { ApiOperation, ApiTags } from "@nestjs/swagger"
 import { nanoid } from "nanoid"
 import { ZodResponse } from "nestjs-zod"
-import { CreateRoleDto, DeleteRoleDto, RoleListQueryDto, RolePageResponseDto, RoleResponseDto, UpdateRoleDto } from "./role.dto"
+import {
+  CreateRoleDto,
+  DeleteRoleDto,
+  RoleListQueryDto,
+  RolePageResponseDto,
+  RoleResponseDto,
+  UpdateRoleDto,
+} from "./role.dto"
 import { RoleService } from "./role.service"
 
 @ApiTags("角色")

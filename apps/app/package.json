@@ -11,8 +11,6 @@
     "dev": "vite --port 3000",
     "build": "vite build && tsc",
     "preview": "vite preview",
-    "fmt": "prettier . --check",
-    "fmt:write": "prettier . --write",
     "lint": "biome check",
     "lint:write": "biome check --write",
     "typecheck": "tsc -p tsconfig.json --noEmit"

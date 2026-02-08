@@ -72,7 +72,7 @@ apps/admin-api/
 
 在写任何文件前，先做两件事：
 
-1) 定 contracts 的“对象”与“视图”
+1. 定 contracts 的“对象”与“视图”
 
 - `{Feature}`：领域对象的基础字段集合（通常对应表字段的公共子集）
 - `App{Feature}View`：ToC 可见字段集合
@@ -80,7 +80,7 @@ apps/admin-api/
 
 建议：优先把“可见性差异”落到 `App/Admin View`，而不是通过 service 层临时裁剪。
 
-2) 定 repository 的职责
+2. 定 repository 的职责
 
 - repository 只承载数据访问与持久化语义，不承载权限、路由、响应包装。
 - app/admin 两套 repository 接口分别只暴露各自真正需要的方法与查询参数。

@@ -1,4 +1,14 @@
-import { AdminPermission, CreateAdminPermission, UpdateAdminPermission, adminPermissionListQuerySchema, adminPermissionPageResponseSchema, adminPermissionResponseSchema, createAdminPermissionSchema, deleteAdminPermissionSchema, updateAdminPermissionSchema } from "@goi/contracts";
+import {
+  AdminPermission,
+  adminPermissionListQuerySchema,
+  adminPermissionPageResponseSchema,
+  adminPermissionResponseSchema,
+  CreateAdminPermission,
+  createAdminPermissionSchema,
+  deleteAdminPermissionSchema,
+  UpdateAdminPermission,
+  updateAdminPermissionSchema,
+} from "@goi/contracts"
 import { createZodDto } from "nestjs-zod"
 import { z } from "zod"
 

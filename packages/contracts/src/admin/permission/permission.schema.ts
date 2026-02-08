@@ -84,4 +84,3 @@ export const adminPermissionPageResponseSchema = z
 export type AdminPermission = z.infer<typeof adminPermissionResponseSchema>
 export type CreateAdminPermission = z.infer<typeof createAdminPermissionSchema>
 export type UpdateAdminPermission = z.infer<typeof updateAdminPermissionSchema>
-

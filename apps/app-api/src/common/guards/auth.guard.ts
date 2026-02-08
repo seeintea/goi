@@ -1,9 +1,4 @@
-import type {
-  NestKitAuthenticator,
-  NestKitAuthorizer,
-  NestKitAuthResult,
-  NestKitAuthUser,
-} from "@goi/nest-kit"
+import type { NestKitAuthenticator, NestKitAuthorizer, NestKitAuthResult, NestKitAuthUser } from "@goi/nest-kit"
 import {
   BadRequestException,
   ExecutionContext,

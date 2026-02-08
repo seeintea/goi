@@ -1,4 +1,4 @@
-import { AppModule, CreateAppModule, UpdateAppModule } from "@goi/contracts";
+import { AppModule, CreateAppModule, UpdateAppModule } from "@goi/contracts"
 import type { PageQuery, PageResult } from "@/types/api"
 import { api } from "../../client"
 
@@ -18,8 +18,7 @@ export const findAppModule = (moduleId: string) => api.get<AppModule>("/api/app/
 export const listAppModules = (query?: AppModuleListQuery) =>
   api.get<PageResult<AppModule>>("/api/app/module/list", query)
 
-export const listAllAppModules = (query?: AppModuleAllQuery) =>
-  api.get<AppModule[]>("/api/app/module/all", query)
+export const listAllAppModules = (query?: AppModuleAllQuery) => api.get<AppModule[]>("/api/app/module/all", query)
 
 export const listRootAppModules = () => api.get<AppModule[]>("/api/app/module/roots")
 

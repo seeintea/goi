@@ -55,12 +55,7 @@ Nx 的 `nx.json` 主要解决三个问题：
 {
   "namedInputs": {
     "default": ["{projectRoot}/**/*", "sharedGlobals"],
-    "production": [
-      "default",
-      "!{projectRoot}/**/*.spec.*",
-      "!{projectRoot}/**/*.test.*",
-      "!{projectRoot}/**/*.md"
-    ],
+    "production": ["default", "!{projectRoot}/**/*.spec.*", "!{projectRoot}/**/*.test.*", "!{projectRoot}/**/*.md"],
     "sharedGlobals": [
       "{workspaceRoot}/package.json",
       "{workspaceRoot}/pnpm-lock.yaml",

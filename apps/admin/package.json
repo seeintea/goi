@@ -7,8 +7,6 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "preview": "vite preview",
-    "fmt": "prettier . --check",
-    "fmt:write": "prettier . --write",
     "lint": "biome check",
     "lint:write": "biome check --write",
     "typecheck": "tsc -p tsconfig.json --noEmit"

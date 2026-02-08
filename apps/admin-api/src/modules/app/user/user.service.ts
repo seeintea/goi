@@ -1,4 +1,4 @@
-import { AppUser, CreateAppUser, UpdateAppUser } from "@goi/contracts";
+import { AppUser, CreateAppUser, UpdateAppUser } from "@goi/contracts"
 import { Injectable, NotFoundException } from "@nestjs/common"
 import { and, desc, eq, like, sql } from "drizzle-orm"
 import { toIsoString } from "@/common/utils/date"

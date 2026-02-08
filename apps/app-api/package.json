@@ -11,8 +11,6 @@
     "dev": "nodemon",
     "build": "tsc -p tsconfig.json",
     "prod": "node dist/apps/app-api/src/main.js",
-    "fmt": "prettier . --check",
-    "fmt:write": "prettier . --write",
     "lint": "biome check",
     "lint:write": "biome check --write",
     "typecheck": "tsc -p tsconfig.typecheck.json"
