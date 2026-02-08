@@ -3,7 +3,6 @@ import { Button, Card, Form, Input, message, Typography } from "antd"
 import { useState } from "react"
 import { login } from "@/api/service/admin/auth"
 import { useUser } from "@/stores/useUser"
-import "antd/dist/reset.css"
 
 type LoginFormValues = {
   username: string
@@ -35,21 +34,9 @@ export function Login() {
   }
 
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        background: "linear-gradient(135deg, #f0f5ff 0%, #ffffff 45%, #f6ffed 100%)",
-        padding: 24,
-      }}
-    >
+    <div className={"h-screen flex items-center justify-center p-6"}>
       {contextHolder}
-      <Card
-        style={{ width: 360, boxShadow: "0 12px 32px rgba(0, 0, 0, 0.08)" }}
-        bordered={false}
-      >
+      <Card className={"w-96"}>
         <Typography.Title
           level={3}
           style={{ marginBottom: 8 }}
@@ -59,7 +46,7 @@ export function Login() {
         <Typography.Text type="secondary">请输入账号与密码继续</Typography.Text>
         <Form
           layout="vertical"
-          style={{ marginTop: 24 }}
+          className={"pt-6!"}
           onFinish={handleFinish}
         >
           <Form.Item
