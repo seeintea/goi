@@ -1,0 +1,12 @@
+{
+  "name": "app-api",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/app-api/src",
+  "projectType": "application",
+  "targets": {
+    "dev": { "command": "pnpm -C apps/app-api dev" },
+    "build": { "command": "pnpm -C apps/app-api build", "outputs": ["{projectRoot}/dist"] },
+    "lint": { "command": "pnpm -C apps/app-api lint" },
+    "typecheck": { "command": "pnpm -C apps/app-api typecheck" }
+  }
+}

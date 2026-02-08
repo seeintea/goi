@@ -1,0 +1,12 @@
+{
+  "name": "admin",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/admin/src",
+  "projectType": "application",
+  "targets": {
+    "dev": { "command": "pnpm -C apps/admin dev" },
+    "build": { "command": "pnpm -C apps/admin build", "outputs": ["{projectRoot}/dist"] },
+    "lint": { "command": "pnpm -C apps/admin lint" },
+    "typecheck": { "command": "pnpm -C apps/admin typecheck" }
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "name": "app",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/app/src",
+  "projectType": "application",
+  "targets": {
+    "dev": { "command": "pnpm -C apps/app dev" },
+    "build": { "command": "pnpm -C apps/app build", "outputs": ["{projectRoot}/dist"] },
+    "lint": { "command": "pnpm -C apps/app lint" },
+    "typecheck": { "command": "pnpm -C apps/app typecheck" }
+  }
+}

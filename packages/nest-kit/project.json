@@ -1,0 +1,12 @@
+{
+  "name": "nest-kit",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/nest-kit/src",
+  "projectType": "library",
+  "targets": {
+    "build": { "command": "pnpm -C packages/nest-kit build", "outputs": ["{projectRoot}/dist"] },
+    "lint": { "command": "pnpm -C packages/nest-kit lint" },
+    "typecheck": { "command": "pnpm -C packages/nest-kit typecheck" },
+    "dev": { "command": "pnpm -C packages/nest-kit dev" }
+  }
+}

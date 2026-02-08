@@ -1,0 +1,16 @@
+{
+  "name": "infra",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/infra/src",
+  "projectType": "library",
+  "targets": {
+    "build": { "command": "pnpm -C packages/infra build", "outputs": ["{projectRoot}/dist"] },
+    "lint": { "command": "pnpm -C packages/infra lint" },
+    "typecheck": { "command": "pnpm -C packages/infra typecheck" },
+    "dev": { "command": "pnpm -C packages/infra dev" },
+    "db:gen": { "command": "pnpm -C packages/infra db:gen" },
+    "db:push": { "command": "pnpm -C packages/infra db:push" },
+    "db:update": { "command": "pnpm -C packages/infra db:update" },
+    "db:studio": { "command": "pnpm -C packages/infra db:studio" }
+  }
+}
