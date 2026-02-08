@@ -6,7 +6,7 @@ import { normalizePage, toPageResult } from "@/common/utils/pagination"
 import { PgService, pgSchema } from "@/database/postgresql"
 import type { PageResult } from "@/types/response"
 
-const { user: userSchema } = pgSchema
+const { authUser: userSchema } = pgSchema
 
 @Injectable()
 export class UserService {

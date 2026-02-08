@@ -7,7 +7,7 @@ import { PgService, pgSchema } from "@/database/postgresql"
 import type { PageResult } from "@/types/response"
 import type { Book, CreateBook, UpdateBook } from "./book.dto"
 
-const { book: bookSchema, bookMember: bookMemberSchema } = pgSchema
+const { financeBook: bookSchema, financeBookMember: bookMemberSchema } = pgSchema
 
 @Injectable()
 export class BookService {

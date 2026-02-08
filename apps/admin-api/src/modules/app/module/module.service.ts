@@ -6,7 +6,7 @@ import { normalizePage, toPageResult } from "@/common/utils/pagination"
 import { PgService, pgSchema } from "@/database/postgresql"
 import type { PageResult } from "@/types/response"
 
-const { sysModule: sysModuleSchema } = pgSchema
+const { authModule: authModuleSchema } = pgSchema
 
 @Injectable()
 export class ModuleService {
@@ -15,18 +15,18 @@ export class ModuleService {
   async find(moduleId: string): Promise<AppModule> {
     const modules = await this.pg.pdb
       .select({
-        moduleId: sysModuleSchema.moduleId,
-        parentId: sysModuleSchema.parentId,
-        name: sysModuleSchema.name,
-        routePath: sysModuleSchema.routePath,
-        permissionCode: sysModuleSchema.permissionCode,
-        sort: sysModuleSchema.sort,
-        isDeleted: sysModuleSchema.isDeleted,
-        createTime: sysModuleSchema.createTime,
-        updateTime: sysModuleSchema.updateTime,
+        moduleId: authModuleSchema.moduleId,
+        parentId: authModuleSchema.parentId,
+        name: authModuleSchema.name,
+        routePath: authModuleSchema.routePath,
+        permissionCode: authModuleSchema.permissionCode,
+        sort: authModuleSchema.sort,
+        isDeleted: authModuleSchema.isDeleted,
+        createTime: authModuleSchema.createTime,
+        updateTime: authModuleSchema.updateTime,
       })
-      .from(sysModuleSchema)
-      .where(and(eq(sysModuleSchema.moduleId, moduleId), eq(sysModuleSchema.isDeleted, false)))
+      .from(authModuleSchema)
+      .where(and(eq(authModuleSchema.moduleId, moduleId), eq(authModuleSchema.isDeleted, false)))
       .limit(1)
 
     const moduleRow = modules[0]
@@ -40,7 +40,7 @@ export class ModuleService {
   }
 
   async create(values: CreateAppModule & { moduleId: string }): Promise<AppModule> {
-    await this.pg.pdb.insert(sysModuleSchema).values({
+    await this.pg.pdb.insert(authModuleSchema).values({
       moduleId: values.moduleId,
       parentId: values.parentId ?? null,
       name: values.name,
@@ -54,7 +54,7 @@ export class ModuleService {
 
   async update(values: UpdateAppModule): Promise<AppModule> {
     await this.pg.pdb
-      .update(sysModuleSchema)
+      .update(authModuleSchema)
       .set({
         ...(values.parentId !== undefined ? { parentId: values.parentId } : {}),
         ...(values.name !== undefined ? { name: values.name } : {}),
@@ -63,13 +63,13 @@ export class ModuleService {
         ...(values.sort !== undefined ? { sort: values.sort } : {}),
         ...(values.isDeleted !== undefined ? { isDeleted: values.isDeleted } : {}),
       })
-      .where(eq(sysModuleSchema.moduleId, values.moduleId))
+      .where(eq(authModuleSchema.moduleId, values.moduleId))
 
     return this.find(values.moduleId)
   }
 
   async delete(moduleId: string): Promise<boolean> {
-    await this.pg.pdb.update(sysModuleSchema).set({ isDeleted: true }).where(eq(sysModuleSchema.moduleId, moduleId))
+    await this.pg.pdb.update(authModuleSchema).set({ isDeleted: true }).where(eq(authModuleSchema.moduleId, moduleId))
     return true
   }
 
@@ -79,28 +79,28 @@ export class ModuleService {
     routePath?: string
     permissionCode?: string
   }): Promise<AppModule[]> {
-    const where: Parameters<typeof and> = [eq(sysModuleSchema.isDeleted, false)]
-    if (query.parentId === null) where.push(isNull(sysModuleSchema.parentId))
-    if (query.parentId) where.push(eq(sysModuleSchema.parentId, query.parentId))
-    if (query.name) where.push(like(sysModuleSchema.name, `%${query.name}%`))
-    if (query.routePath) where.push(like(sysModuleSchema.routePath, `%${query.routePath}%`))
-    if (query.permissionCode) where.push(like(sysModuleSchema.permissionCode, `%${query.permissionCode}%`))
+    const where: Parameters<typeof and> = [eq(authModuleSchema.isDeleted, false)]
+    if (query.parentId === null) where.push(isNull(authModuleSchema.parentId))
+    if (query.parentId) where.push(eq(authModuleSchema.parentId, query.parentId))
+    if (query.name) where.push(like(authModuleSchema.name, `%${query.name}%`))
+    if (query.routePath) where.push(like(authModuleSchema.routePath, `%${query.routePath}%`))
+    if (query.permissionCode) where.push(like(authModuleSchema.permissionCode, `%${query.permissionCode}%`))
 
     const rows = await this.pg.pdb
       .select({
-        moduleId: sysModuleSchema.moduleId,
-        parentId: sysModuleSchema.parentId,
-        name: sysModuleSchema.name,
-        routePath: sysModuleSchema.routePath,
-        permissionCode: sysModuleSchema.permissionCode,
-        sort: sysModuleSchema.sort,
-        isDeleted: sysModuleSchema.isDeleted,
-        createTime: sysModuleSchema.createTime,
-        updateTime: sysModuleSchema.updateTime,
+        moduleId: authModuleSchema.moduleId,
+        parentId: authModuleSchema.parentId,
+        name: authModuleSchema.name,
+        routePath: authModuleSchema.routePath,
+        permissionCode: authModuleSchema.permissionCode,
+        sort: authModuleSchema.sort,
+        isDeleted: authModuleSchema.isDeleted,
+        createTime: authModuleSchema.createTime,
+        updateTime: authModuleSchema.updateTime,
       })
-      .from(sysModuleSchema)
+      .from(authModuleSchema)
       .where(and(...where))
-      .orderBy(asc(sysModuleSchema.sort), desc(sysModuleSchema.createTime))
+      .orderBy(asc(authModuleSchema.sort), desc(authModuleSchema.createTime))
 
     return rows.map((row) => ({
       ...row,
@@ -121,36 +121,36 @@ export class ModuleService {
     page?: number | string
     pageSize?: number | string
   }): Promise<PageResult<AppModule>> {
-    const where: Parameters<typeof and> = [eq(sysModuleSchema.isDeleted, false)]
-    if (query.parentId === null) where.push(isNull(sysModuleSchema.parentId))
-    if (query.parentId) where.push(eq(sysModuleSchema.parentId, query.parentId))
-    if (query.name) where.push(like(sysModuleSchema.name, `%${query.name}%`))
-    if (query.routePath) where.push(like(sysModuleSchema.routePath, `%${query.routePath}%`))
-    if (query.permissionCode) where.push(like(sysModuleSchema.permissionCode, `%${query.permissionCode}%`))
+    const where: Parameters<typeof and> = [eq(authModuleSchema.isDeleted, false)]
+    if (query.parentId === null) where.push(isNull(authModuleSchema.parentId))
+    if (query.parentId) where.push(eq(authModuleSchema.parentId, query.parentId))
+    if (query.name) where.push(like(authModuleSchema.name, `%${query.name}%`))
+    if (query.routePath) where.push(like(authModuleSchema.routePath, `%${query.routePath}%`))
+    if (query.permissionCode) where.push(like(authModuleSchema.permissionCode, `%${query.permissionCode}%`))
 
     const pageParams = normalizePage(query)
 
     const totalRows = await this.pg.pdb
       .select({ count: sql<number>`count(*)` })
-      .from(sysModuleSchema)
+      .from(authModuleSchema)
       .where(and(...where))
     const total = Number(totalRows[0]?.count ?? 0)
 
     const rows = await this.pg.pdb
       .select({
-        moduleId: sysModuleSchema.moduleId,
-        parentId: sysModuleSchema.parentId,
-        name: sysModuleSchema.name,
-        routePath: sysModuleSchema.routePath,
-        permissionCode: sysModuleSchema.permissionCode,
-        sort: sysModuleSchema.sort,
-        isDeleted: sysModuleSchema.isDeleted,
-        createTime: sysModuleSchema.createTime,
-        updateTime: sysModuleSchema.updateTime,
+        moduleId: authModuleSchema.moduleId,
+        parentId: authModuleSchema.parentId,
+        name: authModuleSchema.name,
+        routePath: authModuleSchema.routePath,
+        permissionCode: authModuleSchema.permissionCode,
+        sort: authModuleSchema.sort,
+        isDeleted: authModuleSchema.isDeleted,
+        createTime: authModuleSchema.createTime,
+        updateTime: authModuleSchema.updateTime,
       })
-      .from(sysModuleSchema)
+      .from(authModuleSchema)
       .where(and(...where))
-      .orderBy(asc(sysModuleSchema.sort), desc(sysModuleSchema.createTime))
+      .orderBy(asc(authModuleSchema.sort), desc(authModuleSchema.createTime))
       .limit(pageParams.limit)
       .offset(pageParams.offset)
 

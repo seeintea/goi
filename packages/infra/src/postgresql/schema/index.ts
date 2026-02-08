@@ -3,13 +3,13 @@ import { adminPermission } from "./admin/permission.entity"
 import { adminRole } from "./admin/role.entity"
 import { adminRolePermission } from "./admin/role-permission.entity"
 import { adminUser } from "./admin/user.entity"
-import { book } from "./app/book.entity"
-import { bookMember } from "./app/book-member.entity"
-import { sysModule } from "./app/module.entity"
-import { permission } from "./app/permission.entity"
-import { role } from "./app/role.entity"
-import { rolePermission } from "./app/role-permission.entity"
-import { user } from "./app/user.entity"
+import { authModule } from "./auth/module.entity"
+import { authPermission } from "./auth/permission.entity"
+import { authRole } from "./auth/role.entity"
+import { authRolePermission } from "./auth/role-permission.entity"
+import { authUser } from "./auth/user.entity"
+import { financeBook } from "./finance/book.entity"
+import { financeBookMember } from "./finance/book-member.entity"
 
 export const schema = {
   adminUser,
@@ -17,13 +17,13 @@ export const schema = {
   adminPermission,
   adminRole,
   adminRolePermission,
-  book,
-  bookMember,
-  sysModule,
-  permission,
-  role,
-  rolePermission,
-  user,
+  authUser,
+  authRole,
+  authPermission,
+  authRolePermission,
+  authModule,
+  financeBook,
+  financeBookMember,
 }
 
 export type Schema = typeof schema

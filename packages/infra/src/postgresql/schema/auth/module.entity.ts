@@ -1,10 +1,10 @@
 import { boolean, index, integer, pgTable, timestamp, uniqueIndex, varchar } from "drizzle-orm/pg-core"
 
-export const adminModule = pgTable(
-  "admin_module",
+export const authModule = pgTable(
+  "auth_module",
   {
     moduleId: varchar("module_id", { length: 32 }).primaryKey().notNull(),
-    parentId: varchar("parent_id", { length: 32 }).references(() => adminModule.moduleId, {
+    parentId: varchar("parent_id", { length: 32 }).references(() => authModule.moduleId, {
       onDelete: "restrict",
       onUpdate: "cascade",
     }),
@@ -20,9 +20,9 @@ export const adminModule = pgTable(
       .$onUpdate(() => new Date()),
   },
   (table) => [
-    uniqueIndex("admin_module_route_path_uq").on(table.routePath),
-    uniqueIndex("admin_module_permission_code_uq").on(table.permissionCode),
-    index("admin_module_parent_id_idx").on(table.parentId),
-    index("admin_module_sort_idx").on(table.sort),
+    uniqueIndex("auth_module_route_path_uq").on(table.routePath),
+    uniqueIndex("auth_module_permission_code_uq").on(table.permissionCode),
+    index("auth_module_parent_id_idx").on(table.parentId),
+    index("auth_module_sort_idx").on(table.sort),
   ],
 )

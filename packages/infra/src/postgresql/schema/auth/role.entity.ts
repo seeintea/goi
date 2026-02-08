@@ -1,7 +1,7 @@
 import { boolean, pgTable, timestamp, uniqueIndex, varchar } from "drizzle-orm/pg-core"
 
-export const adminRole = pgTable(
-  "admin_role",
+export const authRole = pgTable(
+  "auth_role",
   {
     roleId: varchar("role_id", { length: 32 }).primaryKey().notNull(),
     roleCode: varchar("role_code", { length: 30 }).notNull(),
@@ -14,5 +14,5 @@ export const adminRole = pgTable(
       .defaultNow()
       .$onUpdate(() => new Date()),
   },
-  (table) => [uniqueIndex("admin_role_role_code_uq").on(table.roleCode)],
+  (table) => [uniqueIndex("auth_role_role_code_uq").on(table.roleCode)],
 )

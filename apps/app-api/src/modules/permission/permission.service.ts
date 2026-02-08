@@ -6,7 +6,7 @@ import { normalizePage, toPageResult } from "@/common/utils/pagination"
 import { PgService, pgSchema } from "@/database/postgresql"
 import type { PageResult } from "@/types/response"
 
-const { permission: permissionSchema } = pgSchema
+const { authPermission: permissionSchema } = pgSchema
 
 @Injectable()
 export class PermissionService {

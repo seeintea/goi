@@ -1,8 +1,8 @@
 import { boolean, pgTable, timestamp, uniqueIndex, varchar } from "drizzle-orm/pg-core"
-import { adminModule } from "./module.entity"
+import { authModule } from "./module.entity"
 
-export const adminPermission = pgTable(
-  "admin_permission",
+export const authPermission = pgTable(
+  "auth_permission",
   {
     permissionId: varchar("permission_id", { length: 32 }).primaryKey().notNull(),
     code: varchar("code", { length: 80 }).notNull(),
@@ -10,7 +10,7 @@ export const adminPermission = pgTable(
     moduleId: varchar("module_id", { length: 32 })
       .notNull()
       .default("")
-      .references(() => adminModule.moduleId, { onDelete: "restrict", onUpdate: "cascade" }),
+      .references(() => authModule.moduleId, { onDelete: "restrict", onUpdate: "cascade" }),
     isDisabled: boolean("is_disabled").notNull().default(false),
     isDeleted: boolean("is_deleted").notNull().default(false),
     createTime: timestamp("create_time").notNull().defaultNow(),
@@ -19,5 +19,5 @@ export const adminPermission = pgTable(
       .defaultNow()
       .$onUpdate(() => new Date()),
   },
-  (table) => [uniqueIndex("admin_permission_code_uq").on(table.code)],
+  (table) => [uniqueIndex("auth_permission_code_uq").on(table.code)],
 )

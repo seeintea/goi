@@ -22,11 +22,11 @@ type JwtPayload = { userId?: string; exp?: number; iat?: number }
 type AuthUser = { userId: string; username: string }
 
 const {
-  book: bookSchema,
-  bookMember: bookMemberSchema,
-  permission: permissionSchema,
-  role: roleSchema,
-  rolePermission: rolePermissionSchema,
+  financeBook: bookSchema,
+  financeBookMember: bookMemberSchema,
+  authPermission: permissionSchema,
+  authRole: roleSchema,
+  authRolePermission: rolePermissionSchema,
 } = pgSchema
 
 @Injectable()

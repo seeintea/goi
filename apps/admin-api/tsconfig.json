@@ -15,7 +15,9 @@
     "noFallthroughCasesInSwitch": false,
     "paths": {
       "@/*": ["./src/*"],
-      "@goi/contracts/*": ["../../packages/contracts/src/*"]
+      "@goi/contracts/*": ["../../packages/contracts/src/*"],
+      "@goi/infra/*": ["../../packages/infra/src/*"],
+      "@goi/nest-kit/*": ["../../packages/nest-kit/src/*"]
     }
   },
   "include": ["src"],

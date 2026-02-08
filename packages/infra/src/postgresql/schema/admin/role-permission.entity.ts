@@ -3,7 +3,7 @@ import { adminPermission } from "./permission.entity"
 import { adminRole } from "./role.entity"
 
 export const adminRolePermission = pgTable(
-  "sys_admin_role_permission",
+  "admin_role_permission",
   {
     roleId: varchar("role_id", { length: 32 })
       .notNull()
@@ -13,5 +13,5 @@ export const adminRolePermission = pgTable(
       .references(() => adminPermission.permissionId, { onDelete: "cascade", onUpdate: "cascade" }),
     createTime: timestamp("create_time").notNull().defaultNow(),
   },
-  (table) => [primaryKey({ columns: [table.roleId, table.permissionId], name: "sys_admin_role_permission_pkey" })],
+  (table) => [primaryKey({ columns: [table.roleId, table.permissionId], name: "admin_role_permission_pkey" })],
 )

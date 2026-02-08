@@ -9,7 +9,7 @@ import { RedisService } from "@/database/redis"
 import { UserService } from "@/modules/user/user.service"
 import type { LoginResponse } from "./auth.dto"
 
-const { book: bookSchema, bookMember: bookMemberSchema, role: roleSchema } = pgSchema
+const { financeBook: bookSchema, financeBookMember: bookMemberSchema, authRole: roleSchema } = pgSchema
 
 @Injectable()
 export class AuthService {

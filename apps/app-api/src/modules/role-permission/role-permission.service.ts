@@ -6,7 +6,7 @@ import { PgService, pgSchema } from "@/database/postgresql"
 import type { PageResult } from "@/types/response"
 import type { CreateRolePermission, RolePermission } from "./role-permission.dto"
 
-const { rolePermission: rolePermissionSchema } = pgSchema
+const { authRolePermission: rolePermissionSchema } = pgSchema
 
 @Injectable()
 export class RolePermissionService {
