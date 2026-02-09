@@ -43,9 +43,18 @@
     "dev": {
       "cache": false
     },
-    "db:gen": { "cache": false },
-    "db:push": { "cache": false },
-    "db:update": { "cache": false },
-    "db:studio": { "cache": false }
-  }
+    "db:gen": {
+      "cache": false
+    },
+    "db:push": {
+      "cache": false
+    },
+    "db:update": {
+      "cache": false
+    },
+    "db:studio": {
+      "cache": false
+    }
+  },
+  "nxCloudId": "6989c60f962319f794f9c39c"
 }

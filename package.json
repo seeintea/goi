@@ -5,17 +5,21 @@
   "scripts": {
     "nx": "nx",
     "dev": "nx run-many -t dev",
+    "dev:app": "nx run-many -t dev -p app app-api --output-style=stream",
     "dev:admin": "nx run-many -t dev -p admin admin-api --output-style=stream",
     "build": "nx run-many -t build",
     "fmt": "prettier . --check",
     "fmt:write": "prettier . --write",
     "lint": "nx run-many -t lint",
     "lint:write": "pnpm -r run lint:write",
-    "typecheck": "nx run-many -t typecheck"
+    "typecheck": "nx run-many -t typecheck",
+    "clean:dist": "node scripts/clean-dist.mjs",
+    "clean:modules": "node scripts/clean-node-modules.mjs"
   },
   "keywords": [],
   "author": "leviegu <leviegu@gmail.com>",
   "license": "MIT",
+  "packageManager": "pnpm@10.25.0",
   "devDependencies": {
     "@biomejs/biome": "2.3.13",
     "@nestjs/cli": "^11.0.16",
@@ -24,13 +28,18 @@
     "@types/node": "^25.2.0",
     "nx": "^22.4.5",
     "prettier": "3.8.1",
-    "ts-loader": "^9.5.4",
-    "typescript": "^5.9.3",
-    "webpack": "^5.105.0",
-    "webpack-node-externals": "^3.0.0"
+    "typescript": "^5.9.3"
   },
-  "dependencies": {
-    "lodash": "^4.17.23",
-    "zod": "^4.3.6"
+  "pnpm": {
+    "overrides": {
+      "react": "^19.2.4",
+      "react-dom": "^19.2.4",
+      "typescript": "^5.9.3",
+      "@nestjs/common": "^11.1.12",
+      "@nestjs/core": "^11.1.12",
+      "@nestjs/platform-express": "^11.1.12",
+      "rxjs": "^7.8.2",
+      "drizzle-orm": "^0.45.1"
+    }
   }
 }

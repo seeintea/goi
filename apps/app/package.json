@@ -6,9 +6,8 @@
   "main": "index.js",
   "author": "leviegu <leviegu@gmail.com>",
   "license": "MIT",
-  "packageManager": "pnpm@10.25.0",
   "scripts": {
-    "dev": "vite --port 3000",
+    "dev": "vite",
     "build": "vite build && tsc",
     "preview": "vite preview",
     "lint": "biome check",
@@ -37,6 +36,7 @@
     "react-hook-form": "^7.71.1",
     "tailwind-merge": "^3.4.0",
     "tailwindcss": "^4.1.18",
+    "zod": "^4.3.6",
     "zustand": "^5.0.11"
   },
   "devDependencies": {

@@ -1,0 +1,11 @@
+{
+  "name": "utils-web",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/utils-web/src",
+  "projectType": "library",
+  "targets": {
+    "build": { "command": "pnpm -C packages/utils-web build", "outputs": ["{projectRoot}/dist"] },
+    "lint": { "command": "pnpm -C packages/utils-web lint" },
+    "typecheck": { "command": "pnpm -C packages/utils-web typecheck" }
+  }
+}

@@ -5,8 +5,6 @@
   "types": "src/index.ts",
   "scripts": {
     "build": "tsc -p tsconfig.json --noEmit",
-    "fmt": "prettier . --check",
-    "fmt:write": "prettier . --write",
     "lint": "biome check",
     "lint:write": "biome check --write",
     "typecheck": "tsc -p tsconfig.json --noEmit"
