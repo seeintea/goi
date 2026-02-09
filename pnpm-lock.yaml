@@ -115,6 +115,12 @@ importers:
       '@goi/nest-kit':
         specifier: workspace:*
         version: link:../../packages/nest-kit
+      '@goi/utils':
+        specifier: workspace:^
+        version: link:../../packages/utils
+      '@goi/utils-node':
+        specifier: workspace:^
+        version: link:../../packages/utils-node
       '@nestjs/common':
         specifier: ^11.1.12
         version: 11.1.12(reflect-metadata@0.2.2)(rxjs@7.8.2)
@@ -173,6 +179,9 @@ importers:
       '@base-ui/react':
         specifier: ^1.1.0
         version: 1.1.0(@types/react@19.2.10)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      '@goi/contracts':
+        specifier: workspace:^
+        version: link:../../packages/contracts
       '@goi/utils-web':
         specifier: workspace:*
         version: link:../../packages/utils-web
@@ -276,6 +285,12 @@ importers:
       '@goi/nest-kit':
         specifier: workspace:*
         version: link:../../packages/nest-kit
+      '@goi/utils':
+        specifier: workspace:^
+        version: link:../../packages/utils
+      '@goi/utils-node':
+        specifier: workspace:^
+        version: link:../../packages/utils-node
       '@nestjs/common':
         specifier: ^11.1.12
         version: 11.1.12(reflect-metadata@0.2.2)(rxjs@7.8.2)
@@ -381,7 +396,23 @@ importers:
         specifier: ^7.8.2
         version: 7.8.2
 
-  packages/utils-web: {}
+  packages/utils:
+    dependencies:
+      '@goi/contracts':
+        specifier: workspace:*
+        version: link:../contracts
+
+  packages/utils-node:
+    devDependencies:
+      '@types/node':
+        specifier: ^20.0.0
+        version: 20.19.33
+
+  packages/utils-web:
+    dependencies:
+      '@goi/contracts':
+        specifier: workspace:^
+        version: link:../contracts
 
 packages:
 
@@ -2315,6 +2346,9 @@ packages:
   '@types/ms@2.1.0':
     resolution: {integrity: sha512-GsCCIZDE/p3i96vtEqx+7dBUGXrc7zeSK3wwPHIaRThS+9OhWIXRqzs4d6k1SVU8g91DrNRWxWUGhp5KXQb2VA==}
 
+  '@types/node@20.19.33':
+    resolution: {integrity: sha512-Rs1bVAIdBs5gbTIKza/tgpMuG1k3U/UMJLWecIMxNdJFDMzcM5LOiLVRYh3PilWEYDIeUDv7bpiHPLPsbydGcw==}
+
   '@types/node@24.10.11':
     resolution: {integrity: sha512-/Af7O8r1frCVgOz0I62jWUtMohJ0/ZQU/ZoketltOJPZpnb17yoNc9BSoVuV9qlaIXJiPNOpsfq4ByFajSArNQ==}
 
@@ -3938,6 +3972,9 @@ packages:
 
   undefsafe@2.0.5:
     resolution: {integrity: sha512-WxONCrssBM8TSPRqN5EmsjVrsv4A8X12J4ArBiiayv3DyyG3ZlIg6yysuuSYdZsVz3TKcTg2fd//Ujd4CHV1iA==}
+
+  undici-types@6.21.0:
+    resolution: {integrity: sha512-iwDZqg0QAGrg9Rav5H4n0M64c3mkR59cJ6wQp+7C4nI0gsmExaedaYLNO44eT4AtBBwjbTiGPMlt2Md0T9H9JQ==}
 
   undici-types@7.16.0:
     resolution: {integrity: sha512-Zz+aZWSj8LE6zoxD+xrjh4VfkIG8Ya6LvYkZqtUQGJPZjYl53ypCaUwWqo7eI0x66KBGeRo+mlBEkMSeSZ38Nw==}
@@ -5863,6 +5900,10 @@ snapshots:
 
   '@types/ms@2.1.0': {}
 
+  '@types/node@20.19.33':
+    dependencies:
+      undici-types: 6.21.0
+
   '@types/node@24.10.11':
     dependencies:
       undici-types: 7.16.0
@@ -7548,6 +7589,8 @@ snapshots:
   uint8array-extras@1.5.0: {}
 
   undefsafe@2.0.5: {}
+
+  undici-types@6.21.0: {}
 
   undici-types@7.16.0: {}
 

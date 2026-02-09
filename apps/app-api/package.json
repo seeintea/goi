@@ -18,6 +18,8 @@
   "dependencies": {
     "@goi/contracts": "workspace:*",
     "@goi/nest-kit": "workspace:*",
+    "@goi/utils": "workspace:^",
+    "@goi/utils-node": "workspace:^",
     "@nestjs/common": "^11.1.12",
     "@nestjs/config": "^4.0.2",
     "@nestjs/core": "^11.1.12",

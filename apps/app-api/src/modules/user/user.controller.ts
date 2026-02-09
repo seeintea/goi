@@ -3,7 +3,7 @@ import { Body, Controller, Get, Post, Query } from "@nestjs/common"
 import { ApiOperation, ApiTags } from "@nestjs/swagger"
 import { nanoid } from "nanoid"
 import { ZodResponse } from "nestjs-zod"
-import { generateSalt, hashPassword } from "@/common/utils/password"
+import { generateSalt, hashPassword } from "@goi/utils-node"
 import {
   CreateUserDto,
   DeleteUserDto,

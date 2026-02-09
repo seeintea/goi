@@ -1,5 +1,5 @@
 {
-  "name": "@goi/utils-web",
+  "name": "@goi/utils",
   "version": "0.0.0",
   "main": "src/index.ts",
   "types": "src/index.ts",
@@ -10,6 +10,6 @@
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
-    "@goi/contracts": "workspace:^"
+    "@goi/contracts": "workspace:*"
   }
 }

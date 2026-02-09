@@ -1,8 +1,5 @@
-export interface ApiResponse<T = unknown> {
-  code: number
-  message: string
-  data: T
-}
+import type { ApiResponse } from "@goi/contracts"
+export type { ApiResponse }
 
 export type RequestContext = { url: string; options: RequestInit }
 export type RequestInterceptor = (ctx: RequestContext) => RequestContext

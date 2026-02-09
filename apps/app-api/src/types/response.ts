@@ -1,17 +1,1 @@
-export interface ApiResponse<T = unknown> {
-  code: number
-  message: string
-  data: T
-}
-
-export interface PageResult<T> {
-  list: T[]
-  total: number
-  page: number
-  pageSize: number
-}
-
-export type PageQuery = {
-  page?: number | string
-  pageSize?: number | string
-}
+export type { ApiResponse, PageQuery, PageResult } from "@goi/contracts"

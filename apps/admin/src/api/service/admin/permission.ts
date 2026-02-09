@@ -1,4 +1,4 @@
-import { AdminPermission, CreateAdminPermission, UpdateAdminPermission } from "@goi/contracts"
+import type { AdminPermission, CreateAdminPermission, UpdateAdminPermission } from "@goi/contracts"
 import type { PageQuery, PageResult } from "@/types/api"
 import { api } from "../../client"
 

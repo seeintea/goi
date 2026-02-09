@@ -1,4 +1,4 @@
-import type { PageQuery, PageResult } from "@/types/response"
+import type { PageQuery, PageResult } from "@goi/contracts"
 
 export type PageParams = {
   page: number
