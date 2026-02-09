@@ -1,6 +1,8 @@
 {
-  "extends": "../../tsconfig.node.json",
+  "extends": "../../tsconfig.base.json",
   "compilerOptions": {
+    "module": "commonjs",
+    "moduleResolution": "node",
     "isolatedModules": true,
     "noImplicitAny": false,
     "strictBindCallApply": false,

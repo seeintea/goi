@@ -4,10 +4,9 @@
     "baseUrl": ".",
     "noEmit": true,
     "paths": {
-      "@/*": ["./src/*"],
-      "@goi/contracts": ["../../packages/contracts/src/index.ts"]
+      "@/*": ["./src/*"]
     }
   },
-  "include": ["src", "../../packages/contracts/src/**/*"],
+  "include": ["src"],
   "exclude": ["node_modules", "dist", "**/*.spec.ts", "**/*.test.ts"]
 }

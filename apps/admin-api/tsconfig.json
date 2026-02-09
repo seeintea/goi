@@ -14,17 +14,11 @@
     "strictBindCallApply": false,
     "noFallthroughCasesInSwitch": false,
     "paths": {
-      "@/*": ["./src/*"],
-      "@goi/contracts": ["../../packages/contracts/src/index.ts"],
-      "@goi/infra": ["../../packages/infra/src/index.ts"],
-      "@goi/nest-kit": ["../../packages/nest-kit/src/index.ts"]
+      "@/*": ["./src/*"]
     }
   },
   "include": [
-    "src",
-    "../../packages/contracts/src/**/*",
-    "../../packages/infra/src/**/*",
-    "../../packages/nest-kit/src/**/*"
+    "src"
   ],
   "exclude": ["node_modules", "dist", "**/*.spec.ts", "**/*.test.ts"]
 }
