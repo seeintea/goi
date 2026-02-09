@@ -8,9 +8,9 @@
   "license": "MIT",
   "packageManager": "pnpm@10.7.1",
   "scripts": {
-    "dev": "nodemon",
-    "build": "tsc -p tsconfig.json",
-    "prod": "node dist/apps/app-api/src/main.js",
+    "dev": "nest start --watch",
+    "build": "nest build",
+    "prod": "node dist/main",
     "lint": "biome check",
     "lint:write": "biome check --write",
     "typecheck": "tsc -p tsconfig.typecheck.json"
@@ -36,7 +36,6 @@
   "devDependencies": {
     "@types/express": "^5.0.6",
     "@types/pg": "^8.16.0",
-    "nodemon": "^3.1.11",
     "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0"
   }
