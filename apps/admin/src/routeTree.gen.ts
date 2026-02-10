@@ -16,7 +16,6 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as UserListRouteImport } from './routes/user/list'
 import { Route as PermissionRoutesRouteImport } from './routes/permission/routes'
 import { Route as PermissionRoleRouteImport } from './routes/permission/role'
-import { Route as PermissionModuleRouteImport } from './routes/permission/module'
 import { Route as PermissionButtonRouteImport } from './routes/permission/button'
 
 const LoginRoute = LoginRouteImport.update({
@@ -54,11 +53,6 @@ const PermissionRoleRoute = PermissionRoleRouteImport.update({
   path: '/role',
   getParentRoute: () => PermissionRouteRoute,
 } as any)
-const PermissionModuleRoute = PermissionModuleRouteImport.update({
-  id: '/module',
-  path: '/module',
-  getParentRoute: () => PermissionRouteRoute,
-} as any)
 const PermissionButtonRoute = PermissionButtonRouteImport.update({
   id: '/button',
   path: '/button',
@@ -71,7 +65,6 @@ export interface FileRoutesByFullPath {
   '/user': typeof UserRouteRouteWithChildren
   '/login': typeof LoginRoute
   '/permission/button': typeof PermissionButtonRoute
-  '/permission/module': typeof PermissionModuleRoute
   '/permission/role': typeof PermissionRoleRoute
   '/permission/routes': typeof PermissionRoutesRoute
   '/user/list': typeof UserListRoute
@@ -82,7 +75,6 @@ export interface FileRoutesByTo {
   '/user': typeof UserRouteRouteWithChildren
   '/login': typeof LoginRoute
   '/permission/button': typeof PermissionButtonRoute
-  '/permission/module': typeof PermissionModuleRoute
   '/permission/role': typeof PermissionRoleRoute
   '/permission/routes': typeof PermissionRoutesRoute
   '/user/list': typeof UserListRoute
@@ -94,7 +86,6 @@ export interface FileRoutesById {
   '/user': typeof UserRouteRouteWithChildren
   '/login': typeof LoginRoute
   '/permission/button': typeof PermissionButtonRoute
-  '/permission/module': typeof PermissionModuleRoute
   '/permission/role': typeof PermissionRoleRoute
   '/permission/routes': typeof PermissionRoutesRoute
   '/user/list': typeof UserListRoute
@@ -107,7 +98,6 @@ export interface FileRouteTypes {
     | '/user'
     | '/login'
     | '/permission/button'
-    | '/permission/module'
     | '/permission/role'
     | '/permission/routes'
     | '/user/list'
@@ -118,7 +108,6 @@ export interface FileRouteTypes {
     | '/user'
     | '/login'
     | '/permission/button'
-    | '/permission/module'
     | '/permission/role'
     | '/permission/routes'
     | '/user/list'
@@ -129,7 +118,6 @@ export interface FileRouteTypes {
     | '/user'
     | '/login'
     | '/permission/button'
-    | '/permission/module'
     | '/permission/role'
     | '/permission/routes'
     | '/user/list'
@@ -193,13 +181,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PermissionRoleRouteImport
       parentRoute: typeof PermissionRouteRoute
     }
-    '/permission/module': {
-      id: '/permission/module'
-      path: '/module'
-      fullPath: '/permission/module'
-      preLoaderRoute: typeof PermissionModuleRouteImport
-      parentRoute: typeof PermissionRouteRoute
-    }
     '/permission/button': {
       id: '/permission/button'
       path: '/button'
@@ -212,14 +193,12 @@ declare module '@tanstack/react-router' {
 
 interface PermissionRouteRouteChildren {
   PermissionButtonRoute: typeof PermissionButtonRoute
-  PermissionModuleRoute: typeof PermissionModuleRoute
   PermissionRoleRoute: typeof PermissionRoleRoute
   PermissionRoutesRoute: typeof PermissionRoutesRoute
 }
 
 const PermissionRouteRouteChildren: PermissionRouteRouteChildren = {
   PermissionButtonRoute: PermissionButtonRoute,
-  PermissionModuleRoute: PermissionModuleRoute,
   PermissionRoleRoute: PermissionRoleRoute,
   PermissionRoutesRoute: PermissionRoutesRoute,
 }

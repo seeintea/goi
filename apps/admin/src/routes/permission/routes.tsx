@@ -1,8 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router"
-import { Routes } from "@/features/app/routes"
+import { RoutesList } from "@/features/app/routes-list"
 
 export const Route = createFileRoute("/permission/routes")({
-  component: Routes,
+  component: RoutesList,
   staticData: {
     name: "路由管理",
     permission: "perm:routes",

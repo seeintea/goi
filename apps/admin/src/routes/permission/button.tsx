@@ -1,8 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router"
-import { Button } from "@/features/app/button"
+import { ButtonList } from "@/features/app/button-list"
 
 export const Route = createFileRoute("/permission/button")({
-  component: Button,
+  component: ButtonList,
   staticData: {
     name: "按钮管理",
     permission: "perm:button",
