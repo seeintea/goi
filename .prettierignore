@@ -1,4 +1,5 @@
 dist/**
+.rslib/**
 node_modules/**
 .tanstack/**
 **/src/components/ui/**

@@ -23,7 +23,16 @@
     "composite": true,
     "declaration": true,
     "declarationMap": true,
-    "sourceMap": true
+    "sourceMap": true,
+    "baseUrl": ".",
+    "paths": {
+      "@goi/contracts": ["packages/contracts/src/index.ts"],
+      "@goi/utils": ["packages/utils/src/index.ts"],
+      "@goi/utils-node": ["packages/utils-node/src/index.ts"],
+      "@goi/utils-web": ["packages/utils-web/src/index.ts"],
+      "@goi/infra": ["packages/infra/src/index.ts"],
+      "@goi/nest-kit": ["packages/nest-kit/src/index.ts"]
+    }
   },
   "exclude": ["node_modules", "dist"]
 }

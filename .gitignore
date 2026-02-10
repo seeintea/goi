@@ -7,41 +7,44 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+# Dependencies
 node_modules
+
+# Build Artifacts
 dist
 dist-ssr
-*.local
-
 *.tsbuildinfo
 
-# Editor directories and files
+# Environment
+.env
+.env.*
+!.env.template
+
+# Editor & System
 .vscode/*
 !.vscode/extensions.json
+!.vscode/launch.json
 .idea
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
-
-# env
-.env
-.env.*
-!.env.template
-
-# system file ignore
 .DS_Store
+Thumbs.db
 
-# @goi/finances-api
-**/migrations/*
+# Testing
+coverage
+test-results
 
-# @goi/finances
-count.txt
-.nitro
-.tanstack
-.wrangler
-.output
-.vinxi
-todos.json
-
+# NX & Rslib
 .nx
+.rslib
+
+# Temporary
+tmp/
+temp/
+
+# Specific Files
+todos.json
+**/migrations/*

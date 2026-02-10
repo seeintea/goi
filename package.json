@@ -15,8 +15,8 @@
     "dev:admin-api": "nx run admin-api:dev",
     "dev:app": "nx run app:dev",
     "dev:app-api": "nx run app-api:dev",
-    "dev:libs": "nx run-many -t build -p nest-kit infra contracts utils utils-node utils-web --watch",
-    "build:libs": "nx run-many -t build -p nest-kit infra contracts utils utils-node utils-web",
+    "dev:libs": "nx run-many -t dev -p contracts utils utils-node utils-web infra nest-kit",
+    "build:libs": "nx run-many -t build -p contracts utils utils-node utils-web infra nest-kit",
     "build": "nx run-many -t build",
     "fmt": "prettier . --check",
     "fmt:write": "prettier . --write",
@@ -25,7 +25,8 @@
     "typecheck": "nx run-many -t typecheck",
     "clean": "nx reset && npm run clean:dist",
     "clean:dist": "node scripts/clean-dist.mjs",
-    "clean:modules": "node scripts/clean-node-modules.mjs"
+    "clean:modules": "node scripts/clean-node-modules.mjs",
+    "verify": "node scripts/verify-build.mjs"
   },
   "keywords": [],
   "author": "leviegu <leviegu@gmail.com>",
@@ -40,13 +41,17 @@
     "concurrently": "^9.2.1",
     "nx": "^22.4.5",
     "prettier": "3.8.1",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "@rslib/core": "^0.19.5",
+    "@microsoft/api-extractor": "^7.56.3"
   },
   "pnpm": {
     "overrides": {
       "react": "^19.2.4",
       "react-dom": "^19.2.4",
       "typescript": "^5.9.3",
+      "@rslib/core": "^0.19.5",
+      "@microsoft/api-extractor": "^7.56.3",
       "@nestjs/common": "^11.1.12",
       "@nestjs/core": "^11.1.12",
       "@nestjs/platform-express": "^11.1.12",

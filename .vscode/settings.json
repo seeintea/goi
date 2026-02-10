@@ -1,5 +1,5 @@
 {
-  "cSpell.words": ["goi", "rsbuild", "tinyint", "rspack", "rsdoctor", "autoincrement", "tanstack", "Sider"],
+  "cSpell.words": ["goi", "rsbuild", "tinyint", "rspack", "rsdoctor", "autoincrement", "tanstack", "Sider", "rslib"],
   "editor.formatOnSave": true,
   "[typescript]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
@@ -18,6 +18,12 @@
     "**/routeTree.gen.ts": true
   },
   "[typescriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[json]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[javascript]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   }
 }

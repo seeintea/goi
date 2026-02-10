@@ -2,16 +2,26 @@
   "name": "@goi/utils-web",
   "version": "0.0.0",
   "type": "module",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "main": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
   "exports": {
-    ".": "./dist/index.js"
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.mjs"
+      }
+    }
   },
   "scripts": {
-    "build": "tsc -p tsconfig.build.json",
+    "build": "rslib build",
+    "dev": "rslib build --watch",
     "lint": "biome check",
     "lint:write": "biome check --write",
     "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "devDependencies": {
+    "@microsoft/api-extractor": "^7.56.3",
+    "@rslib/core": "^0.19.5"
   },
   "dependencies": {
     "@goi/contracts": "workspace:^"
