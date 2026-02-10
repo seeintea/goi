@@ -61,6 +61,8 @@ export const appUserListQuerySchema = z
   .object({
     userId: shape.userId.optional(),
     username: shape.username.optional(),
+    isDisabled: z.coerce.boolean().optional(),
+    isDeleted: z.coerce.boolean().optional(),
     page: shape.page.optional(),
     pageSize: shape.pageSize.optional(),
   })

@@ -10,11 +10,28 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as UserRouteRouteImport } from './routes/user/route'
+import { Route as PermissionRouteRouteImport } from './routes/permission/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as UserListRouteImport } from './routes/user/list'
+import { Route as PermissionRoutesRouteImport } from './routes/permission/routes'
+import { Route as PermissionRoleRouteImport } from './routes/permission/role'
+import { Route as PermissionModuleRouteImport } from './routes/permission/module'
+import { Route as PermissionButtonRouteImport } from './routes/permission/button'
 
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const UserRouteRoute = UserRouteRouteImport.update({
+  id: '/user',
+  path: '/user',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PermissionRouteRoute = PermissionRouteRouteImport.update({
+  id: '/permission',
+  path: '/permission',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -22,30 +39,106 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const UserListRoute = UserListRouteImport.update({
+  id: '/list',
+  path: '/list',
+  getParentRoute: () => UserRouteRoute,
+} as any)
+const PermissionRoutesRoute = PermissionRoutesRouteImport.update({
+  id: '/routes',
+  path: '/routes',
+  getParentRoute: () => PermissionRouteRoute,
+} as any)
+const PermissionRoleRoute = PermissionRoleRouteImport.update({
+  id: '/role',
+  path: '/role',
+  getParentRoute: () => PermissionRouteRoute,
+} as any)
+const PermissionModuleRoute = PermissionModuleRouteImport.update({
+  id: '/module',
+  path: '/module',
+  getParentRoute: () => PermissionRouteRoute,
+} as any)
+const PermissionButtonRoute = PermissionButtonRouteImport.update({
+  id: '/button',
+  path: '/button',
+  getParentRoute: () => PermissionRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/permission': typeof PermissionRouteRouteWithChildren
+  '/user': typeof UserRouteRouteWithChildren
   '/login': typeof LoginRoute
+  '/permission/button': typeof PermissionButtonRoute
+  '/permission/module': typeof PermissionModuleRoute
+  '/permission/role': typeof PermissionRoleRoute
+  '/permission/routes': typeof PermissionRoutesRoute
+  '/user/list': typeof UserListRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/permission': typeof PermissionRouteRouteWithChildren
+  '/user': typeof UserRouteRouteWithChildren
   '/login': typeof LoginRoute
+  '/permission/button': typeof PermissionButtonRoute
+  '/permission/module': typeof PermissionModuleRoute
+  '/permission/role': typeof PermissionRoleRoute
+  '/permission/routes': typeof PermissionRoutesRoute
+  '/user/list': typeof UserListRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/permission': typeof PermissionRouteRouteWithChildren
+  '/user': typeof UserRouteRouteWithChildren
   '/login': typeof LoginRoute
+  '/permission/button': typeof PermissionButtonRoute
+  '/permission/module': typeof PermissionModuleRoute
+  '/permission/role': typeof PermissionRoleRoute
+  '/permission/routes': typeof PermissionRoutesRoute
+  '/user/list': typeof UserListRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/login'
+  fullPaths:
+    | '/'
+    | '/permission'
+    | '/user'
+    | '/login'
+    | '/permission/button'
+    | '/permission/module'
+    | '/permission/role'
+    | '/permission/routes'
+    | '/user/list'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/login'
-  id: '__root__' | '/' | '/login'
+  to:
+    | '/'
+    | '/permission'
+    | '/user'
+    | '/login'
+    | '/permission/button'
+    | '/permission/module'
+    | '/permission/role'
+    | '/permission/routes'
+    | '/user/list'
+  id:
+    | '__root__'
+    | '/'
+    | '/permission'
+    | '/user'
+    | '/login'
+    | '/permission/button'
+    | '/permission/module'
+    | '/permission/role'
+    | '/permission/routes'
+    | '/user/list'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  PermissionRouteRoute: typeof PermissionRouteRouteWithChildren
+  UserRouteRoute: typeof UserRouteRouteWithChildren
   LoginRoute: typeof LoginRoute
 }
 
@@ -58,6 +151,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/user': {
+      id: '/user'
+      path: '/user'
+      fullPath: '/user'
+      preLoaderRoute: typeof UserRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/permission': {
+      id: '/permission'
+      path: '/permission'
+      fullPath: '/permission'
+      preLoaderRoute: typeof PermissionRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -65,11 +172,78 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/user/list': {
+      id: '/user/list'
+      path: '/list'
+      fullPath: '/user/list'
+      preLoaderRoute: typeof UserListRouteImport
+      parentRoute: typeof UserRouteRoute
+    }
+    '/permission/routes': {
+      id: '/permission/routes'
+      path: '/routes'
+      fullPath: '/permission/routes'
+      preLoaderRoute: typeof PermissionRoutesRouteImport
+      parentRoute: typeof PermissionRouteRoute
+    }
+    '/permission/role': {
+      id: '/permission/role'
+      path: '/role'
+      fullPath: '/permission/role'
+      preLoaderRoute: typeof PermissionRoleRouteImport
+      parentRoute: typeof PermissionRouteRoute
+    }
+    '/permission/module': {
+      id: '/permission/module'
+      path: '/module'
+      fullPath: '/permission/module'
+      preLoaderRoute: typeof PermissionModuleRouteImport
+      parentRoute: typeof PermissionRouteRoute
+    }
+    '/permission/button': {
+      id: '/permission/button'
+      path: '/button'
+      fullPath: '/permission/button'
+      preLoaderRoute: typeof PermissionButtonRouteImport
+      parentRoute: typeof PermissionRouteRoute
+    }
   }
 }
 
+interface PermissionRouteRouteChildren {
+  PermissionButtonRoute: typeof PermissionButtonRoute
+  PermissionModuleRoute: typeof PermissionModuleRoute
+  PermissionRoleRoute: typeof PermissionRoleRoute
+  PermissionRoutesRoute: typeof PermissionRoutesRoute
+}
+
+const PermissionRouteRouteChildren: PermissionRouteRouteChildren = {
+  PermissionButtonRoute: PermissionButtonRoute,
+  PermissionModuleRoute: PermissionModuleRoute,
+  PermissionRoleRoute: PermissionRoleRoute,
+  PermissionRoutesRoute: PermissionRoutesRoute,
+}
+
+const PermissionRouteRouteWithChildren = PermissionRouteRoute._addFileChildren(
+  PermissionRouteRouteChildren,
+)
+
+interface UserRouteRouteChildren {
+  UserListRoute: typeof UserListRoute
+}
+
+const UserRouteRouteChildren: UserRouteRouteChildren = {
+  UserListRoute: UserListRoute,
+}
+
+const UserRouteRouteWithChildren = UserRouteRoute._addFileChildren(
+  UserRouteRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  PermissionRouteRoute: PermissionRouteRouteWithChildren,
+  UserRouteRoute: UserRouteRouteWithChildren,
   LoginRoute: LoginRoute,
 }
 export const routeTree = rootRouteImport

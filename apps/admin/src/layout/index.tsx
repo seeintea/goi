@@ -1,8 +1,10 @@
 import { Outlet, useLocation } from "@tanstack/react-router"
+import { useHead } from "@/hooks/use-head"
 import { Header } from "./header"
 import { Sidebar } from "./sidebar"
 
 export function Layout() {
+  useHead()
   const { pathname } = useLocation()
 
   if (pathname === "/login") {
@@ -15,7 +17,7 @@ export function Layout() {
       <div className="flex-1 flex flex-col min-w-0">
         <Header />
         <main className="flex-1 p-6 overflow-auto">
-           <Outlet />
+          <Outlet />
         </main>
       </div>
     </div>

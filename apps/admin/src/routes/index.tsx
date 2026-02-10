@@ -1,9 +1,13 @@
-import { createFileRoute } from "@tanstack/react-router"
+import { createFileRoute, Outlet, redirect } from "@tanstack/react-router"
 
 export const Route = createFileRoute("/")({
-  component: RouteComponent,
+  component: Outlet,
+  beforeLoad: () => {
+    throw redirect({ to: "/user/list", replace: true })
+  },
+  staticData: {
+    name: "",
+    permission: "unauthed",
+    icon: null,
+  },
 })
-
-function RouteComponent() {
-  return <div>Hello "/"!</div>
-}

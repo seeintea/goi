@@ -1,13 +1,18 @@
 import { StyleProvider } from "@ant-design/cssinjs"
 import { createRouter, RouterProvider } from "@tanstack/react-router"
-import { StrictMode } from "react"
+import zhCN from "antd/locale/zh_CN"
+import dayjs from "dayjs"
+import { type ReactNode, StrictMode } from "react"
 import ReactDOM from "react-dom/client"
+import "dayjs/locale/zh-cn"
 
 import "./styles.css"
 
 import { ConfigProvider } from "antd"
 // Import the generated route tree
 import { routeTree } from "./routeTree.gen"
+
+dayjs.locale("zh-cn")
 
 // Create a new router instance
 
@@ -24,6 +29,13 @@ declare module "@tanstack/react-router" {
   interface Register {
     router: typeof router
   }
+
+  interface StaticDataRouteOption {
+    name: string
+    permission: string
+    icon: ReactNode
+    groupName?: string
+  }
 }
 
 // Render the app
@@ -34,10 +46,11 @@ if (rootElement && !rootElement.innerHTML) {
     <StrictMode>
       <StyleProvider layer>
         <ConfigProvider
+          locale={zhCN}
           theme={{
             components: {
               Menu: {
-                collapsedWidth: 63,
+                collapsedWidth: 54,
               },
             },
           }}

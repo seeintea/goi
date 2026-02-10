@@ -5,6 +5,8 @@ import { api } from "../../client"
 export type AppUserListQuery = PageQuery & {
   userId?: string
   username?: string
+  isDisabled?: boolean
+  isDeleted?: boolean
 }
 
 export const createAppUser = (body: CreateAppUser) => api.post<AppUser>("/api/app/user/create", body)

@@ -46,7 +46,7 @@ export function Login() {
           level={3}
           style={{ marginBottom: 8 }}
         >
-          管理员登录
+          账簿 / 运营后台
         </Typography.Title>
         <Typography.Text type="secondary">请输入账号与密码继续</Typography.Text>
         <Form

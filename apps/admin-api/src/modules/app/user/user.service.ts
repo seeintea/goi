@@ -100,12 +100,20 @@ export class UserService {
   async list(query: {
     userId?: string
     username?: string
+    isDisabled?: boolean
+    isDeleted?: boolean
     page?: number | string
     pageSize?: number | string
   }): Promise<PageResult<AppUser>> {
-    const where: Parameters<typeof and> = [eq(userSchema.isDeleted, false)]
+    const where: Parameters<typeof and> = []
     if (query.userId) where.push(eq(userSchema.userId, query.userId))
     if (query.username) where.push(like(userSchema.username, `%${query.username}%`))
+    if (query.isDisabled !== undefined) where.push(eq(userSchema.isDisabled, query.isDisabled))
+    if (query.isDeleted !== undefined) {
+      where.push(eq(userSchema.isDeleted, query.isDeleted))
+    } else {
+      where.push(eq(userSchema.isDeleted, false))
+    }
 
     const pageParams = normalizePage(query)
 
