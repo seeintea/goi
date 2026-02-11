@@ -1,7 +1,7 @@
+import type { PageQuery, PageResult } from "@goi/contracts"
 import { type FormInstance, message } from "antd"
 import type { TablePaginationConfig } from "antd/es/table"
 import { useCallback, useEffect, useState } from "react"
-import type { PageQuery, PageResult } from "@/types/api"
 
 interface UseTableOptions<TQuery extends PageQuery> {
   defaultParams?: Partial<TQuery>

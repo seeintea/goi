@@ -1,5 +1,4 @@
-import type { AdminUser, CreateAdminUser, UpdateAdminUser } from "@goi/contracts"
-import type { PageQuery, PageResult } from "@/types/api"
+import type { AdminUser, CreateAdminUser, PageQuery, PageResult, UpdateAdminUser } from "@goi/contracts"
 import { api } from "../../client"
 
 export type AdminUserListQuery = PageQuery & {

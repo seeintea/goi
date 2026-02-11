@@ -1,4 +1,4 @@
-import type { PageQuery, PageResult } from "@/types/api"
+import type { PageQuery, PageResult } from "@goi/contracts"
 import { api } from "../../client"
 
 export type AppRole = {

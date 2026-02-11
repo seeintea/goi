@@ -1,5 +1,4 @@
-import type { AdminModule, CreateAdminModule, UpdateAdminModule } from "@goi/contracts"
-import type { PageQuery, PageResult } from "@/types/api"
+import type { AdminModule, CreateAdminModule, PageQuery, PageResult, UpdateAdminModule } from "@goi/contracts"
 import { api } from "../../client"
 
 export type AdminModuleListQuery = PageQuery & {
