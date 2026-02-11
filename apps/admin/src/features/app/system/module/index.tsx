@@ -72,7 +72,7 @@ export function ModuleList() {
       title: "模块ID",
       align: "center",
       dataIndex: "moduleId",
-      width: 100,
+      width: 150,
       render: (id: string) => <ShortId id={id} />,
     },
     {

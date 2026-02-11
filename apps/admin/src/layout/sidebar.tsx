@@ -2,7 +2,7 @@ import { useLocation, useNavigate } from "@tanstack/react-router"
 import type { MenuProps } from "antd"
 import { Menu, Segmented } from "antd"
 import { BadgeDollarSign, LayoutGrid, MonitorCog } from "lucide-react"
-import { Activity, useEffect, useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { useRouteTree } from "@/hooks/use-route-tree"
 import { useSetting } from "@/stores"
 import { cn } from "@/utils/cn"
@@ -82,19 +82,34 @@ export function Sidebar() {
     >
       <div
         className={cn(
-          "h-(--header-height) flex justify-center border-b border-(--color-border-secondary) shrink-0 overflow-hidden whitespace-nowrap",
+          "h-(--header-height) flex items-center border-b border-(--color-border-secondary) shrink-0 overflow-hidden whitespace-nowrap transition-all duration-300",
           isOpen ? "justify-start" : "justify-center",
         )}
       >
-        <div className="flex items-center gap-2 text-primary font-bold text-lg px-4">
+        <div
+          className={cn(
+            "flex items-center text-primary font-bold text-lg transition-all duration-300",
+            isOpen ? "px-4 gap-2" : "px-0 gap-0",
+          )}
+        >
           <BadgeDollarSign className="w-6 h-6 shrink-0" />
-          <span className={cn("transition-opacity duration-300", isOpen ? "opacity-100" : "opacity-0 hidden")}>
+          <span
+            className={cn(
+              "transition-all duration-300 ease-in-out overflow-hidden whitespace-nowrap block",
+              isOpen ? "w-20 opacity-100" : "w-0 opacity-0",
+            )}
+          >
             运营后台
           </span>
         </div>
       </div>
 
-      <Activity mode={isOpen ? "visible" : "hidden"}>
+      <div
+        className={cn(
+          "overflow-hidden transition-all duration-300 ease-in-out",
+          isOpen ? "max-h-24 opacity-100" : "max-h-0 opacity-0",
+        )}
+      >
         <div className="px-2 py-4">
           <Segmented
             block
@@ -122,7 +137,7 @@ export function Sidebar() {
             ]}
           />
         </div>
-      </Activity>
+      </div>
 
       <div className="flex-1 overflow-y-auto py-2">
         <Menu

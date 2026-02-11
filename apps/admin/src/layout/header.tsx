@@ -1,6 +1,7 @@
 import { useNavigate } from "@tanstack/react-router"
 import { Avatar, Button, Dropdown } from "antd"
 import { LogOut, Moon, PanelLeftOpen, PanelRightOpen, Sun, User } from "lucide-react"
+import { flushSync } from "react-dom"
 import { logout } from "@/api/service/admin/auth"
 import { Breadcrumb } from "@/components/breadcrumb"
 import { useSetting, useUser } from "@/stores"
@@ -19,6 +20,37 @@ export function Header() {
       resetUser()
       navigate({ to: "/login" })
     }
+  }
+
+  const handleThemeToggle = (e: React.MouseEvent<HTMLElement>) => {
+    if (!document.startViewTransition) {
+      toggleThemeMode()
+      return
+    }
+
+    const x = e.clientX
+    const y = e.clientY
+    const endRadius = Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y))
+
+    const transition = document.startViewTransition(() => {
+      flushSync(() => {
+        toggleThemeMode()
+      })
+    })
+
+    transition.ready.then(() => {
+      const clipPath = [`circle(0px at ${x}px ${y}px)`, `circle(${endRadius}px at ${x}px ${y}px)`]
+      document.documentElement.animate(
+        {
+          clipPath: clipPath,
+        },
+        {
+          duration: 400,
+          easing: "ease-in",
+          pseudoElement: "::view-transition-new(root)",
+        },
+      )
+    })
   }
 
   const items = [
@@ -46,7 +78,7 @@ export function Header() {
       <div className="flex items-center gap-4">
         <Button
           type="text"
-          onClick={toggleThemeMode}
+          onClick={handleThemeToggle}
           className="flex items-center justify-center w-8 h-8 rounded-full hover:bg-(--color-bg-text-hover) transition-colors"
           icon={themeMode === "light" ? <Sun size={18} /> : <Moon size={18} />}
         />

@@ -15,6 +15,12 @@
   }
 }
 
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
 @layer antd {
   .ant-btn-icon {
     display: flex;
