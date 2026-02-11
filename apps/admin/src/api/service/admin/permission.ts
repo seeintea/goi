@@ -1,4 +1,10 @@
-import type { AdminPermission, CreateAdminPermission, PageQuery, PageResult, UpdateAdminPermission } from "@goi/contracts"
+import type {
+  AdminPermission,
+  CreateAdminPermission,
+  PageQuery,
+  PageResult,
+  UpdateAdminPermission,
+} from "@goi/contracts"
 import { api } from "../../client"
 
 export type AdminPermissionListQuery = PageQuery & {

@@ -1,24 +1,24 @@
-import { defineConfig } from '@rslib/core';
+import { defineConfig } from "@rslib/core"
 
 export default defineConfig({
   lib: [
     {
-      format: 'cjs',
+      format: "cjs",
       output: {
-        distPath: { root: './dist' },
-        filename: { js: '[name].cjs' },
+        distPath: { root: "./dist" },
+        filename: { js: "[name].cjs" },
       },
       dts: { bundle: true },
     },
   ],
   output: {
-    target: 'node',
+    target: "node",
   },
   tools: {
     swc: {
       jsc: {
         parser: {
-          syntax: 'typescript',
+          syntax: "typescript",
           decorators: true,
         },
         transform: {
@@ -28,4 +28,4 @@ export default defineConfig({
       },
     },
   },
-});
+})

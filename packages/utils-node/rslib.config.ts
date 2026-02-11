@@ -1,14 +1,14 @@
-import { defineConfig } from '@rslib/core';
+import { defineConfig } from "@rslib/core"
 
 export default defineConfig({
   lib: [
     {
-      format: 'cjs',
+      format: "cjs",
       output: {
-        distPath: { root: './dist' },
-        filename: { js: '[name].cjs' },
+        distPath: { root: "./dist" },
+        filename: { js: "[name].cjs" },
       },
       dts: { bundle: true },
     },
   ],
-});
+})

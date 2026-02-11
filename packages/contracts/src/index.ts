@@ -7,4 +7,3 @@ export * from "./app/module"
 export * from "./app/permission"
 export * from "./app/user"
 export * from "./common"
-
