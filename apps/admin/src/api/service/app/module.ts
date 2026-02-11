@@ -21,6 +21,11 @@ export const listAllAppModules = (query?: AppModuleAllQuery) => api.get<AppModul
 
 export const listRootAppModules = () => api.get<AppModule[]>("/api/app/module/roots")
 
+export const listParentAppModules = () => api.get<AppModule[]>("/api/app/module/parents")
+
 export const updateAppModule = (body: UpdateAppModule) => api.post<AppModule>("/api/app/module/update", body)
+
+export const updateAppModuleSort = (body: { parentId: string | null; moduleIds: string[] }) =>
+  api.post<boolean>("/api/app/module/updateSort", body)
 
 export const deleteAppModule = (moduleId: string) => api.post<boolean>("/api/app/module/delete", { moduleId })

@@ -52,6 +52,13 @@ export const updateAppModuleSchema = z
   })
   .meta({ id: "更新模块请求" })
 
+export const updateAppModuleSortSchema = z
+  .object({
+    parentId: shape.parentId,
+    moduleIds: z.array(shape.moduleId).describe("排序后的模块ID列表"),
+  })
+  .meta({ id: "更新模块排序请求" })
+
 export const deleteAppModuleSchema = z
   .object({
     moduleId: shape.moduleId,
@@ -60,7 +67,7 @@ export const deleteAppModuleSchema = z
 
 export const appModuleListQuerySchema = z
   .object({
-    parentId: shape.parentId.optional(),
+    parentId: shape.parentId.or(z.literal("global")).optional(),
     name: shape.name.optional(),
     routePath: shape.routePath.optional(),
     permissionCode: shape.permissionCode.optional(),

@@ -110,6 +110,12 @@ export function User() {
       key: "username",
     },
     {
+      title: "手机号码",
+      align: "center",
+      dataIndex: "phone",
+      key: "phone",
+    },
+    {
       title: "邮箱",
       align: "center",
       dataIndex: "email",
@@ -135,7 +141,7 @@ export function User() {
       key: "isDeleted",
       width: 100,
       render: (isDeleted: boolean) => (
-        <Tag color={isDeleted ? "default" : "processing"}>{isDeleted ? "已删除" : "未删除"}</Tag>
+        <Tag color={isDeleted ? "error" : "default"}>{isDeleted ? "已删除" : "未删除"}</Tag>
       ),
     },
     {

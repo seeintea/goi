@@ -24,7 +24,7 @@ export class UserService {
         updateTime: userSchema.updateTime,
       })
       .from(userSchema)
-      .where(and(eq(userSchema.userId, userId), eq(userSchema.isDeleted, false)))
+      .where(eq(userSchema.userId, userId))
       .limit(1)
     const row = rows[0]
     if (!row) throw new NotFoundException("用户不存在")
@@ -111,8 +111,6 @@ export class UserService {
     if (query.isDisabled !== undefined) where.push(eq(userSchema.isDisabled, query.isDisabled))
     if (query.isDeleted !== undefined) {
       where.push(eq(userSchema.isDeleted, query.isDeleted))
-    } else {
-      where.push(eq(userSchema.isDeleted, false))
     }
 
     const pageParams = normalizePage(query)

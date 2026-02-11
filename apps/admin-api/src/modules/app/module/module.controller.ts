@@ -12,6 +12,7 @@ import {
   ModulePageResponseDto,
   ModuleResponseDto,
   UpdateModuleDto,
+  UpdateModuleSortDto,
 } from "./module.dto"
 import { ModuleService } from "./module.service"
 
@@ -25,7 +26,10 @@ export class ModuleController {
   @ApiOperation({ summary: "创建模块" })
   @ZodResponse({ type: ModuleResponseDto })
   async create(@Body() body: CreateModuleDto) {
-    return this.moduleService.create({ ...body, moduleId: nanoid(32) })
+    return this.moduleService.create({
+      ...body,
+      moduleId: nanoid(),
+    })
   }
 
   @Get("find")
@@ -52,6 +56,14 @@ export class ModuleController {
     return this.moduleService.all(query)
   }
 
+  @Get("parents")
+  @Permission("app:module:read")
+  @ApiOperation({ summary: "查询所有父模块列表" })
+  @ZodResponse({ type: ModuleListResponseDto })
+  async parents() {
+    return this.moduleService.parents()
+  }
+
   @Get("roots")
   @Permission("app:module:read")
   @ApiOperation({ summary: "查询根模块列表" })
@@ -66,6 +78,13 @@ export class ModuleController {
   @ZodResponse({ type: ModuleResponseDto })
   async update(@Body() body: UpdateModuleDto) {
     return this.moduleService.update(body)
+  }
+
+  @Post("updateSort")
+  @Permission("app:module:update")
+  @ApiOperation({ summary: "更新模块排序" })
+  async updateSort(@Body() body: UpdateModuleSortDto) {
+    return this.moduleService.updateSort(body)
   }
 
   @Post("delete")

@@ -8,4 +8,5 @@ export {
   createAppModuleSchema,
   deleteAppModuleSchema,
   updateAppModuleSchema,
+  updateAppModuleSortSchema,
 } from "./module.schema"

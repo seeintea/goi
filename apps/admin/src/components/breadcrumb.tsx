@@ -5,6 +5,7 @@ export function Breadcrumb() {
   const matches = useMatches()
 
   const items = matches
+    // biome-ignore lint/suspicious/noExplicitAny: <allow any>
     .filter((match) => match.staticData && (match.staticData as any).name)
     .map((match) => {
       const { name } = match.staticData as { name: string }

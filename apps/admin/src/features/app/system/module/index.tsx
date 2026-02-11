@@ -1,29 +1,51 @@
 import type { AppModule } from "@goi/contracts"
-import { Button, Card, Form, message, Popconfirm, Space, Table } from "antd"
+import { Button, Card, Form, message, Popconfirm, Space, Table, Tag } from "antd"
 import type { ColumnsType } from "antd/es/table"
-import { type AppModuleListQuery, deleteAppModule, listAppModules } from "@/api/service/app/module"
+import { useEffect, useState } from "react"
+import {
+  type AppModuleListQuery,
+  deleteAppModule,
+  listAppModules,
+  listParentAppModules,
+} from "@/api/service/app/module"
 import { type FilterField, FilterForm } from "@/components/filter-form"
 import { ShortId } from "@/components/short-id"
 import { useModal } from "@/hooks/use-modal"
 import { useTable } from "@/hooks/use-table"
 import { ModuleModal } from "./components/module-modal"
+import { SortModal } from "./components/sort-modal"
 
 export function ModuleList() {
   const [form] = Form.useForm()
+  const [modules, setModules] = useState<AppModule[]>([])
+
+  useEffect(() => {
+    listParentAppModules().then(({ code, data }) => {
+      if (code === 200) {
+        setModules(data)
+      }
+    })
+  }, [])
 
   const { tableProps, search, refresh } = useTable<AppModule, AppModuleListQuery>(listAppModules, {
     form,
     defaultParams: {
       name: undefined,
+      parentId: undefined,
       routePath: undefined,
       permissionCode: undefined,
     },
   })
 
   const moduleModal = useModal<AppModule>()
+  const sortModal = useModal<void>()
 
   const handleCreate = () => {
     moduleModal.show()
+  }
+
+  const handleSort = () => {
+    sortModal.show()
   }
 
   const handleEdit = (record: AppModule) => {
@@ -64,12 +86,14 @@ export function ModuleList() {
       align: "center",
       dataIndex: "routePath",
       width: 200,
+      render: (path: string) => <Tag color="default">{path || "-"}</Tag>,
     },
     {
       title: "权限编码",
       align: "center",
       dataIndex: "permissionCode",
       width: 150,
+      render: (code: string) => <Tag color="geekblue">{code || "-"}</Tag>,
     },
     {
       title: "父模块名称",
@@ -81,7 +105,7 @@ export function ModuleList() {
     {
       title: "排序",
       align: "center",
-      dataIndex: "order",
+      dataIndex: "sort",
       width: 80,
     },
     {
@@ -89,6 +113,7 @@ export function ModuleList() {
       align: "center",
       dataIndex: "createTime",
       width: 180,
+      render: (text) => (text ? new Date(text).toLocaleString() : "-"),
     },
     {
       title: "操作",
@@ -129,6 +154,20 @@ export function ModuleList() {
 
   const filterFields: FilterField[] = [
     { name: "name", label: "模块名称", type: "input" },
+    {
+      name: "parentId",
+      label: "父模块",
+      type: "select",
+      options: [
+        { label: "全局模块 (根模块)", value: "global" },
+        ...modules.map((m) => ({ label: m.name, value: m.moduleId })),
+      ],
+      props: {
+        showSearch: true,
+        filterOption: (input: string, option?: { label: string; value: string }) =>
+          (option?.label ?? "").toLowerCase().includes(input.toLowerCase()),
+      },
+    },
     { name: "routePath", label: "路由路径", type: "input" },
     { name: "permissionCode", label: "权限编码", type: "input" },
   ]
@@ -143,12 +182,15 @@ export function ModuleList() {
       />
 
       <div className="mb-4">
-        <Button
-          type="primary"
-          onClick={handleCreate}
-        >
-          新增路由模块
-        </Button>
+        <Space>
+          <Button
+            type="primary"
+            onClick={handleCreate}
+          >
+            新增路由模块
+          </Button>
+          <Button onClick={handleSort}>排序</Button>
+        </Space>
       </div>
 
       <Table
@@ -162,6 +204,11 @@ export function ModuleList() {
         open={moduleModal.open}
         record={moduleModal.data}
         onOpenChange={moduleModal.hide}
+        onSuccess={refresh}
+      />
+      <SortModal
+        open={sortModal.open}
+        onOpenChange={sortModal.hide}
         onSuccess={refresh}
       />
     </Card>

@@ -1,7 +1,7 @@
 import type { AppModule, CreateAppModule, UpdateAppModule } from "@goi/contracts"
 import { normalizePage, toIsoString, toPageResult } from "@goi/utils"
 import { Injectable, NotFoundException } from "@nestjs/common"
-import { and, asc, desc, eq, inArray, isNull, like, sql } from "drizzle-orm"
+import { and, asc, desc, eq, inArray, isNotNull, isNull, like, sql } from "drizzle-orm"
 import { PgService, pgSchema } from "@/database/postgresql"
 import { RedisService } from "@/database/redis"
 import type { PageResult } from "@/types/response"
@@ -92,13 +92,28 @@ export class ModuleService {
   }
 
   async create(values: CreateAppModule & { moduleId: string }): Promise<AppModule> {
+    // Calculate sort order if not provided
+    let sort = values.sort
+    if (sort === undefined) {
+      const where = values.parentId
+        ? and(eq(authModuleSchema.parentId, values.parentId), eq(authModuleSchema.isDeleted, false))
+        : and(isNull(authModuleSchema.parentId), eq(authModuleSchema.isDeleted, false))
+
+      const maxSortResult = await this.pg.pdb
+        .select({ maxSort: sql<number>`max(${authModuleSchema.sort})` })
+        .from(authModuleSchema)
+        .where(where)
+
+      sort = (Number(maxSortResult[0]?.maxSort) || 0) + 1
+    }
+
     await this.pg.pdb.insert(authModuleSchema).values({
       moduleId: values.moduleId,
       parentId: values.parentId ?? null,
       name: values.name,
       routePath: values.routePath,
       permissionCode: values.permissionCode,
-      sort: values.sort ?? 0,
+      sort: sort,
       isDeleted: false,
     })
 
@@ -106,6 +121,22 @@ export class ModuleService {
     await this.redisService.hSet(MODULE_NAMES_CACHE_KEY, values.moduleId, values.name)
 
     return this.find(values.moduleId)
+  }
+
+  async updateSort(values: { parentId: string | null; moduleIds: string[] }): Promise<boolean> {
+    const { moduleIds } = values
+    if (moduleIds.length === 0) return true
+
+    await this.pg.pdb.transaction(async (tx) => {
+      for (let i = 0; i < moduleIds.length; i++) {
+        await tx
+          .update(authModuleSchema)
+          .set({ sort: i + 1 })
+          .where(eq(authModuleSchema.moduleId, moduleIds[i]))
+      }
+    })
+
+    return true
   }
 
   async update(values: UpdateAppModule): Promise<AppModule> {
@@ -145,8 +176,11 @@ export class ModuleService {
     permissionCode?: string
   }): Promise<AppModule[]> {
     const where: Parameters<typeof and> = [eq(authModuleSchema.isDeleted, false)]
-    if (query.parentId === null) where.push(isNull(authModuleSchema.parentId))
-    if (query.parentId) where.push(eq(authModuleSchema.parentId, query.parentId))
+    if (query.parentId === "global" || query.parentId === null) {
+      where.push(isNull(authModuleSchema.parentId))
+    } else if (query.parentId) {
+      where.push(eq(authModuleSchema.parentId, query.parentId))
+    }
     if (query.name) where.push(like(authModuleSchema.name, `%${query.name}%`))
     if (query.routePath) where.push(like(authModuleSchema.routePath, `%${query.routePath}%`))
     if (query.permissionCode) where.push(like(authModuleSchema.permissionCode, `%${query.permissionCode}%`))
@@ -174,6 +208,38 @@ export class ModuleService {
     }))
   }
 
+  async parents(): Promise<AppModule[]> {
+    // Subquery to find modules that are referenced as parentId by other modules
+    const children = this.pg.pdb
+      .select({ parentId: authModuleSchema.parentId })
+      .from(authModuleSchema)
+      .where(and(eq(authModuleSchema.isDeleted, false), isNotNull(authModuleSchema.parentId)))
+      .groupBy(authModuleSchema.parentId)
+
+    // Find modules whose ID is in the children's parentId list
+    const rows = await this.pg.pdb
+      .select({
+        moduleId: authModuleSchema.moduleId,
+        parentId: authModuleSchema.parentId,
+        name: authModuleSchema.name,
+        routePath: authModuleSchema.routePath,
+        permissionCode: authModuleSchema.permissionCode,
+        sort: authModuleSchema.sort,
+        isDeleted: authModuleSchema.isDeleted,
+        createTime: authModuleSchema.createTime,
+        updateTime: authModuleSchema.updateTime,
+      })
+      .from(authModuleSchema)
+      .where(and(eq(authModuleSchema.isDeleted, false), inArray(authModuleSchema.moduleId, children)))
+      .orderBy(asc(authModuleSchema.sort), desc(authModuleSchema.createTime))
+
+    return rows.map((row) => ({
+      ...row,
+      createTime: toIsoString(row.createTime),
+      updateTime: toIsoString(row.updateTime),
+    }))
+  }
+
   async roots(): Promise<AppModule[]> {
     return this.all({ parentId: null })
   }
@@ -187,8 +253,11 @@ export class ModuleService {
     pageSize?: number | string
   }): Promise<PageResult<AppModule>> {
     const where: Parameters<typeof and> = [eq(authModuleSchema.isDeleted, false)]
-    if (query.parentId === null) where.push(isNull(authModuleSchema.parentId))
-    if (query.parentId) where.push(eq(authModuleSchema.parentId, query.parentId))
+    if (query.parentId === "global" || query.parentId === null) {
+      where.push(isNull(authModuleSchema.parentId))
+    } else if (query.parentId) {
+      where.push(eq(authModuleSchema.parentId, query.parentId))
+    }
     if (query.name) where.push(like(authModuleSchema.name, `%${query.name}%`))
     if (query.routePath) where.push(like(authModuleSchema.routePath, `%${query.routePath}%`))
     if (query.permissionCode) where.push(like(authModuleSchema.permissionCode, `%${query.permissionCode}%`))
@@ -215,7 +284,7 @@ export class ModuleService {
       })
       .from(authModuleSchema)
       .where(and(...where))
-      .orderBy(asc(authModuleSchema.sort), desc(authModuleSchema.createTime))
+      .orderBy(desc(authModuleSchema.createTime))
       .limit(pageParams.limit)
       .offset(pageParams.offset)
 

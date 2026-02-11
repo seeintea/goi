@@ -1,6 +1,8 @@
-import type { AppPermission } from "@goi/contracts"
-import { Button, Card, Form, message, Popconfirm, Space, Table } from "antd"
+import type { AppModule, AppPermission } from "@goi/contracts"
+import { Button, Card, Form, message, Popconfirm, Space, Table, Tag } from "antd"
 import type { ColumnsType } from "antd/es/table"
+import { useEffect, useState } from "react"
+import { listAllAppModules } from "@/api/service/app/module"
 import { type AppPermissionListQuery, deleteAppPermission, listAppPermissions } from "@/api/service/app/permission"
 import { type FilterField, FilterForm } from "@/components/filter-form"
 import { ShortId } from "@/components/short-id"
@@ -10,6 +12,15 @@ import { PermissionModal } from "./components/permission-modal"
 
 export function PermissionList() {
   const [form] = Form.useForm()
+  const [modules, setModules] = useState<AppModule[]>([])
+
+  useEffect(() => {
+    listAllAppModules().then(({ code, data }) => {
+      if (code === 200) {
+        setModules(data)
+      }
+    })
+  }, [])
 
   const { tableProps, search, refresh } = useTable<AppPermission, AppPermissionListQuery>(listAppPermissions, {
     form,
@@ -57,6 +68,7 @@ export function PermissionList() {
       dataIndex: "code",
       align: "center",
       width: 200,
+      render: (code: string) => <Tag color="geekblue">{code || "-"}</Tag>,
     },
     {
       title: "权限名称",
@@ -76,11 +88,13 @@ export function PermissionList() {
       align: "center",
       dataIndex: "createTime",
       width: 180,
+      render: (text) => (text ? new Date(text).toLocaleString() : "-"),
     },
     {
       title: "操作",
       key: "action",
       width: 150,
+      align: "center",
       fixed: "right",
       render: (_, record) => (
         <Space>
@@ -115,7 +129,17 @@ export function PermissionList() {
 
   const filterFields: FilterField[] = [
     { name: "code", label: "权限编码", type: "input" },
-    { name: "moduleId", label: "模块ID", type: "input" },
+    {
+      name: "moduleId",
+      label: "模块名称",
+      type: "select",
+      options: modules.map((m) => ({ label: m.name, value: m.moduleId })),
+      props: {
+        showSearch: true,
+        filterOption: (input: string, option?: { label: string; value: string }) =>
+          (option?.label ?? "").toLowerCase().includes(input.toLowerCase()),
+      },
+    },
   ]
 
   return (

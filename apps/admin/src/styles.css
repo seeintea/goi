@@ -15,6 +15,12 @@
   }
 }
 
+@layer antd {
+  .ant-btn-icon {
+    display: flex;
+  }
+}
+
 @theme {
   --color-primary: var(--color-primary);
 }

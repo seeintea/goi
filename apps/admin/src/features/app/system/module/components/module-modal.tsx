@@ -1,5 +1,5 @@
 import type { AppModule, CreateAppModule, UpdateAppModule } from "@goi/contracts"
-import { Form, Input, InputNumber, Modal, message, Select } from "antd"
+import { Form, Input, Modal, message, Select } from "antd"
 import { useEffect, useState } from "react"
 import { createAppModule, listRootAppModules, updateAppModule } from "@/api/service/app/module"
 
@@ -40,7 +40,6 @@ export function ModuleModal({ open, record, onOpenChange, onSuccess }: ModuleMod
         routePath: record.routePath,
         permissionCode: record.permissionCode,
         parentId: record.parentId,
-        sort: record.sort,
       })
     }
   }, [open, record, form])
@@ -129,16 +128,6 @@ export function ModuleModal({ open, record, onOpenChange, onSuccess }: ModuleMod
           <Select
             placeholder="请选择父模块ID (可选)"
             options={rootModules}
-          />
-        </Form.Item>
-
-        <Form.Item
-          name="order"
-          label="排序"
-        >
-          <InputNumber
-            placeholder="请输入排序号"
-            style={{ width: "100%" }}
           />
         </Form.Item>
       </Form>

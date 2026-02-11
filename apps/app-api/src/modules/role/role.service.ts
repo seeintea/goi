@@ -1,6 +1,6 @@
+import { normalizePage, toIsoString, toPageResult } from "@goi/utils"
 import { Injectable, NotFoundException } from "@nestjs/common"
 import { and, desc, eq, like, sql } from "drizzle-orm"
-import { toIsoString, normalizePage, toPageResult } from "@goi/utils"
 import { PgService, pgSchema } from "@/database/postgresql"
 import type { PageResult } from "@/types/response"
 import type { CreateRole, Role, UpdateRole } from "./role.dto"
