@@ -8,7 +8,7 @@ export class RedisService {
 
   async set(key: string, value: string, ttl?: number): Promise<void> {
     if (ttl) {
-      await this.redis.set(key, value, "EX", ttl)
+      await this.redis.set(key, value, { EX: ttl })
     } else {
       await this.redis.set(key, value)
     }
@@ -25,5 +25,21 @@ export class RedisService {
   async exists(key: string): Promise<boolean> {
     const result = await this.redis.exists(key)
     return result === 1
+  }
+
+  async hSet(key: string, field: string, value: string): Promise<number> {
+    return this.redis.hSet(key, field, value)
+  }
+
+  async hmSet(key: string, object: Record<string, string | number>): Promise<number> {
+    return this.redis.hSet(key, object)
+  }
+
+  async hmGet(key: string, ...fields: string[]): Promise<(string | null)[]> {
+    return this.redis.hmGet(key, fields)
+  }
+
+  async hDel(key: string, ...fields: string[]): Promise<number> {
+    return this.redis.hDel(key, fields)
   }
 }

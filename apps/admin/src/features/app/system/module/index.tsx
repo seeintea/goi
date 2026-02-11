@@ -72,11 +72,11 @@ export function ModuleList() {
       width: 150,
     },
     {
-      title: "父模块ID",
+      title: "父模块名称",
       align: "center",
-      dataIndex: "parentId",
-      width: 100,
-      render: (id: string) => (id ? <ShortId id={id} /> : "-"),
+      dataIndex: "parentModuleName",
+      width: 150,
+      render: (name: string) => name || "-",
     },
     {
       title: "排序",

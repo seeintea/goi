@@ -1,15 +1,61 @@
 import type { AdminModule, CreateAdminModule, UpdateAdminModule } from "@goi/contracts"
 import { normalizePage, toIsoString, toPageResult } from "@goi/utils"
 import { Injectable, NotFoundException } from "@nestjs/common"
-import { and, asc, desc, eq, isNull, like, sql } from "drizzle-orm"
+import { and, asc, desc, eq, inArray, isNull, like, sql } from "drizzle-orm"
 import { PgService, pgSchema } from "@/database/postgresql"
+import { RedisService } from "@/database/redis"
 import type { PageResult } from "@/types/response"
 
 const { adminModule: adminModuleSchema } = pgSchema
+const MODULE_NAMES_CACHE_KEY = "admin:module:names"
 
 @Injectable()
 export class ModuleService {
-  constructor(private readonly pg: PgService) {}
+  constructor(
+    private readonly pg: PgService,
+    private readonly redisService: RedisService,
+  ) {}
+
+  async getModuleNames(moduleIds: string[]): Promise<Record<string, string>> {
+    if (moduleIds.length === 0) return {}
+
+    // 1. Try to get from Redis
+    const cachedNames = await this.redisService.hmGet(MODULE_NAMES_CACHE_KEY, ...moduleIds)
+    const result: Record<string, string> = {}
+    const missingIds: string[] = []
+
+    moduleIds.forEach((id, index) => {
+      const name = cachedNames[index]
+      if (name) {
+        result[id] = name
+      } else {
+        missingIds.push(id)
+      }
+    })
+
+    // 2. Fetch missing from DB
+    if (missingIds.length > 0) {
+      const modules = await this.pg.pdb
+        .select({
+          moduleId: adminModuleSchema.moduleId,
+          name: adminModuleSchema.name,
+        })
+        .from(adminModuleSchema)
+        .where(inArray(adminModuleSchema.moduleId, missingIds))
+
+      if (modules.length > 0) {
+        const updates: Record<string, string> = {}
+        for (const m of modules) {
+          result[m.moduleId] = m.name
+          updates[m.moduleId] = m.name
+        }
+        // 3. Update Redis
+        await this.redisService.hmSet(MODULE_NAMES_CACHE_KEY, updates)
+      }
+    }
+
+    return result
+  }
 
   async find(moduleId: string): Promise<AdminModule> {
     const modules = await this.pg.pdb
@@ -31,8 +77,15 @@ export class ModuleService {
     const moduleRow = modules[0]
     if (!moduleRow) throw new NotFoundException("管理员模块不存在")
 
+    let parentModuleName: string | null = null
+    if (moduleRow.parentId) {
+      const names = await this.getModuleNames([moduleRow.parentId])
+      parentModuleName = names[moduleRow.parentId] || null
+    }
+
     return {
       ...moduleRow,
+      parentModuleName,
       createTime: toIsoString(moduleRow.createTime),
       updateTime: toIsoString(moduleRow.updateTime),
     }
@@ -48,6 +101,10 @@ export class ModuleService {
       sort: values.sort ?? 0,
       isDeleted: false,
     })
+
+    // Update cache
+    await this.redisService.hSet(MODULE_NAMES_CACHE_KEY, values.moduleId, values.name)
+
     return this.find(values.moduleId)
   }
 
@@ -64,11 +121,20 @@ export class ModuleService {
       })
       .where(eq(adminModuleSchema.moduleId, values.moduleId))
 
+    // Update cache if name changed
+    if (values.name) {
+      await this.redisService.hSet(MODULE_NAMES_CACHE_KEY, values.moduleId, values.name)
+    }
+
     return this.find(values.moduleId)
   }
 
   async delete(moduleId: string): Promise<boolean> {
     await this.pg.pdb.update(adminModuleSchema).set({ isDeleted: true }).where(eq(adminModuleSchema.moduleId, moduleId))
+
+    // Invalidate cache
+    await this.redisService.hDel(MODULE_NAMES_CACHE_KEY, moduleId)
+
     return true
   }
 
@@ -101,8 +167,12 @@ export class ModuleService {
       .where(and(...where))
       .orderBy(asc(adminModuleSchema.sort), desc(adminModuleSchema.createTime))
 
+    const parentIds = rows.map((r) => r.parentId).filter((id): id is string => !!id)
+    const moduleNames = await this.getModuleNames(parentIds)
+
     return rows.map((row) => ({
       ...row,
+      parentModuleName: row.parentId ? moduleNames[row.parentId] : null,
       createTime: toIsoString(row.createTime),
       updateTime: toIsoString(row.updateTime),
     }))

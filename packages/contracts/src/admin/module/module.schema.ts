@@ -12,12 +12,14 @@ const shape = {
   updateTime: z.iso.datetime().describe("更新时间"),
   page: z.coerce.number().int().min(1).describe("页码"),
   pageSize: z.coerce.number().int().min(1).max(100).describe("每页数量"),
+  parentModuleName: z.string().nullish().describe("父模块名称"),
 } satisfies z.ZodRawShape
 
 export const adminModuleResponseSchema = z
   .object({
     moduleId: shape.moduleId,
     parentId: shape.parentId,
+    parentModuleName: shape.parentModuleName,
     name: shape.name,
     routePath: shape.routePath,
     permissionCode: shape.permissionCode,
@@ -79,6 +81,7 @@ export const adminModuleAllQuerySchema = z
 const adminModulePageItemSchema = z.object({
   moduleId: shape.moduleId,
   parentId: shape.parentId,
+  parentModuleName: shape.parentModuleName,
   name: shape.name,
   routePath: shape.routePath,
   permissionCode: shape.permissionCode,

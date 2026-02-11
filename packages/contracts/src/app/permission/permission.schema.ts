@@ -11,6 +11,7 @@ const shape = {
   updateTime: z.iso.datetime().describe("更新时间"),
   page: z.coerce.number().int().min(1).describe("页码"),
   pageSize: z.coerce.number().int().min(1).max(100).describe("每页数量"),
+  moduleName: z.string().nullish().describe("模块名称"),
 } satisfies z.ZodRawShape
 
 export const appPermissionResponseSchema = z
@@ -19,6 +20,7 @@ export const appPermissionResponseSchema = z
     code: shape.code,
     name: shape.name,
     moduleId: shape.moduleId,
+    moduleName: shape.moduleName,
     isDisabled: shape.isDisabled,
     isDeleted: shape.isDeleted,
     createTime: shape.createTime,
@@ -66,6 +68,7 @@ const appPermissionPageItemSchema = z.object({
   code: shape.code,
   name: shape.name,
   moduleId: shape.moduleId,
+  moduleName: shape.moduleName,
   isDisabled: shape.isDisabled,
   isDeleted: shape.isDeleted,
   createTime: shape.createTime,

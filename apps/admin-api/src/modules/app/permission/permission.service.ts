@@ -4,12 +4,16 @@ import { Injectable, NotFoundException } from "@nestjs/common"
 import { and, desc, eq, like, sql } from "drizzle-orm"
 import { PgService, pgSchema } from "@/database/postgresql"
 import type { PageResult } from "@/types/response"
+import { ModuleService } from "../module/module.service"
 
 const { authPermission: permissionSchema } = pgSchema
 
 @Injectable()
 export class PermissionService {
-  constructor(private readonly pg: PgService) {}
+  constructor(
+    private readonly pg: PgService,
+    private readonly moduleService: ModuleService,
+  ) {}
 
   async find(permissionId: string): Promise<AppPermission> {
     const permissions = await this.pg.pdb
@@ -30,8 +34,12 @@ export class PermissionService {
     const permission = permissions[0]
     if (!permission) throw new NotFoundException("权限不存在")
 
+    const names = await this.moduleService.getModuleNames([permission.moduleId])
+    const moduleName = names[permission.moduleId] || null
+
     return {
       ...permission,
+      moduleName,
       createTime: toIsoString(permission.createTime),
       updateTime: toIsoString(permission.updateTime),
     }
@@ -107,8 +115,12 @@ export class PermissionService {
       .limit(pageParams.limit)
       .offset(pageParams.offset)
 
+    const moduleIds = rows.map((r) => r.moduleId)
+    const moduleNames = await this.moduleService.getModuleNames(moduleIds)
+
     const list = rows.map((row) => ({
       ...row,
+      moduleName: moduleNames[row.moduleId] || null,
       createTime: toIsoString(row.createTime),
       updateTime: toIsoString(row.updateTime),
     }))

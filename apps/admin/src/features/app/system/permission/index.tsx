@@ -65,11 +65,11 @@ export function PermissionList() {
       width: 150,
     },
     {
-      title: "模块ID",
-      dataIndex: "moduleId",
+      title: "模块名称",
+      dataIndex: "moduleName",
       align: "center",
-      width: 100,
-      render: (id: string) => (id ? <ShortId id={id} /> : "-"),
+      width: 150,
+      render: (name: string) => name || "-",
     },
     {
       title: "创建时间",
