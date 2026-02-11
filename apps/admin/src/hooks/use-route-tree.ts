@@ -1,16 +1,16 @@
 import { useRouter } from "@tanstack/react-router"
 import * as React from "react"
 
-type RouteChildStaticData = {
-  name: string
-  permission: string
-  icon: React.ReactNode
-}
-
 export type RouteTreeNode = {
   id: string
   path: string
-  staticData: RouteChildStaticData
+  staticData: {
+    name: string
+    permission: string
+    icon?: React.ReactNode
+    order?: number
+    menuType?: "group" | "item" | "hidden" | "flatten"
+  }
   children?: RouteTreeNode[]
 }
 
@@ -19,12 +19,7 @@ type RouteLike = {
   path?: string
   fullPath?: string
   options?: {
-    staticData?: {
-      name: string
-      permission: string
-      icon: React.ReactNode
-      groupName?: string
-    }
+    staticData?: RouteTreeNode["staticData"]
   }
   children?: unknown
 }
@@ -49,70 +44,51 @@ export function useRouteTree(): RouteTreeNode[] {
   const router = useRouter()
 
   return React.useMemo(() => {
-    const routes: RouteLike[] = []
-
-    const collect = (route: RouteLike) => {
-      for (const child of getRouteChildren(route)) {
-        routes.push(child)
-        collect(child)
-      }
-    }
-
-    collect(router.routeTree as unknown as RouteLike)
-
-    const result: RouteTreeNode[] = []
-    const groups = new Map<string, RouteTreeNode[]>()
-
-    // First pass: collect all valid nodes and group them
-    for (const route of routes) {
+    // Recursive function to build the tree
+    const buildTree = (route: RouteLike): RouteTreeNode[] => {
       const staticData = route.options?.staticData
-      if (!staticData) continue
-      if (staticData.permission === "unauthed") continue
 
+      // 1. Skip if no staticData (assuming strict mode)
+      if (!staticData) return []
+
+      // 2. Skip if unauthed
+      if (staticData.permission === "unauthed" && staticData.menuType !== "flatten") return []
+
+      // 3. Skip if hidden
+      if (staticData.menuType === "hidden") return []
+
+      // Process children first
+      const children = getRouteChildren(route)
+        .flatMap(buildTree)
+        .sort((a, b) => (a.staticData.order ?? 99) - (b.staticData.order ?? 99))
+
+      // 4. Handle "flatten": return children directly, skipping current node
+      if (staticData.menuType === "flatten") {
+        return children
+      }
+
+      // 5. Normal/Group: Create node and attach children
       const node: RouteTreeNode = {
         id: getRouteId(route),
         path: getRoutePath(route),
-        staticData: {
-          name: staticData.name,
-          permission: staticData.permission,
-          icon: staticData.icon,
-        },
+        staticData,
       }
 
-      if (staticData.groupName) {
-        if (!groups.has(staticData.groupName)) {
-          groups.set(staticData.groupName, [])
-        }
-        groups.get(staticData.groupName)?.push(node)
-      } else {
-        result.push(node)
+      if (children.length > 0) {
+        node.children = children
       }
+
+      return [node]
     }
 
-    // Second pass: process groups
-    for (const [groupName, nodes] of groups) {
-      // Find the main node (where name === groupName)
-      const mainNodeIndex = nodes.findIndex((n) => n.staticData.name === groupName)
+    // Root level handling
+    const rootRoute = router.routeTree as unknown as RouteLike
+    const topLevelRoutes = getRouteChildren(rootRoute)
 
-      if (mainNodeIndex !== -1) {
-        const mainNode = nodes[mainNodeIndex]
-        // Remove main node from children list
-        const children = nodes.filter((_, index) => index !== mainNodeIndex)
+    const tree = topLevelRoutes
+      .flatMap(buildTree)
+      .sort((a, b) => (a.staticData.order ?? 99) - (b.staticData.order ?? 99))
 
-        if (children.length > 0) {
-          mainNode.children = children
-        }
-
-        result.push(mainNode)
-      } else {
-        // Fallback: if no main node found, treat all as top-level items
-        // Or create a synthetic group?
-        // Based on user request "make groupName === name data be main data",
-        // if missing, we probably just add them to result as is to avoid losing them.
-        result.push(...nodes)
-      }
-    }
-
-    return result
+    return tree
   }, [router])
 }

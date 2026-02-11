@@ -1,2 +1,16 @@
-@layer base, antd, utilities;
 @import "tailwindcss";
+
+@layer base, antd, utilities;
+
+@layer base {
+  :root {
+    --sidebar-width: 240px;
+    --sidebar-collapsed-width: 64px;
+    --header-height: 64px;
+    --content-padding: 16px 12px;
+  }
+}
+
+@theme {
+  --color-primary: var(--color-primary);
+}

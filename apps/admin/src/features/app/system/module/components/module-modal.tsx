@@ -3,14 +3,14 @@ import { Form, Input, InputNumber, Modal, message, Select } from "antd"
 import { useEffect, useState } from "react"
 import { createAppModule, listRootAppModules, updateAppModule } from "@/api/service/app/module"
 
-interface RoutesModalProps {
+interface ModuleModalProps {
   open: boolean
   record?: AppModule | null
   onOpenChange: (open: boolean) => void
   onSuccess: () => void
 }
 
-export function RoutesModal({ open, record, onOpenChange, onSuccess }: RoutesModalProps) {
+export function ModuleModal({ open, record, onOpenChange, onSuccess }: ModuleModalProps) {
   const [form] = Form.useForm()
   const [submitting, setSubmitting] = useState(false)
   const [rootModules, setRootModules] = useState<{ label: string; value: string }[]>([])

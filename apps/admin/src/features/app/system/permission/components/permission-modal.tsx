@@ -4,14 +4,14 @@ import { useEffect, useState } from "react"
 import { listAllAppModules } from "@/api/service/app/module"
 import { createAppPermission, updateAppPermission } from "@/api/service/app/permission"
 
-interface ButtonModalProps {
+interface PermissionModalProps {
   open: boolean
   record?: AppPermission | null
   onOpenChange: (open: boolean) => void
   onSuccess: () => void
 }
 
-export function ButtonModal({ open, record, onOpenChange, onSuccess }: ButtonModalProps) {
+export function PermissionModal({ open, record, onOpenChange, onSuccess }: PermissionModalProps) {
   const [form] = Form.useForm()
   const [submitting, setSubmitting] = useState(false)
   const [modules, setModules] = useState<{ label: string; value: string }[]>([])

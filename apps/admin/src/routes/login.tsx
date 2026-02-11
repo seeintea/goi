@@ -6,6 +6,6 @@ export const Route = createFileRoute("/login")({
   staticData: {
     name: "登录",
     permission: "unauthed",
-    icon: null,
+    menuType: "hidden",
   },
 })

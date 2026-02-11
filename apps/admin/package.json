@@ -13,7 +13,6 @@
   },
   "dependencies": {
     "@ant-design/cssinjs": "^2.0.3",
-    "@ant-design/icons": "^6.1.0",
     "@goi/contracts": "workspace:*",
     "@goi/utils-web": "workspace:*",
     "@tanstack/react-router": "^1.157.18",
@@ -22,7 +21,6 @@
     "clsx": "^2.1.1",
     "dayjs": "^1.11.19",
     "lucide-react": "^0.563.0",
-    "nanoid": "^5.1.6",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "tailwind-merge": "^3.4.0",

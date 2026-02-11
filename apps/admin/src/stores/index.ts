@@ -1,2 +1,2 @@
-export * from "./useSidebar"
-export * from "./useUser"
+export * from "./use-setting"
+export * from "./use-user"

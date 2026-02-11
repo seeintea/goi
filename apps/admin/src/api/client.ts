@@ -1,5 +1,5 @@
 import { FetchInstance, withHeader } from "@goi/utils-web"
-import { useUser } from "@/stores/useUser"
+import { useUser } from "@/stores"
 
 export * from "@goi/utils-web"
 

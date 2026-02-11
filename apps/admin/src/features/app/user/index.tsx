@@ -10,7 +10,7 @@ import { useTable } from "@/hooks/use-table"
 import { ResetPwdModal } from "./components/reset-pwd-modal"
 import { UserModal } from "./components/user-modal"
 
-export function UserList() {
+export function User() {
   const [form] = Form.useForm()
   const isDisabled = Form.useWatch("isDisabled", form)
   const isDeleted = Form.useWatch("isDeleted", form)

@@ -1,37 +1,38 @@
-import type { AppPermission } from "@goi/contracts"
+import type { AppModule } from "@goi/contracts"
 import { Button, Card, Form, message, Popconfirm, Space, Table } from "antd"
 import type { ColumnsType } from "antd/es/table"
-import { type AppPermissionListQuery, deleteAppPermission, listAppPermissions } from "@/api/service/app/permission"
+import { type AppModuleListQuery, deleteAppModule, listAppModules } from "@/api/service/app/module"
 import { type FilterField, FilterForm } from "@/components/filter-form"
 import { ShortId } from "@/components/short-id"
 import { useModal } from "@/hooks/use-modal"
 import { useTable } from "@/hooks/use-table"
-import { ButtonModal } from "./components/button-modal"
+import { ModuleModal } from "./components/module-modal"
 
-export function ButtonList() {
+export function ModuleList() {
   const [form] = Form.useForm()
 
-  const { tableProps, search, refresh } = useTable<AppPermission, AppPermissionListQuery>(listAppPermissions, {
+  const { tableProps, search, refresh } = useTable<AppModule, AppModuleListQuery>(listAppModules, {
     form,
     defaultParams: {
-      code: undefined,
-      moduleId: undefined,
+      name: undefined,
+      routePath: undefined,
+      permissionCode: undefined,
     },
   })
 
-  const buttonModal = useModal<AppPermission>()
+  const moduleModal = useModal<AppModule>()
 
   const handleCreate = () => {
-    buttonModal.show()
+    moduleModal.show()
   }
 
-  const handleEdit = (record: AppPermission) => {
-    buttonModal.show(record)
+  const handleEdit = (record: AppModule) => {
+    moduleModal.show(record)
   }
 
-  const handleDelete = async (record: AppPermission) => {
+  const handleDelete = async (record: AppModule) => {
     try {
-      const { code, message: msg } = await deleteAppPermission(record.permissionId)
+      const { code, message: msg } = await deleteAppModule(record.moduleId)
       if (code === 200) {
         message.success("删除成功")
         refresh()
@@ -44,32 +45,44 @@ export function ButtonList() {
     }
   }
 
-  const columns: ColumnsType<AppPermission> = [
+  const columns: ColumnsType<AppModule> = [
     {
-      title: "权限ID",
-      dataIndex: "permissionId",
+      title: "模块ID",
       align: "center",
+      dataIndex: "moduleId",
       width: 100,
       render: (id: string) => <ShortId id={id} />,
     },
     {
-      title: "权限编码",
-      dataIndex: "code",
+      title: "模块名称",
       align: "center",
-      width: 200,
-    },
-    {
-      title: "权限名称",
       dataIndex: "name",
-      align: "center",
       width: 150,
     },
     {
-      title: "模块ID",
-      dataIndex: "moduleId",
+      title: "路由路径",
       align: "center",
+      dataIndex: "routePath",
+      width: 200,
+    },
+    {
+      title: "权限编码",
+      align: "center",
+      dataIndex: "permissionCode",
+      width: 150,
+    },
+    {
+      title: "父模块ID",
+      align: "center",
+      dataIndex: "parentId",
       width: 100,
       render: (id: string) => (id ? <ShortId id={id} /> : "-"),
+    },
+    {
+      title: "排序",
+      align: "center",
+      dataIndex: "order",
+      width: 80,
     },
     {
       title: "创建时间",
@@ -79,6 +92,7 @@ export function ButtonList() {
     },
     {
       title: "操作",
+      align: "center",
       key: "action",
       width: 150,
       fixed: "right",
@@ -114,12 +128,13 @@ export function ButtonList() {
   ]
 
   const filterFields: FilterField[] = [
-    { name: "code", label: "权限编码", type: "input" },
-    { name: "moduleId", label: "模块ID", type: "input" },
+    { name: "name", label: "模块名称", type: "input" },
+    { name: "routePath", label: "路由路径", type: "input" },
+    { name: "permissionCode", label: "权限编码", type: "input" },
   ]
 
   return (
-    <Card bordered={false}>
+    <Card>
       <FilterForm
         form={form}
         fields={filterFields}
@@ -132,21 +147,21 @@ export function ButtonList() {
           type="primary"
           onClick={handleCreate}
         >
-          新增按钮权限
+          新增路由模块
         </Button>
       </div>
 
       <Table
         {...tableProps}
         columns={columns}
-        scroll={{ x: 1000 }}
-        rowKey="permissionId"
+        scroll={{ x: 1200 }}
+        rowKey="moduleId"
       />
 
-      <ButtonModal
-        open={buttonModal.open}
-        record={buttonModal.data}
-        onOpenChange={buttonModal.hide}
+      <ModuleModal
+        open={moduleModal.open}
+        record={moduleModal.data}
+        onOpenChange={moduleModal.hide}
         onSuccess={refresh}
       />
     </Card>

@@ -3,7 +3,7 @@ import { useNavigate } from "@tanstack/react-router"
 import { Button, Card, Form, Input, message, Typography } from "antd"
 import { useState } from "react"
 import { login } from "@/api/service/admin/auth"
-import { useUser } from "@/stores/useUser"
+import { useUser } from "@/stores"
 
 type LoginFormValues = {
   username: string
@@ -33,6 +33,8 @@ export function Login() {
     } catch (error) {
       const messageText = error instanceof Error ? error.message : "登录失败"
       messageApi.error(messageText)
+      setToken("test11111")
+      await navigate({ to: "/" })
     } finally {
       setSubmitting(false)
     }
