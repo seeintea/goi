@@ -24,8 +24,8 @@ export class PermissionService {
         moduleId: adminPermissionSchema.moduleId,
         isDisabled: adminPermissionSchema.isDisabled,
         isDeleted: adminPermissionSchema.isDeleted,
-        createTime: adminPermissionSchema.createTime,
-        updateTime: adminPermissionSchema.updateTime,
+        createdAt: adminPermissionSchema.createdAt,
+        updatedAt: adminPermissionSchema.updatedAt,
       })
       .from(adminPermissionSchema)
       .where(and(eq(adminPermissionSchema.permissionId, permissionId), eq(adminPermissionSchema.isDeleted, false)))
@@ -40,8 +40,8 @@ export class PermissionService {
     return {
       ...permission,
       moduleName,
-      createTime: toIsoString(permission.createTime),
-      updateTime: toIsoString(permission.updateTime),
+      createdAt: toIsoString(permission.createdAt),
+      updatedAt: toIsoString(permission.updatedAt),
     }
   }
 
@@ -106,12 +106,12 @@ export class PermissionService {
         moduleId: adminPermissionSchema.moduleId,
         isDisabled: adminPermissionSchema.isDisabled,
         isDeleted: adminPermissionSchema.isDeleted,
-        createTime: adminPermissionSchema.createTime,
-        updateTime: adminPermissionSchema.updateTime,
+        createdAt: adminPermissionSchema.createdAt,
+        updatedAt: adminPermissionSchema.updatedAt,
       })
       .from(adminPermissionSchema)
       .where(and(...where))
-      .orderBy(desc(adminPermissionSchema.createTime))
+      .orderBy(desc(adminPermissionSchema.createdAt))
       .limit(pageParams.limit)
       .offset(pageParams.offset)
 
@@ -121,8 +121,8 @@ export class PermissionService {
     const list = rows.map((row) => ({
       ...row,
       moduleName: moduleNames[row.moduleId] || null,
-      createTime: toIsoString(row.createTime),
-      updateTime: toIsoString(row.updateTime),
+      createdAt: toIsoString(row.createdAt),
+      updatedAt: toIsoString(row.updatedAt),
     }))
 
     return toPageResult(pageParams, total, list)

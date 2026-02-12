@@ -147,8 +147,8 @@ export function User() {
     {
       title: "创建时间",
       align: "center",
-      dataIndex: "createTime",
-      key: "createTime",
+      dataIndex: "createdAt",
+      key: "createdAt",
       width: 180,
       render: (text) => (text ? new Date(text).toLocaleString() : "-"),
     },

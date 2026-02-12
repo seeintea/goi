@@ -11,7 +11,7 @@ export const authRolePermission = pgTable(
     permissionId: varchar("permission_id", { length: 32 })
       .notNull()
       .references(() => authPermission.permissionId, { onDelete: "cascade", onUpdate: "cascade" }),
-    createTime: timestamp("create_time").notNull().defaultNow(),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
   },
   (table) => [primaryKey({ columns: [table.roleId, table.permissionId], name: "auth_role_permission_pkey" })],
 )

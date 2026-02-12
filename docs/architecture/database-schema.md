@@ -7,178 +7,178 @@
 设计目标：
 
 - **融合系统级权限**：直接使用 `packages/infra/src/postgresql/schema/auth` 中的用户和权限表结构。
-- **支持多租户**：以 `families` (账本) 为核心隔离单元，通过 `family_members` 关联用户和角色。
+- **支持多租户**：以 `fin_families` (账本) 为核心隔离单元，通过 `fin_family_members` 关联用户和角色。
 - **支持自定义角色**：`auth_role` 支持系统预设角色（全局）和家庭自定义角色（租户级）。
 - **支持复杂的财务交易**：收入、支出、转账等。
 
-## 2. ER 图 (Entity-Relationship Diagram)
+## 2. ER 图
 
 ```mermaid
 erDiagram
-    auth_user ||--o{ family_members : "belongs to"
-    auth_user ||--o{ transactions : "creates"
+    auth_user ||--o{ fin_family_members : "属于"
+    auth_user ||--o{ fin_transactions : "创建"
 
-    auth_role ||--o{ family_members : "assigned to"
-    auth_role ||--o{ auth_role_permission : "has"
-    auth_permission ||--o{ auth_role_permission : "granted to"
-    auth_module ||--o{ auth_permission : "contains"
+    auth_role ||--o{ fin_family_members : "分配给"
+    auth_role ||--o{ auth_role_permission : "拥有"
+    auth_permission ||--o{ auth_role_permission : "授予"
+    auth_module ||--o{ auth_permission : "包含"
 
-    families ||--o{ family_members : "has"
-    families ||--o{ auth_role : "defines custom roles"
-    families ||--o{ accounts : "owns"
-    families ||--o{ categories : "defines"
-    families ||--o{ transactions : "records"
-    families ||--o{ budgets : "sets"
-    families ||--o{ tags : "defines"
+    fin_families ||--o{ fin_family_members : "拥有"
+    fin_families ||--o{ auth_role : "定义自定义角色"
+    fin_families ||--o{ fin_accounts : "拥有"
+    fin_families ||--o{ fin_categories : "定义"
+    fin_families ||--o{ fin_transactions : "记录"
+    fin_families ||--o{ fin_budgets : "设置"
+    fin_families ||--o{ fin_tags : "定义"
 
-    accounts ||--o{ transactions : "source of"
-    accounts ||--o{ transactions : "destination of (transfer)"
+    fin_accounts ||--o{ fin_transactions : "来源"
+    fin_accounts ||--o{ fin_transactions : "目标"
 
-    categories ||--o{ categories : "parent of"
-    categories ||--o{ transactions : "classifies"
-    categories ||--o{ budgets : "limits"
+    fin_categories ||--o{ fin_categories : "父级"
+    fin_categories ||--o{ fin_transactions : "分类"
+    fin_categories ||--o{ fin_budgets : "限制"
 
-    transactions ||--o{ transaction_tags : "tagged with"
-    tags ||--o{ transaction_tags : "tags"
+    fin_transactions ||--o{ fin_transaction_tags : "打标签"
+    fin_tags ||--o{ fin_transaction_tags : "标签"
 
     auth_user {
-        varchar user_id PK
-        varchar username UK
-        varchar password
-        varchar salt
-        varchar email
-        varchar phone
-        boolean is_disabled
-        boolean is_deleted
-        timestamp create_time
-        timestamp update_time
+        varchar user_id PK "用户ID"
+        varchar username UK "用户名"
+        varchar password "密码"
+        varchar salt "盐"
+        varchar email "邮箱"
+        varchar phone "手机"
+        boolean is_disabled "禁用状态"
+        boolean is_deleted "删除状态"
+        timestamp created_at "创建时间"
+        timestamp updated_at "更新时间"
     }
 
     auth_role {
-        varchar role_id PK
-        varchar family_id FK "Nullable: NULL=System Role"
-        varchar role_code
-        varchar role_name
+        varchar role_id PK "角色ID"
+        varchar family_id FK "家庭ID (空=系统角色)"
+        varchar role_code "角色编码"
+        varchar role_name "角色名称"
         boolean is_disabled
         boolean is_deleted
-        timestamp create_time
-        timestamp update_time
+        timestamp created_at
+        timestamp updated_at
     }
 
     auth_permission {
-        varchar permission_id PK
-        varchar code UK
-        varchar name
-        varchar module_id FK
+        varchar permission_id PK "权限ID"
+        varchar code UK "权限编码"
+        varchar name "权限名称"
+        varchar module_id FK "模块ID"
         boolean is_disabled
         boolean is_deleted
-        timestamp create_time
-        timestamp update_time
+        timestamp created_at
+        timestamp updated_at
     }
 
     auth_role_permission {
         varchar role_id FK
         varchar permission_id FK
-        timestamp create_time
+        timestamp created_at
     }
 
     auth_module {
-        varchar module_id PK
-        varchar parent_id FK
-        varchar name
-        varchar route_path UK
-        varchar permission_code UK
-        int sort
+        varchar module_id PK "模块ID"
+        varchar parent_id FK "父模块ID"
+        varchar name "模块名称"
+        varchar route_path UK "路由路径"
+        varchar permission_code UK "权限编码"
+        int sort "排序"
         boolean is_deleted
-        timestamp create_time
-        timestamp update_time
-    }
-
-    families {
-        uuid id PK
-        varchar name
-        varchar owner_id FK
-        varchar base_currency
-        varchar timezone
         timestamp created_at
         timestamp updated_at
     }
 
-    family_members {
+    fin_families {
+        uuid id PK "家庭ID"
+        varchar name "家庭名称"
+        varchar owner_id FK "拥有者ID"
+        varchar base_currency "本位币"
+        varchar timezone "时区"
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    fin_family_members {
         uuid id PK
         uuid family_id FK
         varchar user_id FK
         varchar role_id FK
-        varchar status
-        timestamp joined_at
+        varchar status "状态"
+        timestamp joined_at "加入时间"
     }
 
-    accounts {
+    fin_accounts {
         uuid id PK
         uuid family_id FK
-        varchar name
-        varchar type
-        decimal balance
-        varchar currency_code
-        decimal credit_limit
-        int billing_day
-        int due_day
-        boolean exclude_from_stats
-        boolean archived
+        varchar name "账户名称"
+        varchar type "账户类型"
+        decimal balance "余额"
+        varchar currency_code "币种"
+        decimal credit_limit "信用额度"
+        int billing_day "账单日"
+        int due_day "还款日"
+        boolean exclude_from_stats "不计入统计"
+        boolean archived "归档"
         timestamp created_at
         timestamp updated_at
     }
 
-    categories {
+    fin_categories {
         uuid id PK
         uuid family_id FK
-        varchar name
-        varchar type
+        varchar name "分类名称"
+        varchar type "类型"
         uuid parent_id FK
-        boolean is_hidden
-        int sort_order
-        varchar icon
-        varchar color
+        boolean is_hidden "隐藏"
+        int sort_order "排序"
+        varchar icon "图标"
+        varchar color "颜色"
         timestamp created_at
         timestamp updated_at
     }
 
-    transactions {
+    fin_transactions {
         uuid id PK
         uuid family_id FK
         uuid account_id FK
         uuid to_account_id FK
         uuid category_id FK
-        decimal amount
-        varchar type
-        timestamp occurred_at
-        varchar description
-        varchar created_by FK
+        decimal amount "金额"
+        varchar type "类型"
+        timestamp occurred_at "发生时间"
+        varchar description "描述"
+        varchar created_by FK "创建人"
         timestamp created_at
         timestamp updated_at
     }
 
-    tags {
+    fin_tags {
         uuid id PK
         uuid family_id FK
-        varchar name
-        varchar color
+        varchar name "标签名"
+        varchar color "颜色"
         timestamp created_at
     }
 
-    transaction_tags {
+    fin_transaction_tags {
         uuid transaction_id FK
         uuid tag_id FK
     }
 
-    budgets {
+    fin_budgets {
         uuid id PK
         uuid family_id FK
         uuid category_id FK
-        decimal amount
-        varchar period_type
-        date start_date
-        date end_date
+        decimal amount "金额"
+        varchar period_type "周期"
+        date start_date "开始日期"
+        date end_date "结束日期"
         timestamp created_at
         timestamp updated_at
     }
@@ -215,8 +215,8 @@ erDiagram
 | `is_virtual`  | BOOLEAN      | DEFAULT FALSE    | **新增**：是否为虚拟账户                          |
 | `is_disabled` | BOOLEAN      | DEFAULT FALSE    | 账号是否禁用                                      |
 | `is_deleted`  | BOOLEAN      | DEFAULT FALSE    | 软删除标记                                        |
-| `create_time` | TIMESTAMP    | DEFAULT NOW()    | 创建时间                                          |
-| `update_time` | TIMESTAMP    | DEFAULT NOW()    | 更新时间                                          |
+| `created_at`  | TIMESTAMP    | DEFAULT NOW()    | 创建时间                                          |
+| `updated_at`  | TIMESTAMP    | DEFAULT NOW()    | 更新时间                                          |
 
 #### 2. 角色表 (`auth_role`)
 
@@ -237,8 +237,8 @@ erDiagram
 | `role_name`   | VARCHAR(50) | NOT NULL          | 角色名称 (e.g. "家庭拥有者")                         |
 | `is_disabled` | BOOLEAN     | DEFAULT FALSE     |                                                      |
 | `is_deleted`  | BOOLEAN     | DEFAULT FALSE     |                                                      |
-| `create_time` | TIMESTAMP   | DEFAULT NOW()     |                                                      |
-| `update_time` | TIMESTAMP   | DEFAULT NOW()     |                                                      |
+| `created_at`  | TIMESTAMP   | DEFAULT NOW()     |                                                      |
+| `updated_at`  | TIMESTAMP   | DEFAULT NOW()     |                                                      |
 
 **约束逻辑**：
 
@@ -257,8 +257,8 @@ erDiagram
 | `module_id`     | VARCHAR(32) | FK -> auth_module | 所属模块                      |
 | `is_disabled`   | BOOLEAN     | DEFAULT FALSE     |                               |
 | `is_deleted`    | BOOLEAN     | DEFAULT FALSE     |                               |
-| `create_time`   | TIMESTAMP   | DEFAULT NOW()     |                               |
-| `update_time`   | TIMESTAMP   | DEFAULT NOW()     |                               |
+| `created_at`    | TIMESTAMP   | DEFAULT NOW()     |                               |
+| `updated_at`    | TIMESTAMP   | DEFAULT NOW()     |                               |
 
 #### 4. 角色-权限关联表 (`auth_role_permission`)
 
@@ -268,7 +268,7 @@ erDiagram
 | :-------------- | :----------------------- | :-------------------- | :------- |
 | `role_id`       | VARCHAR(32)              | FK -> auth_role       |          |
 | `permission_id` | VARCHAR(32)              | FK -> auth_permission |          |
-| `create_time`   | TIMESTAMP                | DEFAULT NOW()         |          |
+| `created_at`    | TIMESTAMP                | DEFAULT NOW()         |          |
 | **PK**          | (role_id, permission_id) |                       | 联合主键 |
 
 #### 5. 模块表 (`auth_module`)
@@ -284,14 +284,14 @@ erDiagram
 | `permission_code` | VARCHAR(80)  | UNIQUE, NOT NULL  | 关联的权限标识 |
 | `sort`            | INTEGER      | DEFAULT 0         | 排序           |
 | `is_deleted`      | BOOLEAN      | DEFAULT FALSE     |                |
-| `create_time`     | TIMESTAMP    | DEFAULT NOW()     |                |
-| `update_time`     | TIMESTAMP    | DEFAULT NOW()     |                |
+| `created_at`      | TIMESTAMP    | DEFAULT NOW()     |                |
+| `updated_at`      | TIMESTAMP    | DEFAULT NOW()     |                |
 
 ---
 
-### 3.2 业务核心：家庭与成员 (Families & Members)
+### 3.2 业务核心：家庭与成员
 
-#### 6. 家庭/账本表 (`families`)
+#### 6. 家庭/账本表 (`fin_families`)
 
 租户隔离的核心单元。W1 阶段对应 "Book" (账本)。
 
@@ -305,24 +305,24 @@ erDiagram
 | `created_at`    | TIMESTAMP   | DEFAULT NOW()           | 创建时间                      |
 | `updated_at`    | TIMESTAMP   | DEFAULT NOW()           | 更新时间                      |
 
-#### 7. 家庭成员表 (`family_members`)
+#### 7. 家庭成员表 (`fin_family_members`)
 
 连接用户、家庭和角色，实现基于家庭的 RBAC。
 
-| 字段名      | 类型        | 约束                                  | 说明                                              |
-| :---------- | :---------- | :------------------------------------ | :------------------------------------------------ |
-| `id`        | UUID        | PK                                    |                                                   |
-| `family_id` | UUID        | FK -> families.id                     |                                                   |
-| `user_id`   | VARCHAR(32) | FK -> auth_user.user_id               |                                                   |
-| `role_id`   | VARCHAR(32) | FK -> auth_role.role_id               | 用户在该家庭中的角色 (System Role OR Custom Role) |
-| `status`    | VARCHAR     | ENUM('INVITED', 'ACTIVE', 'DISABLED') | 状态                                              |
-| `joined_at` | TIMESTAMP   | DEFAULT NOW()                         | 加入时间                                          |
+| 字段名      | 类型        | 约束                                  | 说明                                          |
+| :---------- | :---------- | :------------------------------------ | :-------------------------------------------- |
+| `id`        | UUID        | PK                                    |                                               |
+| `family_id` | UUID        | FK -> families.id                     |                                               |
+| `user_id`   | VARCHAR(32) | FK -> auth_user.user_id               |                                               |
+| `role_id`   | VARCHAR(32) | FK -> auth_role.role_id               | 用户在该家庭中的角色 (系统角色 或 自定义角色) |
+| `status`    | VARCHAR     | ENUM('INVITED', 'ACTIVE', 'DISABLED') | 状态                                          |
+| `joined_at` | TIMESTAMP   | DEFAULT NOW()                         | 加入时间                                      |
 
 ---
 
 ### 3.3 财务核心 (Finance Core)
 
-#### 8. 账户表 (`accounts`)
+#### 8. 账户表 (`fin_accounts`)
 
 管理资金的容器。
 
@@ -343,7 +343,7 @@ erDiagram
 | `created_at`         | TIMESTAMP | DEFAULT NOW()     |                                      |
 | `updated_at`         | TIMESTAMP | DEFAULT NOW()     |                                      |
 
-#### 9. 分类表 (`categories`)
+#### 9. 分类表 (`fin_categories`)
 
 收支分类，支持多级树形结构。
 
@@ -361,7 +361,7 @@ erDiagram
 | `created_at` | TIMESTAMP | DEFAULT NOW()             |                         |
 | `updated_at` | TIMESTAMP | DEFAULT NOW()             |                         |
 
-#### 10. 标签表 (`tags`)
+#### 10. 标签表 (`fin_tags`)
 
 交易的多维度标记（如：#旅游 #装修）。
 
@@ -377,7 +377,7 @@ erDiagram
 
 ### 3.4 交易流水 (Transactions)
 
-#### 11. 交易流水表 (`transactions`)
+#### 11. 交易流水表 (`fin_transactions`)
 
 系统的核心数据表，记录每一笔资金变动。
 
@@ -402,7 +402,7 @@ erDiagram
 | `created_at`    | TIMESTAMP   | DEFAULT NOW()                         | 入库时间                              |
 | `updated_at`    | TIMESTAMP   | DEFAULT NOW()                         |                                       |
 
-#### 12. 交易-标签关联表 (`transaction_tags`)
+#### 12. 交易-标签关联表 (`fin_transaction_tags`)
 
 多对多关系表。
 
@@ -410,36 +410,35 @@ erDiagram
 | :--------------- | :----------------------- | :-------------------- | :------- |
 | `transaction_id` | UUID                     | FK -> transactions.id |          |
 | `tag_id`         | UUID                     | FK -> tags.id         |          |
-| **PK**           | (transaction_id, tag_id) |                       | 联合主键 |
+| `PK`             | (transaction_id, tag_id) |                       | 联合主键 |
 
 ---
 
 ### 3.5 预算 (Budgeting)
 
-#### 13. 预算表 (`budgets`)
+#### 13. 预算表 (`fin_budgets`)
 
 设置消费限额。
 
-| 字段名        | 类型      | 约束                                 | 说明                                |
-| :------------ | :-------- | :----------------------------------- | :---------------------------------- |
-| `id`          | UUID      | PK                                   |                                     |
-| `family_id`   | UUID      | FK -> families.id                    |                                     |
-| `category_id` | UUID      | FK -> categories.id                  | 预算关联的分类 (为空则为家庭总预算) |
-| `amount`      | DECIMAL   | NOT NULL                             | 预算金额                            |
-| `period_type` | VARCHAR   | ENUM('MONTHLY', 'YEARLY', 'ONE_OFF') | 周期类型                            |
-| `start_date`  | DATE      | NOT NULL                             | 开始日期                            |
-| `end_date`    | DATE      |                                      | 结束日期                            |
-| `created_at`  | TIMESTAMP | DEFAULT NOW()                        |                                     |
-| `updated_at`  | TIMESTAMP | DEFAULT NOW()                        |                                     |
+| 字段名        | 类型      | 约束                                 | 说明                         |
+| :------------ | :-------- | :----------------------------------- | :--------------------------- |
+| `id`          | UUID      | PK                                   |                              |
+| `family_id`   | UUID      | FK -> families.id                    |                              |
+| `category_id` | UUID      | FK -> categories.id                  | 空=家庭总预算；非空=分类预算 |
+| `amount`      | DECIMAL   | NOT NULL                             | 预算金额                     |
+| `period_type` | VARCHAR   | ENUM('MONTHLY', 'YEARLY', 'ONE_OFF') | 周期类型                     |
+| `start_date`  | DATE      | NOT NULL                             |                              |
+| `end_date`    | DATE      |                                      |                              |
+| `created_at`  | TIMESTAMP | DEFAULT NOW()                        |                              |
+| `updated_at`  | TIMESTAMP | DEFAULT NOW()                        |                              |
 
 ---
 
-### 3.6 系统审计 (System Audit)
+### 3.6 系统审计
 
 #### 14. 审计日志表 (`sys_audit_log`)
 
-记录关键业务操作日志（Who did What to Whom and When）。
-这对于**虚拟账户**场景尤为重要，因为我们需要知道“这笔归属于孩子的账，到底是谁记的”。
+记录关键业务操作，用于追溯和安全审计。
 
 | 字段名          | 类型        | 约束                    | 说明                                |
 | :-------------- | :---------- | :---------------------- | :---------------------------------- |
@@ -450,13 +449,6 @@ erDiagram
 | `target_entity` | VARCHAR(50) | NOT NULL                | 操作对象 (e.g., `TRANSACTION`)      |
 | `target_id`     | VARCHAR(50) | NOT NULL                | 对象ID (e.g., 流水ID)               |
 | `changes`       | JSONB       |                         | 变更内容快照 (Old/New Values)       |
-| `ip_address`    | VARCHAR(45) |                         | 操作IP                              |
-| `user_agent`    | VARCHAR     |                         | 客户端信息                          |
+| `ip_address`    | VARCHAR(45) |                         | 操作 IP                             |
+| `user_agent`    | TEXT        |                         | 客户端信息                          |
 | `created_at`    | TIMESTAMP   | DEFAULT NOW()           | 操作时间                            |
-
-> **存储策略说明**：
-> 对于中小规模的家庭理财应用，建议直接**存储在数据库**中。
->
-> 1.  **数据关联强**：审计日志常需要关联 User/Family 信息展示给用户（如“修改历史”）。
-> 2.  **事务一致性**：业务操作成功才记录日志，数据库事务能保证这一点。
-> 3.  **成本低**：无需维护额外的日志服务（如 ELK）。定期清理（如保留 6 个月）即可防止表过大。

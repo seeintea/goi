@@ -67,8 +67,8 @@ export class ModuleService {
         permissionCode: authModuleSchema.permissionCode,
         sort: authModuleSchema.sort,
         isDeleted: authModuleSchema.isDeleted,
-        createTime: authModuleSchema.createTime,
-        updateTime: authModuleSchema.updateTime,
+        createdAt: authModuleSchema.createdAt,
+        updatedAt: authModuleSchema.updatedAt,
       })
       .from(authModuleSchema)
       .where(and(eq(authModuleSchema.moduleId, moduleId), eq(authModuleSchema.isDeleted, false)))
@@ -86,8 +86,8 @@ export class ModuleService {
     return {
       ...moduleRow,
       parentModuleName,
-      createTime: toIsoString(moduleRow.createTime),
-      updateTime: toIsoString(moduleRow.updateTime),
+      createdAt: toIsoString(moduleRow.createdAt),
+      updatedAt: toIsoString(moduleRow.updatedAt),
     }
   }
 
@@ -194,17 +194,21 @@ export class ModuleService {
         permissionCode: authModuleSchema.permissionCode,
         sort: authModuleSchema.sort,
         isDeleted: authModuleSchema.isDeleted,
-        createTime: authModuleSchema.createTime,
-        updateTime: authModuleSchema.updateTime,
+        createdAt: authModuleSchema.createdAt,
+        updatedAt: authModuleSchema.updatedAt,
       })
       .from(authModuleSchema)
       .where(and(...where))
-      .orderBy(asc(authModuleSchema.sort), desc(authModuleSchema.createTime))
+      .orderBy(asc(authModuleSchema.sort), desc(authModuleSchema.createdAt))
+
+    const parentIds = rows.map((r) => r.parentId).filter((id): id is string => !!id)
+    const moduleNames = await this.getModuleNames(parentIds)
 
     return rows.map((row) => ({
       ...row,
-      createTime: toIsoString(row.createTime),
-      updateTime: toIsoString(row.updateTime),
+      parentModuleName: row.parentId ? moduleNames[row.parentId] : null,
+      createdAt: toIsoString(row.createdAt),
+      updatedAt: toIsoString(row.updatedAt),
     }))
   }
 
@@ -226,17 +230,17 @@ export class ModuleService {
         permissionCode: authModuleSchema.permissionCode,
         sort: authModuleSchema.sort,
         isDeleted: authModuleSchema.isDeleted,
-        createTime: authModuleSchema.createTime,
-        updateTime: authModuleSchema.updateTime,
+        createdAt: authModuleSchema.createdAt,
+        updatedAt: authModuleSchema.updatedAt,
       })
       .from(authModuleSchema)
       .where(and(eq(authModuleSchema.isDeleted, false), inArray(authModuleSchema.moduleId, children)))
-      .orderBy(asc(authModuleSchema.sort), desc(authModuleSchema.createTime))
+      .orderBy(asc(authModuleSchema.sort), desc(authModuleSchema.createdAt))
 
     return rows.map((row) => ({
       ...row,
-      createTime: toIsoString(row.createTime),
-      updateTime: toIsoString(row.updateTime),
+      createdAt: toIsoString(row.createdAt),
+      updatedAt: toIsoString(row.updatedAt),
     }))
   }
 
@@ -279,12 +283,12 @@ export class ModuleService {
         permissionCode: authModuleSchema.permissionCode,
         sort: authModuleSchema.sort,
         isDeleted: authModuleSchema.isDeleted,
-        createTime: authModuleSchema.createTime,
-        updateTime: authModuleSchema.updateTime,
+        createdAt: authModuleSchema.createdAt,
+        updatedAt: authModuleSchema.updatedAt,
       })
       .from(authModuleSchema)
       .where(and(...where))
-      .orderBy(desc(authModuleSchema.createTime))
+      .orderBy(desc(authModuleSchema.createdAt))
       .limit(pageParams.limit)
       .offset(pageParams.offset)
 
@@ -294,8 +298,8 @@ export class ModuleService {
     const list = rows.map((row) => ({
       ...row,
       parentModuleName: row.parentId ? moduleNames[row.parentId] : null,
-      createTime: toIsoString(row.createTime),
-      updateTime: toIsoString(row.updateTime),
+      createdAt: toIsoString(row.createdAt),
+      updatedAt: toIsoString(row.updatedAt),
     }))
 
     return toPageResult(pageParams, total, list)

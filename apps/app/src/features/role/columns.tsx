@@ -49,12 +49,12 @@ export function getRoleColumns({
       },
     },
     {
-      accessorKey: "createTime",
+      accessorKey: "createdAt",
       header: "创建时间",
       cell: ({ row }) => {
-        const createTime = row.getValue<string>("createTime")
-        if (createTime) {
-          return format(new Date(createTime), "yyyy-MM-dd HH:mm:ss")
+        const createdAt = row.getValue<string>("createdAt")
+        if (createdAt) {
+          return format(new Date(createdAt), "yyyy-MM-dd HH:mm:ss")
         }
         return "-"
       },

@@ -8,8 +8,8 @@ export const authRole = pgTable(
     roleName: varchar("role_name", { length: 50 }).notNull(),
     isDisabled: boolean("is_disabled").notNull().default(false),
     isDeleted: boolean("is_deleted").notNull().default(false),
-    createTime: timestamp("create_time").notNull().defaultNow(),
-    updateTime: timestamp("update_time")
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+    updatedAt: timestamp("updated_at")
       .notNull()
       .defaultNow()
       .$onUpdate(() => new Date()),

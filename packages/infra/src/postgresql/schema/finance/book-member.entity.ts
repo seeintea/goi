@@ -16,8 +16,8 @@ export const financeBookMember = pgTable(
     scopeType: varchar("scope_type", { length: 20 }).notNull().default("all"),
     scope: jsonb("scope").notNull().default({}),
     isDeleted: boolean("is_deleted").notNull().default(false),
-    createTime: timestamp("create_time").notNull().defaultNow(),
-    updateTime: timestamp("update_time")
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+    updatedAt: timestamp("updated_at")
       .notNull()
       .defaultNow()
       .$onUpdate(() => new Date()),

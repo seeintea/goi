@@ -7,8 +7,8 @@ export type AppRole = {
   roleName: string
   isDisabled: boolean
   isDeleted: boolean
-  createTime: string
-  updateTime: string
+  createdAt: string
+  updatedAt: string
 }
 
 export type CreateAppRole = {

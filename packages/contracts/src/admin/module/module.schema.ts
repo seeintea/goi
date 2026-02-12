@@ -8,8 +8,8 @@ const shape = {
   permissionCode: z.string().min(1).max(80).describe("页面权限编码"),
   sort: z.coerce.number().int().min(0).describe("排序值"),
   isDeleted: z.boolean().describe("是否删除"),
-  createTime: z.iso.datetime().describe("创建时间"),
-  updateTime: z.iso.datetime().describe("更新时间"),
+  createdAt: z.iso.datetime().describe("创建时间"),
+  updatedAt: z.iso.datetime().describe("更新时间"),
   page: z.coerce.number().int().min(1).describe("页码"),
   pageSize: z.coerce.number().int().min(1).max(100).describe("每页数量"),
   parentModuleName: z.string().nullish().describe("父模块名称"),
@@ -25,8 +25,8 @@ export const adminModuleResponseSchema = z
     permissionCode: shape.permissionCode,
     sort: shape.sort,
     isDeleted: shape.isDeleted,
-    createTime: shape.createTime,
-    updateTime: shape.updateTime,
+    createdAt: shape.createdAt,
+    updatedAt: shape.updatedAt,
   })
   .meta({ id: "管理员模块响应类型" })
 
@@ -87,8 +87,8 @@ const adminModulePageItemSchema = z.object({
   permissionCode: shape.permissionCode,
   sort: shape.sort,
   isDeleted: shape.isDeleted,
-  createTime: shape.createTime,
-  updateTime: shape.updateTime,
+  createdAt: shape.createdAt,
+  updatedAt: shape.updatedAt,
 })
 
 export const adminModulePageResponseSchema = z

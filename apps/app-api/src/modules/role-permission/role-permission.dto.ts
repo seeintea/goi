@@ -4,7 +4,7 @@ import { z } from "zod"
 const shape = {
   roleId: z.string().length(32).describe("角色ID"),
   permissionId: z.string().length(32).describe("权限ID"),
-  createTime: z.iso.datetime().describe("创建时间"),
+  createdAt: z.iso.datetime().describe("创建时间"),
   page: z.coerce.number().int().min(1).describe("页码"),
   pageSize: z.coerce.number().int().min(1).max(100).describe("每页数量"),
 } satisfies z.ZodRawShape
@@ -13,7 +13,7 @@ const rolePermissionResponseSchema = z
   .object({
     roleId: shape.roleId,
     permissionId: shape.permissionId,
-    createTime: shape.createTime,
+    createdAt: shape.createdAt,
   })
   .meta({ id: "角色权限关联响应类型" })
 
@@ -43,7 +43,7 @@ const rolePermissionListQuerySchema = z
 const rolePermissionPageItemSchema = z.object({
   roleId: shape.roleId,
   permissionId: shape.permissionId,
-  createTime: shape.createTime,
+  createdAt: shape.createdAt,
 })
 
 const rolePermissionPageResponseSchema = z

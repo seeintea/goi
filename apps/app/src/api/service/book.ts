@@ -8,8 +8,8 @@ export type Book = {
   timezone: string
   ownerUserId: string
   isDeleted: boolean
-  createTime: string
-  updateTime: string
+  createdAt: string
+  updatedAt: string
 }
 
 export type CreateBook = {

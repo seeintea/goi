@@ -21,8 +21,8 @@ export class BookMemberService {
         scopeType: bookMemberSchema.scopeType,
         scope: bookMemberSchema.scope,
         isDeleted: bookMemberSchema.isDeleted,
-        createTime: bookMemberSchema.createTime,
-        updateTime: bookMemberSchema.updateTime,
+        createdAt: bookMemberSchema.createdAt,
+        updatedAt: bookMemberSchema.updatedAt,
       })
       .from(bookMemberSchema)
       .where(
@@ -36,8 +36,8 @@ export class BookMemberService {
     if (!member) throw new NotFoundException("账本成员不存在")
     return {
       ...member,
-      createTime: toIsoString(member.createTime),
-      updateTime: toIsoString(member.updateTime),
+      createdAt: toIsoString(member.createdAt),
+      updatedAt: toIsoString(member.updatedAt),
     }
   }
 
@@ -103,19 +103,19 @@ export class BookMemberService {
         scopeType: bookMemberSchema.scopeType,
         scope: bookMemberSchema.scope,
         isDeleted: bookMemberSchema.isDeleted,
-        createTime: bookMemberSchema.createTime,
-        updateTime: bookMemberSchema.updateTime,
+        createdAt: bookMemberSchema.createdAt,
+        updatedAt: bookMemberSchema.updatedAt,
       })
       .from(bookMemberSchema)
       .where(and(...where))
-      .orderBy(desc(bookMemberSchema.createTime))
+      .orderBy(desc(bookMemberSchema.createdAt))
       .limit(pageParams.limit)
       .offset(pageParams.offset)
 
     const list = rows.map((row) => ({
       ...row,
-      createTime: toIsoString(row.createTime),
-      updateTime: toIsoString(row.updateTime),
+      createdAt: toIsoString(row.createdAt),
+      updatedAt: toIsoString(row.updatedAt),
     }))
 
     return toPageResult(pageParams, total, list)

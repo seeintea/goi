@@ -7,8 +7,8 @@ const shape = {
   moduleId: z.string().length(32).describe("模块ID"),
   isDisabled: z.boolean().describe("是否禁用"),
   isDeleted: z.boolean().describe("是否删除"),
-  createTime: z.iso.datetime().describe("创建时间"),
-  updateTime: z.iso.datetime().describe("更新时间"),
+  createdAt: z.iso.datetime().describe("创建时间"),
+  updatedAt: z.iso.datetime().describe("更新时间"),
   page: z.coerce.number().int().min(1).describe("页码"),
   pageSize: z.coerce.number().int().min(1).max(100).describe("每页数量"),
   moduleName: z.string().nullish().describe("模块名称"),
@@ -23,8 +23,8 @@ export const appPermissionResponseSchema = z
     moduleName: shape.moduleName,
     isDisabled: shape.isDisabled,
     isDeleted: shape.isDeleted,
-    createTime: shape.createTime,
-    updateTime: shape.updateTime,
+    createdAt: shape.createdAt,
+    updatedAt: shape.updatedAt,
   })
   .meta({ id: "权限响应类型" })
 
@@ -71,8 +71,8 @@ const appPermissionPageItemSchema = z.object({
   moduleName: shape.moduleName,
   isDisabled: shape.isDisabled,
   isDeleted: shape.isDeleted,
-  createTime: shape.createTime,
-  updateTime: shape.updateTime,
+  createdAt: shape.createdAt,
+  updatedAt: shape.updatedAt,
 })
 
 export const appPermissionPageResponseSchema = z

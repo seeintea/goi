@@ -51,8 +51,8 @@ export class UserService {
         phone: adminUserSchema.phone,
         isDisabled: adminUserSchema.isDisabled,
         isDeleted: adminUserSchema.isDeleted,
-        createTime: adminUserSchema.createTime,
-        updateTime: adminUserSchema.updateTime,
+        createdAt: adminUserSchema.createdAt,
+        updatedAt: adminUserSchema.updatedAt,
       })
       .from(adminUserSchema)
       .where(and(eq(adminUserSchema.userId, userId), eq(adminUserSchema.isDeleted, false)))
@@ -63,8 +63,8 @@ export class UserService {
 
     return {
       ...user,
-      createTime: toIsoString(user.createTime),
-      updateTime: toIsoString(user.updateTime),
+      createdAt: toIsoString(user.createdAt),
+      updatedAt: toIsoString(user.updatedAt),
     }
   }
 
@@ -129,19 +129,19 @@ export class UserService {
         phone: adminUserSchema.phone,
         isDisabled: adminUserSchema.isDisabled,
         isDeleted: adminUserSchema.isDeleted,
-        createTime: adminUserSchema.createTime,
-        updateTime: adminUserSchema.updateTime,
+        createdAt: adminUserSchema.createdAt,
+        updatedAt: adminUserSchema.updatedAt,
       })
       .from(adminUserSchema)
       .where(and(...where))
-      .orderBy(desc(adminUserSchema.createTime))
+      .orderBy(desc(adminUserSchema.createdAt))
       .limit(pageParams.limit)
       .offset(pageParams.offset)
 
     const list = rows.map((row) => ({
       ...row,
-      createTime: toIsoString(row.createTime),
-      updateTime: toIsoString(row.updateTime),
+      createdAt: toIsoString(row.createdAt),
+      updatedAt: toIsoString(row.updatedAt),
     }))
 
     return toPageResult(pageParams, total, list)

@@ -16,7 +16,7 @@ export class RolePermissionService {
       .select({
         roleId: rolePermissionSchema.roleId,
         permissionId: rolePermissionSchema.permissionId,
-        createTime: rolePermissionSchema.createTime,
+        createdAt: rolePermissionSchema.createdAt,
       })
       .from(rolePermissionSchema)
       .where(and(eq(rolePermissionSchema.roleId, roleId), eq(rolePermissionSchema.permissionId, permissionId)))
@@ -24,7 +24,7 @@ export class RolePermissionService {
     if (!row) throw new NotFoundException("角色权限关联不存在")
     return {
       ...row,
-      createTime: toIsoString(row.createTime),
+      createdAt: toIsoString(row.createdAt),
     }
   }
 
@@ -66,20 +66,20 @@ export class RolePermissionService {
       .select({
         roleId: rolePermissionSchema.roleId,
         permissionId: rolePermissionSchema.permissionId,
-        createTime: rolePermissionSchema.createTime,
+        createdAt: rolePermissionSchema.createdAt,
       })
       .from(rolePermissionSchema)
     if (where.length) {
       qb.where(and(...where))
     }
     const rows = await qb
-      .orderBy(desc(rolePermissionSchema.createTime))
+      .orderBy(desc(rolePermissionSchema.createdAt))
       .limit(pageParams.limit)
       .offset(pageParams.offset)
 
     const list = rows.map((row) => ({
       ...row,
-      createTime: toIsoString(row.createTime),
+      createdAt: toIsoString(row.createdAt),
     }))
 
     return toPageResult(pageParams, total, list)

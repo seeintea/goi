@@ -4,7 +4,7 @@ import { api } from "../../client"
 export type AppRolePermission = {
   roleId: string
   permissionId: string
-  createTime: string
+  createdAt: string
 }
 
 export type CreateAppRolePermission = {

@@ -67,8 +67,8 @@ export class ModuleService {
         permissionCode: adminModuleSchema.permissionCode,
         sort: adminModuleSchema.sort,
         isDeleted: adminModuleSchema.isDeleted,
-        createTime: adminModuleSchema.createTime,
-        updateTime: adminModuleSchema.updateTime,
+        createdAt: adminModuleSchema.createdAt,
+        updatedAt: adminModuleSchema.updatedAt,
       })
       .from(adminModuleSchema)
       .where(and(eq(adminModuleSchema.moduleId, moduleId), eq(adminModuleSchema.isDeleted, false)))
@@ -86,8 +86,8 @@ export class ModuleService {
     return {
       ...moduleRow,
       parentModuleName,
-      createTime: toIsoString(moduleRow.createTime),
-      updateTime: toIsoString(moduleRow.updateTime),
+      createdAt: toIsoString(moduleRow.createdAt),
+      updatedAt: toIsoString(moduleRow.updatedAt),
     }
   }
 
@@ -160,12 +160,12 @@ export class ModuleService {
         permissionCode: adminModuleSchema.permissionCode,
         sort: adminModuleSchema.sort,
         isDeleted: adminModuleSchema.isDeleted,
-        createTime: adminModuleSchema.createTime,
-        updateTime: adminModuleSchema.updateTime,
+        createdAt: adminModuleSchema.createdAt,
+        updatedAt: adminModuleSchema.updatedAt,
       })
       .from(adminModuleSchema)
       .where(and(...where))
-      .orderBy(asc(adminModuleSchema.sort), desc(adminModuleSchema.createTime))
+      .orderBy(asc(adminModuleSchema.sort), desc(adminModuleSchema.createdAt))
 
     const parentIds = rows.map((r) => r.parentId).filter((id): id is string => !!id)
     const moduleNames = await this.getModuleNames(parentIds)
@@ -173,8 +173,8 @@ export class ModuleService {
     return rows.map((row) => ({
       ...row,
       parentModuleName: row.parentId ? moduleNames[row.parentId] : null,
-      createTime: toIsoString(row.createTime),
-      updateTime: toIsoString(row.updateTime),
+      createdAt: toIsoString(row.createdAt),
+      updatedAt: toIsoString(row.updatedAt),
     }))
   }
 
@@ -214,19 +214,19 @@ export class ModuleService {
         permissionCode: adminModuleSchema.permissionCode,
         sort: adminModuleSchema.sort,
         isDeleted: adminModuleSchema.isDeleted,
-        createTime: adminModuleSchema.createTime,
-        updateTime: adminModuleSchema.updateTime,
+        createdAt: adminModuleSchema.createdAt,
+        updatedAt: adminModuleSchema.updatedAt,
       })
       .from(adminModuleSchema)
       .where(and(...where))
-      .orderBy(asc(adminModuleSchema.sort), desc(adminModuleSchema.createTime))
+      .orderBy(asc(adminModuleSchema.sort), desc(adminModuleSchema.createdAt))
       .limit(pageParams.limit)
       .offset(pageParams.offset)
 
     const list = rows.map((row) => ({
       ...row,
-      createTime: toIsoString(row.createTime),
-      updateTime: toIsoString(row.updateTime),
+      createdAt: toIsoString(row.createdAt),
+      updatedAt: toIsoString(row.updatedAt),
     }))
 
     return toPageResult(pageParams, total, list)

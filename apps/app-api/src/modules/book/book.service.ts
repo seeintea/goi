@@ -21,8 +21,8 @@ export class BookService {
         timezone: bookSchema.timezone,
         ownerUserId: bookSchema.ownerUserId,
         isDeleted: bookSchema.isDeleted,
-        createTime: bookSchema.createTime,
-        updateTime: bookSchema.updateTime,
+        createdAt: bookSchema.createdAt,
+        updatedAt: bookSchema.updatedAt,
       })
       .from(bookSchema)
       .where(and(eq(bookSchema.bookId, bookId), eq(bookSchema.isDeleted, false)))
@@ -44,8 +44,8 @@ export class BookService {
     }
     return {
       ...book,
-      createTime: toIsoString(book.createTime),
-      updateTime: toIsoString(book.updateTime),
+      createdAt: toIsoString(book.createdAt),
+      updatedAt: toIsoString(book.updatedAt),
     }
   }
 
@@ -129,8 +129,8 @@ export class BookService {
         timezone: bookSchema.timezone,
         ownerUserId: bookSchema.ownerUserId,
         isDeleted: bookSchema.isDeleted,
-        createTime: bookSchema.createTime,
-        updateTime: bookSchema.updateTime,
+        createdAt: bookSchema.createdAt,
+        updatedAt: bookSchema.updatedAt,
       })
       .from(bookSchema)
       .leftJoin(
@@ -142,14 +142,14 @@ export class BookService {
         ),
       )
       .where(and(...where))
-      .orderBy(desc(bookSchema.createTime))
+      .orderBy(desc(bookSchema.createdAt))
       .limit(pageParams.limit)
       .offset(pageParams.offset)
 
     const list = rows.map((row) => ({
       ...row,
-      createTime: toIsoString(row.createTime),
-      updateTime: toIsoString(row.updateTime),
+      createdAt: toIsoString(row.createdAt),
+      updatedAt: toIsoString(row.updatedAt),
     }))
 
     return toPageResult(pageParams, total, list)

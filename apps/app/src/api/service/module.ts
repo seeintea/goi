@@ -9,8 +9,8 @@ export type Module = {
   permissionCode: string
   sort: number
   isDeleted: boolean
-  createTime: string
-  updateTime: string
+  createdAt: string
+  updatedAt: string
 }
 
 export type CreateModule = {

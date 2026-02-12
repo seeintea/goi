@@ -9,8 +9,8 @@ const shape = {
   scopeType: z.string().min(1).max(20).describe("范围类型"),
   scope: z.unknown().describe("范围明细"),
   isDeleted: z.boolean().describe("是否删除"),
-  createTime: z.iso.datetime().describe("创建时间"),
-  updateTime: z.iso.datetime().describe("更新时间"),
+  createdAt: z.iso.datetime().describe("创建时间"),
+  updatedAt: z.iso.datetime().describe("更新时间"),
   page: z.coerce.number().int().min(1).describe("页码"),
   pageSize: z.coerce.number().int().min(1).max(100).describe("每页数量"),
 } satisfies z.ZodRawShape
@@ -24,8 +24,8 @@ const bookMemberResponseSchema = z
     scopeType: shape.scopeType,
     scope: shape.scope,
     isDeleted: shape.isDeleted,
-    createTime: shape.createTime,
-    updateTime: shape.updateTime,
+    createdAt: shape.createdAt,
+    updatedAt: shape.updatedAt,
   })
   .meta({ id: "账本成员响应类型" })
 
@@ -72,8 +72,8 @@ const bookMemberPageItemSchema = z.object({
   scopeType: shape.scopeType,
   scope: shape.scope,
   isDeleted: shape.isDeleted,
-  createTime: shape.createTime,
-  updateTime: shape.updateTime,
+  createdAt: shape.createdAt,
+  updatedAt: shape.updatedAt,
 })
 
 const bookMemberPageResponseSchema = z

@@ -9,8 +9,8 @@ const shape = {
   phone: z.string().max(11).describe("手机号"),
   isDisabled: z.boolean().describe("是否禁用"),
   isDeleted: z.boolean().describe("是否删除"),
-  createTime: z.iso.datetime().describe("创建时间"),
-  updateTime: z.iso.datetime().describe("更新时间"),
+  createdAt: z.iso.datetime().describe("创建时间"),
+  updatedAt: z.iso.datetime().describe("更新时间"),
   page: z.coerce.number().int().min(1).describe("页码"),
   pageSize: z.coerce.number().int().min(1).max(100).describe("每页数量"),
 } satisfies z.ZodRawShape
@@ -23,8 +23,8 @@ export const adminUserResponseSchema = z
     phone: shape.phone,
     isDisabled: shape.isDisabled,
     isDeleted: shape.isDeleted,
-    createTime: shape.createTime,
-    updateTime: shape.updateTime,
+    createdAt: shape.createdAt,
+    updatedAt: shape.updatedAt,
   })
   .meta({ id: "管理员用户响应类型" })
 
@@ -73,8 +73,8 @@ const adminUserPageItemSchema = z.object({
   phone: shape.phone,
   isDisabled: shape.isDisabled,
   isDeleted: shape.isDeleted,
-  createTime: shape.createTime,
-  updateTime: shape.updateTime,
+  createdAt: shape.createdAt,
+  updatedAt: shape.updatedAt,
 })
 
 export const adminUserPageResponseSchema = z

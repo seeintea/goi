@@ -20,8 +20,8 @@ export class PermissionService {
         moduleId: permissionSchema.moduleId,
         isDisabled: permissionSchema.isDisabled,
         isDeleted: permissionSchema.isDeleted,
-        createTime: permissionSchema.createTime,
-        updateTime: permissionSchema.updateTime,
+        createdAt: permissionSchema.createdAt,
+        updatedAt: permissionSchema.updatedAt,
       })
       .from(permissionSchema)
       .where(and(eq(permissionSchema.permissionId, permissionId), eq(permissionSchema.isDeleted, false)))
@@ -32,8 +32,8 @@ export class PermissionService {
 
     return {
       ...permission,
-      createTime: toIsoString(permission.createTime),
-      updateTime: toIsoString(permission.updateTime),
+      createdAt: toIsoString(permission.createdAt),
+      updatedAt: toIsoString(permission.updatedAt),
     }
   }
 
@@ -98,19 +98,19 @@ export class PermissionService {
         moduleId: permissionSchema.moduleId,
         isDisabled: permissionSchema.isDisabled,
         isDeleted: permissionSchema.isDeleted,
-        createTime: permissionSchema.createTime,
-        updateTime: permissionSchema.updateTime,
+        createdAt: permissionSchema.createdAt,
+        updatedAt: permissionSchema.updatedAt,
       })
       .from(permissionSchema)
       .where(and(...where))
-      .orderBy(desc(permissionSchema.createTime))
+      .orderBy(desc(permissionSchema.createdAt))
       .limit(pageParams.limit)
       .offset(pageParams.offset)
 
     const list = rows.map((row) => ({
       ...row,
-      createTime: toIsoString(row.createTime),
-      updateTime: toIsoString(row.updateTime),
+      createdAt: toIsoString(row.createdAt),
+      updatedAt: toIsoString(row.updatedAt),
     }))
 
     return toPageResult(pageParams, total, list)

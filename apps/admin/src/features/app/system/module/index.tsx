@@ -111,7 +111,7 @@ export function ModuleList() {
     {
       title: "创建时间",
       align: "center",
-      dataIndex: "createTime",
+      dataIndex: "createdAt",
       width: 180,
       render: (text) => (text ? new Date(text).toLocaleString() : "-"),
     },

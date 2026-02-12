@@ -90,7 +90,7 @@ export class AuthService {
           eq(bookSchema.isDeleted, false),
         ),
       )
-      .orderBy(desc(bookMemberSchema.createTime))
+      .orderBy(desc(bookMemberSchema.createdAt))
       .limit(1)
 
     if (memberRows[0]) {
@@ -102,7 +102,7 @@ export class AuthService {
       .select({ bookId: bookSchema.bookId })
       .from(bookSchema)
       .where(and(eq(bookSchema.ownerUserId, userId), eq(bookSchema.isDeleted, false)))
-      .orderBy(desc(bookSchema.createTime))
+      .orderBy(desc(bookSchema.createdAt))
       .limit(1)
 
     if (ownerRows[0]) {

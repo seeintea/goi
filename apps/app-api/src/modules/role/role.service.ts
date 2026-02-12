@@ -19,8 +19,8 @@ export class RoleService {
         roleName: roleSchema.roleName,
         isDisabled: roleSchema.isDisabled,
         isDeleted: roleSchema.isDeleted,
-        createTime: roleSchema.createTime,
-        updateTime: roleSchema.updateTime,
+        createdAt: roleSchema.createdAt,
+        updatedAt: roleSchema.updatedAt,
       })
       .from(roleSchema)
       .where(and(eq(roleSchema.roleId, roleId), eq(roleSchema.isDeleted, false)))
@@ -28,8 +28,8 @@ export class RoleService {
     if (!role) throw new NotFoundException("角色不存在")
     return {
       ...role,
-      createTime: toIsoString(role.createTime),
-      updateTime: toIsoString(role.updateTime),
+      createdAt: toIsoString(role.createdAt),
+      updatedAt: toIsoString(role.updatedAt),
     }
   }
 
@@ -87,19 +87,19 @@ export class RoleService {
         roleName: roleSchema.roleName,
         isDisabled: roleSchema.isDisabled,
         isDeleted: roleSchema.isDeleted,
-        createTime: roleSchema.createTime,
-        updateTime: roleSchema.updateTime,
+        createdAt: roleSchema.createdAt,
+        updatedAt: roleSchema.updatedAt,
       })
       .from(roleSchema)
       .where(and(...where))
-      .orderBy(desc(roleSchema.createTime))
+      .orderBy(desc(roleSchema.createdAt))
       .limit(pageParams.limit)
       .offset(pageParams.offset)
 
     const list = rows.map((row) => ({
       ...row,
-      createTime: toIsoString(row.createTime),
-      updateTime: toIsoString(row.updateTime),
+      createdAt: toIsoString(row.createdAt),
+      updatedAt: toIsoString(row.updatedAt),
     }))
 
     return toPageResult(pageParams, total, list)

@@ -8,8 +8,8 @@ const shape = {
   timezone: z.string().min(1).max(50).describe("时区"),
   ownerUserId: z.string().length(32).describe("所有者用户ID"),
   isDeleted: z.boolean().describe("是否删除"),
-  createTime: z.iso.datetime().describe("创建时间"),
-  updateTime: z.iso.datetime().describe("更新时间"),
+  createdAt: z.iso.datetime().describe("创建时间"),
+  updatedAt: z.iso.datetime().describe("更新时间"),
   page: z.coerce.number().int().min(1).describe("页码"),
   pageSize: z.coerce.number().int().min(1).max(100).describe("每页数量"),
 } satisfies z.ZodRawShape
@@ -22,8 +22,8 @@ const bookResponseSchema = z
     timezone: shape.timezone,
     ownerUserId: shape.ownerUserId,
     isDeleted: shape.isDeleted,
-    createTime: shape.createTime,
-    updateTime: shape.updateTime,
+    createdAt: shape.createdAt,
+    updatedAt: shape.updatedAt,
   })
   .meta({ id: "账本响应类型" })
 
@@ -69,8 +69,8 @@ const bookPageItemSchema = z.object({
   timezone: shape.timezone,
   ownerUserId: shape.ownerUserId,
   isDeleted: shape.isDeleted,
-  createTime: shape.createTime,
-  updateTime: shape.updateTime,
+  createdAt: shape.createdAt,
+  updatedAt: shape.updatedAt,
 })
 
 const bookPageResponseSchema = z

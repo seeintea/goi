@@ -8,8 +8,8 @@ export type Permission = {
   moduleId: string
   isDisabled: boolean
   isDeleted: boolean
-  createTime: string
-  updateTime: string
+  createdAt: string
+  updatedAt: string
 }
 
 export type CreatePermission = {

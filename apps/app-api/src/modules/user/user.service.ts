@@ -20,8 +20,8 @@ export class UserService {
         phone: userSchema.phone,
         isDisabled: userSchema.isDisabled,
         isDeleted: userSchema.isDeleted,
-        createTime: userSchema.createTime,
-        updateTime: userSchema.updateTime,
+        createdAt: userSchema.createdAt,
+        updatedAt: userSchema.updatedAt,
       })
       .from(userSchema)
       .where(and(eq(userSchema.userId, userId), eq(userSchema.isDeleted, false)))
@@ -31,8 +31,8 @@ export class UserService {
 
     return {
       ...row,
-      createTime: toIsoString(row.createTime),
-      updateTime: toIsoString(row.updateTime),
+      createdAt: toIsoString(row.createdAt),
+      updatedAt: toIsoString(row.updatedAt),
     }
   }
 
@@ -123,19 +123,19 @@ export class UserService {
         phone: userSchema.phone,
         isDisabled: userSchema.isDisabled,
         isDeleted: userSchema.isDeleted,
-        createTime: userSchema.createTime,
-        updateTime: userSchema.updateTime,
+        createdAt: userSchema.createdAt,
+        updatedAt: userSchema.updatedAt,
       })
       .from(userSchema)
       .where(and(...where))
-      .orderBy(desc(userSchema.createTime))
+      .orderBy(desc(userSchema.createdAt))
       .limit(pageParams.limit)
       .offset(pageParams.offset)
 
     const list = rows.map((row) => ({
       ...row,
-      createTime: toIsoString(row.createTime),
-      updateTime: toIsoString(row.updateTime),
+      createdAt: toIsoString(row.createdAt),
+      updatedAt: toIsoString(row.updatedAt),
     }))
 
     return toPageResult(pageParams, total, list)
