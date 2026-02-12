@@ -1,6 +1,6 @@
 import { boolean, date, decimal, index, pgTable, timestamp, uuid, varchar } from "drizzle-orm/pg-core"
-import { financeFamily } from "./family.entity"
 import { financeCategory } from "./category.entity"
+import { financeFamily } from "./family.entity"
 
 export const financeBudget = pgTable(
   "fin_budgets",

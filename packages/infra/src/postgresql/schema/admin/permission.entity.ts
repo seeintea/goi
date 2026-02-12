@@ -9,7 +9,6 @@ export const adminPermission = pgTable(
     name: varchar("name", { length: 80 }).notNull().default(""),
     moduleId: uuid("module_id")
       .notNull()
-      .default("")
       .references(() => adminModule.moduleId, { onDelete: "restrict", onUpdate: "cascade" }),
     isDisabled: boolean("is_disabled").notNull().default(false),
     isDeleted: boolean("is_deleted").notNull().default(false),

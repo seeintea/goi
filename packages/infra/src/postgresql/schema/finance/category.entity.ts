@@ -1,4 +1,4 @@
-import { boolean, index, integer, pgTable, timestamp, uuid, varchar, AnyPgColumn } from "drizzle-orm/pg-core"
+import { AnyPgColumn, boolean, index, integer, pgTable, timestamp, uuid, varchar } from "drizzle-orm/pg-core"
 import { financeFamily } from "./family.entity"
 
 export const financeCategory = pgTable(

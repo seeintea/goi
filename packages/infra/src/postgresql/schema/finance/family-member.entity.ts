@@ -1,7 +1,7 @@
 import { boolean, index, pgTable, timestamp, varchar, uuid, unique } from "drizzle-orm/pg-core"
+import { authRole } from "../auth/role.entity"
 import { authUser } from "../auth/user.entity"
 import { financeFamily } from "./family.entity"
-import { authRole } from "../auth/role.entity"
 
 export const financeFamilyMember = pgTable(
   "fin_family_members",

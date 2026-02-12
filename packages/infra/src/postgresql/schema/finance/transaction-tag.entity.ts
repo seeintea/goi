@@ -1,6 +1,6 @@
 import { pgTable, primaryKey, uuid } from "drizzle-orm/pg-core"
-import { financeTransaction } from "./transaction.entity"
 import { financeTag } from "./tag.entity"
+import { financeTransaction } from "./transaction.entity"
 
 export const financeTransactionTag = pgTable(
   "fin_transaction_tags",
