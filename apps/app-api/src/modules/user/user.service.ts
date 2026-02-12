@@ -92,11 +92,8 @@ export class UserService {
       .update(userSchema)
       .set({
         ...(values.username !== undefined ? { username: values.username } : {}),
-        ...(values.password !== undefined ? { password: values.password } : {}),
-        ...(values.salt !== undefined ? { salt: values.salt } : {}),
         ...(values.email !== undefined ? { email: values.email } : {}),
         ...(values.phone !== undefined ? { phone: values.phone } : {}),
-        ...(values.isDisabled !== undefined ? { isDisabled: values.isDisabled } : {}),
         ...(values.isDeleted !== undefined ? { isDeleted: values.isDeleted } : {}),
       })
       .where(eq(userSchema.userId, values.userId))

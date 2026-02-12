@@ -50,11 +50,6 @@ export class UserController {
   @ApiOperation({ summary: "更新用户" })
   @ZodResponse({ type: UserResponseDto })
   async update(@Body() body: UpdateUserDto) {
-    if (body.password) {
-      const salt = generateSalt(16)
-      const password = hashPassword(body.password, salt)
-      return this.userService.update({ ...body, password, salt })
-    }
     return this.userService.update(body)
   }
 
