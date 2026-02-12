@@ -1,6 +1,6 @@
 import type { AppUser, CreateAppUser, UpdateAppUser } from "@goi/contracts"
 import { sha1Hex } from "@goi/utils-web"
-import { Form, Input, Modal, message } from "antd"
+import { Form, Input, Modal, message, Switch } from "antd"
 import { useEffect, useState } from "react"
 import { createAppUser, updateAppUser } from "@/api/service/app/user"
 
@@ -20,8 +20,10 @@ export function UserModal({ open, record, onOpenChange, onSuccess }: UserModalPr
     if (open && record) {
       form.setFieldsValue({
         username: record.username,
+        nickname: record.nickname,
         email: record.email,
         phone: record.phone,
+        isVirtual: record.isVirtual,
       })
     }
   }, [open, record, form])
@@ -84,7 +86,6 @@ export function UserModal({ open, record, onOpenChange, onSuccess }: UserModalPr
         className="mt-4!"
         form={form}
         labelCol={{ span: 4 }}
-        preserve={false}
       >
         <Form.Item
           name="username"
@@ -92,6 +93,13 @@ export function UserModal({ open, record, onOpenChange, onSuccess }: UserModalPr
           rules={[{ required: true, message: "请输入用户名" }]}
         >
           <Input placeholder="请输入用户名" />
+        </Form.Item>
+
+        <Form.Item
+          name="nickname"
+          label="昵称"
+        >
+          <Input placeholder="请输入昵称" />
         </Form.Item>
 
         {!isEdit && (
@@ -117,6 +125,15 @@ export function UserModal({ open, record, onOpenChange, onSuccess }: UserModalPr
           label="手机号"
         >
           <Input placeholder="请输入手机号" />
+        </Form.Item>
+
+        <Form.Item
+          name="isVirtual"
+          label="虚拟账户"
+          valuePropName="checked"
+          initialValue={false}
+        >
+          <Switch />
         </Form.Item>
       </Form>
     </Modal>

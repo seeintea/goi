@@ -16,8 +16,10 @@ export class UserService {
       .select({
         userId: userSchema.userId,
         username: userSchema.username,
+        nickname: userSchema.nickname,
         email: userSchema.email,
         phone: userSchema.phone,
+        isVirtual: userSchema.isVirtual,
         isDisabled: userSchema.isDisabled,
         isDeleted: userSchema.isDeleted,
         createdAt: userSchema.createdAt,
@@ -40,8 +42,10 @@ export class UserService {
     | {
         userId: string
         username: string
+        nickname: string
         password: string
         salt: string
+        isVirtual: boolean
         isDisabled: boolean
         isDeleted: boolean
       }
@@ -51,8 +55,10 @@ export class UserService {
       .select({
         userId: userSchema.userId,
         username: userSchema.username,
+        nickname: userSchema.nickname,
         password: userSchema.password,
         salt: userSchema.salt,
+        isVirtual: userSchema.isVirtual,
         isDisabled: userSchema.isDisabled,
         isDeleted: userSchema.isDeleted,
       })
@@ -68,10 +74,12 @@ export class UserService {
       .values({
         userId: values.userId,
         username: values.username,
+        nickname: values.nickname ?? values.username,
         password: values.password,
         salt: values.salt,
         email: values.email ?? "",
         phone: values.phone ?? "",
+        isVirtual: values.isVirtual ?? false,
         isDisabled: values.isDisabled ?? false,
         isDeleted: false,
       })
@@ -122,8 +130,10 @@ export class UserService {
       .select({
         userId: userSchema.userId,
         username: userSchema.username,
+        nickname: userSchema.nickname,
         email: userSchema.email,
         phone: userSchema.phone,
+        isVirtual: userSchema.isVirtual,
         isDisabled: userSchema.isDisabled,
         isDeleted: userSchema.isDeleted,
         createdAt: userSchema.createdAt,

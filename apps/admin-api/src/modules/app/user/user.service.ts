@@ -1,4 +1,4 @@
-import type { AppUser, CreateAppUser, UpdateAppUser } from "@goi/contracts"
+import type { AppUser, CreateAppUser, ResetAppUserPassword, UpdateAppUser, UpdateAppUserStatus } from "@goi/contracts"
 import { normalizePage, toIsoString, toPageResult } from "@goi/utils"
 import { Injectable, NotFoundException } from "@nestjs/common"
 import { and, desc, eq, like, sql } from "drizzle-orm"
@@ -16,8 +16,10 @@ export class UserService {
       .select({
         userId: userSchema.userId,
         username: userSchema.username,
+        nickname: userSchema.nickname,
         email: userSchema.email,
         phone: userSchema.phone,
+        isVirtual: userSchema.isVirtual,
         isDisabled: userSchema.isDisabled,
         isDeleted: userSchema.isDeleted,
         createdAt: userSchema.createdAt,
@@ -40,8 +42,10 @@ export class UserService {
     | {
         userId: string
         username: string
+        nickname: string
         password: string
         salt: string
+        isVirtual: boolean
         isDisabled: boolean
         isDeleted: boolean
       }
@@ -51,8 +55,10 @@ export class UserService {
       .select({
         userId: userSchema.userId,
         username: userSchema.username,
+        nickname: userSchema.nickname,
         password: userSchema.password,
         salt: userSchema.salt,
+        isVirtual: userSchema.isVirtual,
         isDisabled: userSchema.isDisabled,
         isDeleted: userSchema.isDeleted,
       })
@@ -66,10 +72,12 @@ export class UserService {
     await this.pg.pdb.insert(userSchema).values({
       userId: values.userId,
       username: values.username,
+      nickname: values.nickname ?? values.username,
       password: values.password,
       salt: values.salt,
       email: values.email ?? "",
       phone: values.phone ?? "",
+      isVirtual: values.isVirtual ?? false,
       isDisabled: values.isDisabled ?? false,
       isDeleted: false,
     })
@@ -81,12 +89,33 @@ export class UserService {
       .update(userSchema)
       .set({
         ...(values.username !== undefined ? { username: values.username } : {}),
-        ...(values.password !== undefined ? { password: values.password } : {}),
-        ...(values.salt !== undefined ? { salt: values.salt } : {}),
+        ...(values.nickname !== undefined ? { nickname: values.nickname } : {}),
         ...(values.email !== undefined ? { email: values.email } : {}),
         ...(values.phone !== undefined ? { phone: values.phone } : {}),
-        ...(values.isDisabled !== undefined ? { isDisabled: values.isDisabled } : {}),
+        ...(values.isVirtual !== undefined ? { isVirtual: values.isVirtual } : {}),
         ...(values.isDeleted !== undefined ? { isDeleted: values.isDeleted } : {}),
+      })
+      .where(eq(userSchema.userId, values.userId))
+    return this.find(values.userId)
+  }
+
+  async resetPassword(values: ResetAppUserPassword): Promise<AppUser> {
+    await this.pg.pdb
+      .update(userSchema)
+      .set({
+        isVirtual: false,
+        password: values.password,
+        ...(values.salt !== undefined ? { salt: values.salt } : {}),
+      })
+      .where(eq(userSchema.userId, values.userId))
+    return this.find(values.userId)
+  }
+
+  async updateStatus(values: UpdateAppUserStatus): Promise<AppUser> {
+    await this.pg.pdb
+      .update(userSchema)
+      .set({
+        isDisabled: values.isDisabled,
       })
       .where(eq(userSchema.userId, values.userId))
     return this.find(values.userId)
@@ -125,8 +154,10 @@ export class UserService {
       .select({
         userId: userSchema.userId,
         username: userSchema.username,
+        nickname: userSchema.nickname,
         email: userSchema.email,
         phone: userSchema.phone,
+        isVirtual: userSchema.isVirtual,
         isDisabled: userSchema.isDisabled,
         isDeleted: userSchema.isDeleted,
         createdAt: userSchema.createdAt,

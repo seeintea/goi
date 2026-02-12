@@ -1,7 +1,7 @@
 import { sha1Hex } from "@goi/utils-web"
 import { Form, Input, Modal, message } from "antd"
 import { useState } from "react"
-import { updateAppUser } from "@/api/service/app/user"
+import { resetAppUserPassword } from "@/api/service/app/user"
 
 interface ResetPwdModalProps {
   open: boolean
@@ -22,7 +22,7 @@ export function ResetPwdModal({ open, userId, username, onOpenChange, onSuccess 
 
       const password = await sha1Hex(values.password)
 
-      const { code, message: msg } = await updateAppUser({
+      const { code, message: msg } = await resetAppUserPassword({
         userId,
         password,
       })

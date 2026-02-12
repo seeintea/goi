@@ -44,9 +44,9 @@ export const updateAppModuleSchema = z
   .object({
     moduleId: shape.moduleId,
     parentId: shape.parentId.optional(),
-    name: shape.name.optional(),
-    routePath: shape.routePath.optional(),
-    permissionCode: shape.permissionCode.optional(),
+    name: shape.name,
+    routePath: shape.routePath,
+    permissionCode: shape.permissionCode,
     sort: shape.sort.optional(),
     isDeleted: shape.isDeleted.optional(),
   })

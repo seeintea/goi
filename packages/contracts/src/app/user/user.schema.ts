@@ -3,10 +3,12 @@ import { z } from "zod"
 const shape = {
   userId: z.uuid().describe("用户ID"),
   username: z.string().min(1).max(30).describe("用户名"),
+  nickname: z.string().min(1).max(50).describe("昵称"),
   password: z.string().min(1).max(100).describe("密码明文"),
   salt: z.string().min(1).max(16).describe("盐"),
   email: z.string().max(50).describe("邮箱"),
   phone: z.string().max(11).describe("手机号"),
+  isVirtual: z.boolean().describe("是否虚拟账户"),
   isDisabled: z.boolean().describe("是否禁用"),
   isDeleted: z.boolean().describe("是否删除"),
   createdAt: z.iso.datetime().describe("创建时间"),
@@ -19,8 +21,10 @@ export const appUserResponseSchema = z
   .object({
     userId: shape.userId,
     username: shape.username,
+    nickname: shape.nickname,
     email: shape.email,
     phone: shape.phone,
+    isVirtual: shape.isVirtual,
     isDisabled: shape.isDisabled,
     isDeleted: shape.isDeleted,
     createdAt: shape.createdAt,
@@ -31,9 +35,11 @@ export const appUserResponseSchema = z
 export const createAppUserSchema = z
   .object({
     username: shape.username,
+    nickname: shape.nickname.optional(),
     password: shape.password,
     email: shape.email.optional(),
     phone: shape.phone.optional(),
+    isVirtual: shape.isVirtual.optional(),
     isDisabled: shape.isDisabled.optional(),
   })
   .meta({ id: "创建用户请求" })
@@ -42,14 +48,28 @@ export const updateAppUserSchema = z
   .object({
     userId: shape.userId,
     username: shape.username.optional(),
-    password: shape.password.optional(),
-    salt: shape.salt.optional(),
+    nickname: shape.nickname.optional(),
     email: shape.email.optional(),
     phone: shape.phone.optional(),
-    isDisabled: shape.isDisabled.optional(),
+    isVirtual: shape.isVirtual.optional(),
     isDeleted: shape.isDeleted.optional(),
   })
   .meta({ id: "更新用户请求" })
+
+export const resetAppUserPasswordSchema = z
+  .object({
+    userId: shape.userId,
+    password: shape.password,
+    salt: shape.salt.optional(),
+  })
+  .meta({ id: "重置用户密码请求" })
+
+export const updateAppUserStatusSchema = z
+  .object({
+    userId: shape.userId,
+    isDisabled: shape.isDisabled,
+  })
+  .meta({ id: "更新用户状态请求" })
 
 export const deleteAppUserSchema = z
   .object({
@@ -71,8 +91,10 @@ export const appUserListQuerySchema = z
 const appUserPageItemSchema = z.object({
   userId: shape.userId,
   username: shape.username,
+  nickname: shape.nickname,
   email: shape.email,
   phone: shape.phone,
+  isVirtual: shape.isVirtual,
   isDisabled: shape.isDisabled,
   isDeleted: shape.isDeleted,
   createdAt: shape.createdAt,
@@ -91,3 +113,5 @@ export const appUserPageResponseSchema = z
 export type AppUser = z.infer<typeof appUserResponseSchema>
 export type CreateAppUser = z.infer<typeof createAppUserSchema>
 export type UpdateAppUser = z.infer<typeof updateAppUserSchema>
+export type ResetAppUserPassword = z.infer<typeof resetAppUserPasswordSchema>
+export type UpdateAppUserStatus = z.infer<typeof updateAppUserStatusSchema>

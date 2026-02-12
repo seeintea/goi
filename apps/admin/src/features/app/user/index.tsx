@@ -2,7 +2,7 @@ import type { AppUser } from "@goi/contracts"
 import { Button, Card, Form, message, Popconfirm, Space, Switch, Table, Tag } from "antd"
 import type { ColumnsType } from "antd/es/table"
 import { useEffect } from "react"
-import { type AppUserListQuery, deleteAppUser, listAppUsers, updateAppUser } from "@/api/service/app/user"
+import { type AppUserListQuery, deleteAppUser, listAppUsers, updateAppUserStatus } from "@/api/service/app/user"
 import { type FilterField, FilterForm } from "@/components/filter-form"
 import { ShortId } from "@/components/short-id"
 import { useModal } from "@/hooks/use-modal"
@@ -78,7 +78,7 @@ export function User() {
 
   const handleStatusChange = async (checked: boolean, record: AppUser) => {
     try {
-      const { code, message: msg } = await updateAppUser({
+      const { code, message: msg } = await updateAppUserStatus({
         userId: record.userId,
         isDisabled: !checked, // Switch checked means enabled (isDisabled=false)
       })
@@ -110,6 +110,12 @@ export function User() {
       key: "username",
     },
     {
+      title: "昵称",
+      align: "center",
+      dataIndex: "nickname",
+      key: "nickname",
+    },
+    {
       title: "手机号码",
       align: "center",
       dataIndex: "phone",
@@ -120,6 +126,14 @@ export function User() {
       align: "center",
       dataIndex: "email",
       key: "email",
+    },
+    {
+      title: "虚拟账户",
+      dataIndex: "isVirtual",
+      key: "isVirtual",
+      width: 100,
+      align: "center",
+      render: (isVirtual: boolean) => (isVirtual ? <Tag color="blue">是</Tag> : <Tag>否</Tag>),
     },
     {
       title: "状态",
@@ -253,9 +267,7 @@ export function User() {
           userId={resetPwdModal.data.userId}
           username={resetPwdModal.data.username}
           onOpenChange={resetPwdModal.setOpen}
-          onSuccess={() => {
-            // No need to refresh list for password reset
-          }}
+          onSuccess={refresh}
         />
       )}
     </Card>

@@ -5,10 +5,12 @@ export const authUser = pgTable(
   {
     userId: uuid("user_id").primaryKey().defaultRandom(),
     username: varchar("username", { length: 30 }).notNull(),
+    nickname: varchar("nickname", { length: 50 }).notNull().default("用户"),
     password: varchar("password", { length: 100 }).notNull(),
     salt: varchar("salt", { length: 16 }).notNull(),
     email: varchar("email", { length: 50 }).notNull().default(""),
     phone: varchar("phone", { length: 11 }).notNull().default(""),
+    isVirtual: boolean("is_virtual").notNull().default(false),
     isDisabled: boolean("is_disabled").notNull().default(false),
     isDeleted: boolean("is_deleted").notNull().default(false),
     createdAt: timestamp("created_at").notNull().defaultNow(),

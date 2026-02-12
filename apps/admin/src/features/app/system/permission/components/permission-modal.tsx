@@ -98,7 +98,6 @@ export function PermissionModal({ open, record, onOpenChange, onSuccess }: Permi
         className="mt-4!"
         form={form}
         labelCol={{ span: 4 }}
-        preserve={false}
       >
         <Form.Item
           name="code"

@@ -97,7 +97,6 @@ export function ModuleModal({ open, record, onOpenChange, onSuccess }: ModuleMod
         className="mt-4!"
         form={form}
         labelCol={{ span: 4 }}
-        preserve={false}
       >
         <Form.Item
           name="name"
@@ -110,6 +109,7 @@ export function ModuleModal({ open, record, onOpenChange, onSuccess }: ModuleMod
         <Form.Item
           name="routePath"
           label="路由路径"
+          rules={[{ required: true, message: "请输入路由路径" }]}
         >
           <Input placeholder="请输入路由路径 (例如: /system/user)" />
         </Form.Item>
@@ -117,6 +117,7 @@ export function ModuleModal({ open, record, onOpenChange, onSuccess }: ModuleMod
         <Form.Item
           name="permissionCode"
           label="权限编码"
+          rules={[{ required: true, message: "请输入权限编码" }]}
         >
           <Input placeholder="请输入权限编码" />
         </Form.Item>
