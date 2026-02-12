@@ -21,9 +21,9 @@
   "dependencies": {
     "@goi/contracts": "workspace:*",
     "@goi/infra": "workspace:*",
-    "@nestjs/common": "^11.1.12",
-    "@nestjs/config": "^4.0.2",
-    "@nestjs/core": "^11.1.12",
+    "@nestjs/common": "^11.1.13",
+    "@nestjs/config": "^4.0.3",
+    "@nestjs/core": "^11.1.13",
     "@nestjs/jwt": "^11.0.2",
     "nestjs-zod": "^5.1.1",
     "rxjs": "^7.8.2"
