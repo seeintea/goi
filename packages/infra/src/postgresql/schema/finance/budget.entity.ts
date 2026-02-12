@@ -1,4 +1,4 @@
-import { date, decimal, index, pgTable, timestamp, uuid, varchar } from "drizzle-orm/pg-core"
+import { boolean, date, decimal, index, pgTable, timestamp, uuid, varchar } from "drizzle-orm/pg-core"
 import { financeFamily } from "./family.entity"
 import { financeCategory } from "./category.entity"
 
@@ -17,6 +17,7 @@ export const financeBudget = pgTable(
     periodType: varchar("period_type", { length: 20 }).notNull().default("MONTHLY"), // MONTHLY, YEARLY, ONE_OFF
     startDate: date("start_date").notNull(),
     endDate: date("end_date"),
+    isDeleted: boolean("is_deleted").notNull().default(false),
     createdAt: timestamp("created_at").notNull().defaultNow(),
     updatedAt: timestamp("updated_at")
       .notNull()

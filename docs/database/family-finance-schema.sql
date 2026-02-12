@@ -78,6 +78,7 @@ CREATE TABLE IF NOT EXISTS fin_families (
     owner_id VARCHAR(32) REFERENCES auth_user(user_id),
     base_currency VARCHAR(10) DEFAULT 'CNY',
     timezone VARCHAR(50) DEFAULT 'Asia/Shanghai',
+    is_deleted BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP DEFAULT NOW()
 );
@@ -89,6 +90,7 @@ CREATE TABLE IF NOT EXISTS fin_family_members (
     user_id VARCHAR(32) REFERENCES auth_user(user_id),
     role_id VARCHAR(32) REFERENCES auth_role(role_id),
     status VARCHAR(20) CHECK (status IN ('INVITED', 'ACTIVE', 'DISABLED')),
+    is_deleted BOOLEAN DEFAULT FALSE,
     joined_at TIMESTAMP DEFAULT NOW()
 );
 
@@ -110,6 +112,7 @@ CREATE TABLE IF NOT EXISTS fin_accounts (
     exclude_from_stats BOOLEAN DEFAULT FALSE,
     archived BOOLEAN DEFAULT FALSE,
     sort_order INTEGER DEFAULT 0,
+    is_deleted BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP DEFAULT NOW()
 );
@@ -125,6 +128,7 @@ CREATE TABLE IF NOT EXISTS fin_categories (
     sort_order INTEGER DEFAULT 0,
     icon VARCHAR(255),
     color VARCHAR(50),
+    is_deleted BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP DEFAULT NOW()
 );
@@ -135,6 +139,7 @@ CREATE TABLE IF NOT EXISTS fin_tags (
     family_id UUID REFERENCES fin_families(id),
     name VARCHAR(255) NOT NULL,
     color VARCHAR(50),
+    is_deleted BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMP DEFAULT NOW()
 );
 
@@ -154,6 +159,7 @@ CREATE TABLE IF NOT EXISTS fin_transactions (
     occurred_at TIMESTAMP NOT NULL,
     description TEXT,
     created_by VARCHAR(32) REFERENCES auth_user(user_id), -- Can be virtual user ID
+    is_deleted BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP DEFAULT NOW()
 );
@@ -178,6 +184,7 @@ CREATE TABLE IF NOT EXISTS fin_budgets (
     period_type VARCHAR(20) CHECK (period_type IN ('MONTHLY', 'YEARLY', 'ONE_OFF')),
     start_date DATE NOT NULL,
     end_date DATE,
+    is_deleted BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP DEFAULT NOW()
 );

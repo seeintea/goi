@@ -20,3 +20,9 @@ export class CreateFamilyDto extends createZodDto(typedCreateFamilySchema) {}
 export class UpdateFamilyDto extends createZodDto(typedUpdateFamilySchema) {}
 export class FamilyListQueryDto extends createZodDto(familyListQuerySchema) {}
 export class FamilyPageResponseDto extends createZodDto(familyPageResponseSchema) {}
+
+const deleteFamilySchema = z.object({
+  id: z.uuid(),
+})
+
+export class DeleteFamilyDto extends createZodDto(deleteFamilySchema) {}

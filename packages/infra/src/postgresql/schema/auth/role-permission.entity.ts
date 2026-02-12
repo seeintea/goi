@@ -1,14 +1,14 @@
-import { pgTable, primaryKey, timestamp, varchar } from "drizzle-orm/pg-core"
+import { pgTable, primaryKey, timestamp, uuid } from "drizzle-orm/pg-core"
 import { authPermission } from "./permission.entity"
 import { authRole } from "./role.entity"
 
 export const authRolePermission = pgTable(
   "auth_role_permission",
   {
-    roleId: varchar("role_id", { length: 32 })
+    roleId: uuid("role_id")
       .notNull()
       .references(() => authRole.roleId, { onDelete: "cascade", onUpdate: "cascade" }),
-    permissionId: varchar("permission_id", { length: 32 })
+    permissionId: uuid("permission_id")
       .notNull()
       .references(() => authPermission.permissionId, { onDelete: "cascade", onUpdate: "cascade" }),
     createdAt: timestamp("created_at").notNull().defaultNow(),

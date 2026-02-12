@@ -1,8 +1,8 @@
 import { z } from "zod"
 
 const shape = {
-  moduleId: z.string().length(32).describe("模块ID"),
-  parentId: z.string().length(32).nullable().describe("父模块ID"),
+  moduleId: z.uuid().describe("模块ID"),
+  parentId: z.uuid().nullable().describe("父模块ID"),
   name: z.string().min(1).max(80).describe("模块名称"),
   routePath: z.string().min(1).max(200).describe("前端路由路径"),
   permissionCode: z.string().min(1).max(80).describe("页面权限编码"),

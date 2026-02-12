@@ -1,8 +1,8 @@
 import { Permission } from "@goi/nest-kit"
 import { Body, Controller, Get, Post, Query } from "@nestjs/common"
 import { ApiOperation, ApiTags } from "@nestjs/swagger"
-import { nanoid } from "nanoid"
 import { ZodResponse } from "nestjs-zod"
+import { v4 as uuid } from "uuid"
 import {
   CreateModuleDto,
   DeleteModuleDto,
@@ -28,7 +28,7 @@ export class ModuleController {
   async create(@Body() body: CreateModuleDto) {
     return this.moduleService.create({
       ...body,
-      moduleId: nanoid(),
+      moduleId: uuid(),
     })
   }
 

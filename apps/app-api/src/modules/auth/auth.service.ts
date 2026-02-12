@@ -96,7 +96,10 @@ export class AuthService {
   }
 
   private async resolveRoleById(roleId: string) {
-    const [role] = await this.pg.pdb.select().from(roleSchema).where(eq(roleSchema.roleId, roleId))
+    const [role] = await this.pg.pdb
+      .select({ roleId: roleSchema.roleId, roleName: roleSchema.roleName })
+      .from(roleSchema)
+      .where(eq(roleSchema.roleId, roleId))
     return role
   }
 }

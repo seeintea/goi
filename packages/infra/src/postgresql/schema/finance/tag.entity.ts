@@ -1,4 +1,4 @@
-import { index, pgTable, timestamp, uuid, varchar } from "drizzle-orm/pg-core"
+import { boolean, index, pgTable, timestamp, uuid, varchar } from "drizzle-orm/pg-core"
 import { financeFamily } from "./family.entity"
 
 export const financeTag = pgTable(
@@ -10,6 +10,7 @@ export const financeTag = pgTable(
       .references(() => financeFamily.id, { onDelete: "cascade", onUpdate: "cascade" }),
     name: varchar("name", { length: 50 }).notNull(),
     color: varchar("color", { length: 20 }),
+    isDeleted: boolean("is_deleted").notNull().default(false),
     createdAt: timestamp("created_at").notNull().defaultNow(),
   },
   (table) => [index("fin_tags_family_id_idx").on(table.familyId)],

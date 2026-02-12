@@ -1,7 +1,7 @@
 import { z } from "zod"
 
 const shape = {
-  userId: z.string().length(32).describe("用户ID"),
+  userId: z.uuid().describe("用户ID"),
   username: z.string().min(1).max(30).describe("用户名"),
   password: z.string().min(1).max(100).describe("密码明文"),
   salt: z.string().min(1).max(16).describe("盐"),

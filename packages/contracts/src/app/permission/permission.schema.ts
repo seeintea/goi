@@ -4,7 +4,7 @@ const shape = {
   permissionId: z.string().length(32).describe("权限ID"),
   code: z.string().min(1).max(80).describe("权限编码"),
   name: z.string().max(80).describe("权限名称"),
-  moduleId: z.string().length(32).describe("模块ID"),
+  moduleId: z.uuid().describe("模块ID"),
   isDisabled: z.boolean().describe("是否禁用"),
   isDeleted: z.boolean().describe("是否删除"),
   createdAt: z.iso.datetime().describe("创建时间"),

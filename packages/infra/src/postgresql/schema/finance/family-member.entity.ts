@@ -1,4 +1,4 @@
-import { index, pgTable, timestamp, varchar, uuid, unique } from "drizzle-orm/pg-core"
+import { boolean, index, pgTable, timestamp, varchar, uuid, unique } from "drizzle-orm/pg-core"
 import { authUser } from "../auth/user.entity"
 import { financeFamily } from "./family.entity"
 import { authRole } from "../auth/role.entity"
@@ -10,13 +10,14 @@ export const financeFamilyMember = pgTable(
     familyId: uuid("family_id")
       .notNull()
       .references(() => financeFamily.id, { onDelete: "cascade", onUpdate: "cascade" }),
-    userId: varchar("user_id", { length: 32 })
+    userId: uuid("user_id")
       .notNull()
       .references(() => authUser.userId, { onDelete: "cascade", onUpdate: "cascade" }),
-    roleId: varchar("role_id", { length: 32 })
+    roleId: uuid("role_id")
       .notNull()
       .references(() => authRole.roleId, { onDelete: "restrict", onUpdate: "cascade" }),
     status: varchar("status", { length: 20 }).notNull().default("ACTIVE"), // INVITED, ACTIVE, DISABLED
+    isDeleted: boolean("is_deleted").notNull().default(false),
     joinedAt: timestamp("joined_at").notNull().defaultNow(),
   },
   (table) => [

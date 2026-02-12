@@ -39,16 +39,19 @@ export class ModuleService {
   }
 
   async create(values: CreateAppModule & { moduleId: string }): Promise<AppModule> {
-    await this.pg.pdb.insert(authModuleSchema).values({
-      moduleId: values.moduleId,
-      parentId: values.parentId ?? null,
-      name: values.name,
-      routePath: values.routePath,
-      permissionCode: values.permissionCode,
-      sort: values.sort ?? 0,
-      isDeleted: false,
-    })
-    return this.find(values.moduleId)
+    const [inserted] = await this.pg.pdb
+      .insert(authModuleSchema)
+      .values({
+        moduleId: values.moduleId,
+        parentId: values.parentId ?? null,
+        name: values.name,
+        routePath: values.routePath,
+        permissionCode: values.permissionCode,
+        sort: values.sort ?? 0,
+        isDeleted: false,
+      })
+      .returning({ moduleId: authModuleSchema.moduleId })
+    return this.find(inserted.moduleId)
   }
 
   async update(values: UpdateAppModule): Promise<AppModule> {

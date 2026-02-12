@@ -2,8 +2,8 @@ import { Permission } from "@goi/nest-kit"
 import { generateSalt, hashPassword } from "@goi/utils-node"
 import { Body, Controller, Get, Post, Query } from "@nestjs/common"
 import { ApiOperation, ApiTags } from "@nestjs/swagger"
-import { nanoid } from "nanoid"
 import { ZodResponse } from "nestjs-zod"
+import { v4 as uuid } from "uuid"
 import {
   CreateUserDto,
   DeleteUserDto,
@@ -26,7 +26,7 @@ export class UserController {
   async create(@Body() body: CreateUserDto) {
     const salt = generateSalt(16)
     const password = hashPassword(body.password, salt)
-    return this.userService.create({ ...body, password, salt, userId: nanoid(32) })
+    return this.userService.create({ ...body, password, salt, userId: uuid() })
   }
 
   @Get("find")
@@ -50,6 +50,11 @@ export class UserController {
   @ApiOperation({ summary: "更新用户" })
   @ZodResponse({ type: UserResponseDto })
   async update(@Body() body: UpdateUserDto) {
+    if (body.password) {
+      const salt = generateSalt(16)
+      const password = hashPassword(body.password, salt)
+      return this.userService.update({ ...body, password, salt })
+    }
     return this.userService.update(body)
   }
 

@@ -1,13 +1,13 @@
-import { boolean, pgTable, timestamp, uniqueIndex, varchar } from "drizzle-orm/pg-core"
+import { boolean, pgTable, timestamp, uniqueIndex, uuid, varchar } from "drizzle-orm/pg-core"
 import { authModule } from "./module.entity"
 
 export const authPermission = pgTable(
   "auth_permission",
   {
-    permissionId: varchar("permission_id", { length: 32 }).primaryKey().notNull(),
+    permissionId: uuid("permission_id").primaryKey().defaultRandom(),
     code: varchar("code", { length: 80 }).notNull(),
     name: varchar("name", { length: 80 }).notNull().default(""),
-    moduleId: varchar("module_id", { length: 32 })
+    moduleId: uuid("module_id")
       .notNull()
       .default("")
       .references(() => authModule.moduleId, { onDelete: "restrict", onUpdate: "cascade" }),

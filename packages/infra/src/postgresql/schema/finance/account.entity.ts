@@ -18,6 +18,7 @@ export const financeAccount = pgTable(
     excludeFromStats: boolean("exclude_from_stats").notNull().default(false),
     archived: boolean("archived").notNull().default(false),
     sortOrder: integer("sort_order").notNull().default(0),
+    isDeleted: boolean("is_deleted").notNull().default(false),
     createdAt: timestamp("created_at").notNull().defaultNow(),
     updatedAt: timestamp("updated_at")
       .notNull()

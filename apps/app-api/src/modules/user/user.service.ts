@@ -62,18 +62,21 @@ export class UserService {
     return rows[0]
   }
 
-  async create(values: CreateAppUser & { userId: string; salt: string; password: string }): Promise<AppUser> {
-    await this.pg.pdb.insert(userSchema).values({
-      userId: values.userId,
-      username: values.username,
-      password: values.password,
-      salt: values.salt,
-      email: values.email ?? "",
-      phone: values.phone ?? "",
-      isDisabled: values.isDisabled ?? false,
-      isDeleted: false,
-    })
-    return this.find(values.userId)
+  async create(values: CreateAppUser & { salt: string; password: string; userId: string }): Promise<AppUser> {
+    const [inserted] = await this.pg.pdb
+      .insert(userSchema)
+      .values({
+        userId: values.userId,
+        username: values.username,
+        password: values.password,
+        salt: values.salt,
+        email: values.email ?? "",
+        phone: values.phone ?? "",
+        isDisabled: values.isDisabled ?? false,
+        isDeleted: false,
+      })
+      .returning({ userId: userSchema.userId })
+    return this.find(inserted.userId)
   }
 
   async update(values: UpdateAppUser): Promise<AppUser> {

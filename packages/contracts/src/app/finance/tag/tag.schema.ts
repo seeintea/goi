@@ -1,18 +1,14 @@
 import { z } from "zod"
-import { extendZodWithOpenApi } from "@asteasolutions/zod-to-openapi"
 import { pageQuerySchema, pageResponseSchema } from "../../../common"
 
-extendZodWithOpenApi(z)
-
-export const tagSchema = z
-  .object({
-    id: z.string().uuid(),
-    familyId: z.string().uuid(),
-    name: z.string().min(1).max(50),
-    color: z.string().max(20).optional().nullable(),
-    createdAt: z.date(),
-  })
-  .openapi("Tag")
+export const tagSchema = z.object({
+  id: z.uuid(),
+  familyId: z.uuid(),
+  name: z.string().min(1).max(50),
+  color: z.string().max(20).optional().nullable(),
+  isDeleted: z.boolean().default(false),
+  createdAt: z.date(),
+})
 
 export const createTagSchema = tagSchema.pick({
   familyId: true,
@@ -27,13 +23,13 @@ export const updateTagSchema = tagSchema
   })
   .partial()
   .extend({
-    id: z.string().uuid(),
+    id: z.uuid(),
   })
 
 export const tagResponseSchema = tagSchema
 
 export const tagListQuerySchema = pageQuerySchema.extend({
-  familyId: z.string().uuid(),
+  familyId: z.uuid(),
   name: z.string().optional(),
 })
 

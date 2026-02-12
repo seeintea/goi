@@ -38,15 +38,18 @@ export class PermissionService {
   }
 
   async create(values: CreateAppPermission & { permissionId: string }): Promise<AppPermission> {
-    await this.pg.pdb.insert(permissionSchema).values({
-      permissionId: values.permissionId,
-      code: values.code,
-      name: values.name ?? "",
-      moduleId: values.moduleId,
-      isDisabled: values.isDisabled ?? false,
-      isDeleted: false,
-    })
-    return this.find(values.permissionId)
+    const [inserted] = await this.pg.pdb
+      .insert(permissionSchema)
+      .values({
+        permissionId: values.permissionId,
+        code: values.code,
+        name: values.name ?? "",
+        moduleId: values.moduleId,
+        isDisabled: values.isDisabled ?? false,
+        isDeleted: false,
+      })
+      .returning({ permissionId: permissionSchema.permissionId })
+    return this.find(inserted.permissionId)
   }
 
   async update(values: UpdateAppPermission): Promise<AppPermission> {

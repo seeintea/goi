@@ -1,8 +1,8 @@
-import { decimal, index, pgTable, text, timestamp, uuid, varchar } from "drizzle-orm/pg-core"
-import { financeFamily } from "./family.entity"
+import { boolean, decimal, index, pgTable, text, timestamp, uuid, varchar } from "drizzle-orm/pg-core"
+import { authUser } from "../auth/user.entity"
 import { financeAccount } from "./account.entity"
 import { financeCategory } from "./category.entity"
-import { authUser } from "../auth/user.entity"
+import { financeFamily } from "./family.entity"
 
 export const financeTransaction = pgTable(
   "fin_transactions",
@@ -26,7 +26,8 @@ export const financeTransaction = pgTable(
     type: varchar("type", { length: 20 }).notNull(), // EXPENSE, INCOME, TRANSFER
     occurredAt: timestamp("occurred_at").notNull(),
     description: text("description"),
-    createdBy: varchar("created_by", { length: 32 }).references(() => authUser.userId),
+    createdBy: uuid("created_by").references(() => authUser.userId),
+    isDeleted: boolean("is_deleted").notNull().default(false),
     createdAt: timestamp("created_at").notNull().defaultNow(),
     updatedAt: timestamp("updated_at")
       .notNull()

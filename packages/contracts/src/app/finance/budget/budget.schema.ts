@@ -1,22 +1,18 @@
-import { extendZodWithOpenApi } from "@asteasolutions/zod-to-openapi"
 import { z } from "zod"
 import { pageQuerySchema, pageResponseSchema } from "../../../common"
 
-extendZodWithOpenApi(z)
-
-export const budgetSchema = z
-  .object({
-    id: z.string().uuid(),
-    familyId: z.string().uuid(),
-    categoryId: z.string().uuid().optional().nullable(),
-    amount: z.string(), // Decimal as string
-    periodType: z.string().min(1).max(20).default("MONTHLY"), // MONTHLY, YEARLY, ONE_OFF
-    startDate: z.string(), // Date string YYYY-MM-DD
-    endDate: z.string().optional().nullable(),
-    createdAt: z.date(),
-    updatedAt: z.date(),
-  })
-  .openapi("Budget")
+export const budgetSchema = z.object({
+  id: z.uuid(),
+  familyId: z.uuid(),
+  categoryId: z.uuid().optional().nullable(),
+  amount: z.string(), // Decimal as string
+  periodType: z.string().min(1).max(20).default("MONTHLY"), // MONTHLY, YEARLY, ONE_OFF
+  startDate: z.string(), // Date string YYYY-MM-DD
+  endDate: z.string().optional().nullable(),
+  isDeleted: z.boolean().default(false),
+  createdAt: z.date(),
+  updatedAt: z.date(),
+})
 
 export const createBudgetSchema = budgetSchema.pick({
   familyId: true,
@@ -37,13 +33,13 @@ export const updateBudgetSchema = budgetSchema
   })
   .partial()
   .extend({
-    id: z.string().uuid(),
+    id: z.uuid(),
   })
 
 export const budgetResponseSchema = budgetSchema
 
 export const budgetListQuerySchema = pageQuerySchema.extend({
-  familyId: z.string().uuid(),
+  familyId: z.uuid(),
   periodType: z.string().optional(),
 })
 

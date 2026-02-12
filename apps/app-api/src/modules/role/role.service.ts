@@ -34,14 +34,17 @@ export class RoleService {
   }
 
   async create(values: CreateRole & { roleId: string }): Promise<Role> {
-    await this.pg.pdb.insert(roleSchema).values({
-      roleId: values.roleId,
-      roleCode: values.roleCode,
-      roleName: values.roleName,
-      isDisabled: values.isDisabled ?? false,
-      isDeleted: false,
-    })
-    return this.find(values.roleId)
+    const [inserted] = await this.pg.pdb
+      .insert(roleSchema)
+      .values({
+        roleId: values.roleId,
+        roleCode: values.roleCode,
+        roleName: values.roleName,
+        isDisabled: values.isDisabled ?? false,
+        isDeleted: false,
+      })
+      .returning({ roleId: roleSchema.roleId })
+    return this.find(inserted.roleId)
   }
 
   async update(values: UpdateRole): Promise<Role> {

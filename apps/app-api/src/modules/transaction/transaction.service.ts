@@ -1,76 +1,152 @@
-import { financeTransaction } from "@goi/infra"
-import { Inject, Injectable, NotFoundException } from "@nestjs/common"
-import { and, between, count, desc, eq, ilike } from "drizzle-orm"
-import type { DbType } from "@/database/postgresql"
-import { DATABASE_CONNECTION } from "@/database/postgresql"
-import { CreateTransactionDto, TransactionListQueryDto, UpdateTransactionDto } from "./transaction.dto"
+import type { CreateTransaction, Transaction, UpdateTransaction } from "@goi/contracts"
+import { normalizePage, toPageResult } from "@goi/utils"
+import { Injectable, NotFoundException } from "@nestjs/common"
+import { and, between, desc, eq, ilike, sql } from "drizzle-orm"
+import { PgService, pgSchema } from "@/database/postgresql"
+import type { PageResult } from "@/types/response"
+
+const { financeTransaction } = pgSchema
 
 @Injectable()
 export class TransactionService {
-  constructor(@Inject(DATABASE_CONNECTION) private readonly db: DbType) {}
+  constructor(private readonly pg: PgService) {}
 
-  async create(dto: CreateTransactionDto) {
-    const [created] = await this.db.insert(financeTransaction).values(dto).returning()
-    return created
+  async find(id: string): Promise<Transaction> {
+    const rows = await this.pg.pdb
+      .select({
+        id: financeTransaction.id,
+        familyId: financeTransaction.familyId,
+        accountId: financeTransaction.accountId,
+        toAccountId: financeTransaction.toAccountId,
+        categoryId: financeTransaction.categoryId,
+        amount: financeTransaction.amount,
+        type: financeTransaction.type,
+        occurredAt: financeTransaction.occurredAt,
+        description: financeTransaction.description,
+        isDeleted: financeTransaction.isDeleted,
+        createdBy: financeTransaction.createdBy,
+        createdAt: financeTransaction.createdAt,
+        updatedAt: financeTransaction.updatedAt,
+      })
+      .from(financeTransaction)
+      .where(and(eq(financeTransaction.id, id), eq(financeTransaction.isDeleted, false)))
+      .limit(1)
+
+    const row = rows[0]
+    if (!row) throw new NotFoundException("Transaction not found")
+
+    return row as Transaction
   }
 
-  async findAll(query: TransactionListQueryDto) {
-    const page = query.page || 1
-    const pageSize = query.pageSize || 10
-    const offset = (page - 1) * pageSize
+  async create(dto: CreateTransaction & { id: string }): Promise<Transaction> {
+    const [inserted] = await this.pg.pdb
+      .insert(financeTransaction)
+      .values({
+        id: dto.id,
+        familyId: dto.familyId,
+        accountId: dto.accountId,
+        toAccountId: dto.toAccountId,
+        categoryId: dto.categoryId,
+        amount: dto.amount,
+        type: dto.type,
+        occurredAt: dto.occurredAt,
+        description: dto.description,
+      })
+      .returning({ id: financeTransaction.id })
 
-    const conditions = [eq(financeTransaction.familyId, query.familyId)]
+    return this.find(inserted.id)
+  }
+
+  async update(dto: UpdateTransaction): Promise<Transaction> {
+    await this.pg.pdb
+      .update(financeTransaction)
+      .set({
+        ...(dto.accountId !== undefined ? { accountId: dto.accountId } : {}),
+        ...(dto.toAccountId !== undefined ? { toAccountId: dto.toAccountId } : {}),
+        ...(dto.categoryId !== undefined ? { categoryId: dto.categoryId } : {}),
+        ...(dto.amount !== undefined ? { amount: dto.amount } : {}),
+        ...(dto.type !== undefined ? { type: dto.type } : {}),
+        ...(dto.occurredAt !== undefined ? { occurredAt: dto.occurredAt } : {}),
+        ...(dto.description !== undefined ? { description: dto.description } : {}),
+      })
+      .where(eq(financeTransaction.id, dto.id))
+
+    return this.find(dto.id)
+  }
+
+  async delete(id: string): Promise<boolean> {
+    const [deleted] = await this.pg.pdb
+      .update(financeTransaction)
+      .set({ isDeleted: true })
+      .where(eq(financeTransaction.id, id))
+      .returning({ id: financeTransaction.id })
+
+    if (!deleted) throw new NotFoundException("Transaction not found")
+    return true
+  }
+
+  async list(query: {
+    familyId: string
+    accountId?: string
+    categoryId?: string
+    type?: string
+    startDate?: string
+    endDate?: string
+    keyword?: string
+    page?: number | string
+    pageSize?: number | string
+  }): Promise<PageResult<Transaction>> {
+    const where: Parameters<typeof and> = [
+      eq(financeTransaction.familyId, query.familyId),
+      eq(financeTransaction.isDeleted, false),
+    ]
 
     if (query.accountId) {
-      conditions.push(eq(financeTransaction.accountId, query.accountId))
+      where.push(eq(financeTransaction.accountId, query.accountId))
     }
     if (query.categoryId) {
-      conditions.push(eq(financeTransaction.categoryId, query.categoryId))
+      where.push(eq(financeTransaction.categoryId, query.categoryId))
     }
     if (query.type) {
-      conditions.push(eq(financeTransaction.type, query.type))
+      where.push(eq(financeTransaction.type, query.type))
     }
     if (query.startDate && query.endDate) {
-      conditions.push(between(financeTransaction.occurredAt, new Date(query.startDate), new Date(query.endDate)))
+      where.push(between(financeTransaction.occurredAt, new Date(query.startDate), new Date(query.endDate)))
     }
     if (query.keyword) {
-      conditions.push(ilike(financeTransaction.description, `%${query.keyword}%`))
+      where.push(ilike(financeTransaction.description, `%${query.keyword}%`))
     }
 
-    const where = and(...conditions)
+    const pageParams = normalizePage(query)
 
-    const [total] = await this.db.select({ count: count() }).from(financeTransaction).where(where)
-    const items = await this.db
-      .select()
+    const totalRows = await this.pg.pdb
+      .select({ count: sql<number>`count(*)` })
       .from(financeTransaction)
-      .where(where)
-      .limit(pageSize)
-      .offset(offset)
+      .where(and(...where))
+    const total = Number(totalRows[0]?.count ?? 0)
+
+    const rows = await this.pg.pdb
+      .select({
+        id: financeTransaction.id,
+        familyId: financeTransaction.familyId,
+        accountId: financeTransaction.accountId,
+        toAccountId: financeTransaction.toAccountId,
+        categoryId: financeTransaction.categoryId,
+        amount: financeTransaction.amount,
+        type: financeTransaction.type,
+        occurredAt: financeTransaction.occurredAt,
+        description: financeTransaction.description,
+        isDeleted: financeTransaction.isDeleted,
+        createdBy: financeTransaction.createdBy,
+        createdAt: financeTransaction.createdAt,
+        updatedAt: financeTransaction.updatedAt,
+      })
+      .from(financeTransaction)
+      .where(and(...where))
       .orderBy(desc(financeTransaction.occurredAt))
+      .limit(pageParams.limit)
+      .offset(pageParams.offset)
 
-    return {
-      items,
-      total: Number(total.count),
-      page,
-      pageSize,
-    }
-  }
-
-  async findOne(id: string) {
-    const [item] = await this.db.select().from(financeTransaction).where(eq(financeTransaction.id, id))
-    if (!item) throw new NotFoundException("Transaction not found")
-    return item
-  }
-
-  async update(id: string, dto: UpdateTransactionDto) {
-    const [updated] = await this.db.update(financeTransaction).set(dto).where(eq(financeTransaction.id, id)).returning()
-    if (!updated) throw new NotFoundException("Transaction not found")
-    return updated
-  }
-
-  async remove(id: string) {
-    const [deleted] = await this.db.delete(financeTransaction).where(eq(financeTransaction.id, id)).returning()
-    if (!deleted) throw new NotFoundException("Transaction not found")
-    return deleted
+    return toPageResult(pageParams, total, rows as Transaction[])
   }
 }

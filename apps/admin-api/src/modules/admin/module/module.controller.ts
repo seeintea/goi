@@ -1,8 +1,8 @@
 import { Permission } from "@goi/nest-kit"
 import { Body, Controller, Get, Post, Query } from "@nestjs/common"
 import { ApiOperation, ApiTags } from "@nestjs/swagger"
-import { nanoid } from "nanoid"
 import { ZodResponse } from "nestjs-zod"
+import { v4 as uuid } from "uuid"
 import {
   AdminModuleAllQueryDto,
   AdminModuleListQueryDto,
@@ -25,7 +25,7 @@ export class ModuleController {
   @ApiOperation({ summary: "创建管理员模块" })
   @ZodResponse({ type: AdminModuleResponseDto })
   async create(@Body() body: CreateAdminModuleDto) {
-    return this.moduleService.create({ ...body, moduleId: nanoid(32) })
+    return this.moduleService.create({ ...body, moduleId: uuid() })
   }
 
   @Get("find")

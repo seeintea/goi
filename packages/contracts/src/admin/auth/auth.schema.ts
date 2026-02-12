@@ -9,7 +9,7 @@ export const adminLoginSchema = z
 
 export const adminLoginResponseSchema = z
   .object({
-    userId: z.string().length(32).describe("管理员用户ID"),
+    userId: z.uuid().describe("管理员用户ID"),
     username: z.string().min(1).max(30).describe("管理员用户名"),
     accessToken: z.string().min(1).describe("访问令牌"),
   })

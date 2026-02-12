@@ -15,6 +15,7 @@ export const financeCategory = pgTable(
     sortOrder: integer("sort_order").notNull().default(0),
     icon: varchar("icon", { length: 50 }),
     color: varchar("color", { length: 20 }),
+    isDeleted: boolean("is_deleted").notNull().default(false),
     createdAt: timestamp("created_at").notNull().defaultNow(),
     updatedAt: timestamp("updated_at")
       .notNull()

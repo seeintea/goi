@@ -18,5 +18,6 @@ const typedUpdateBudgetSchema = updateBudgetSchema as z.ZodType<UpdateBudget>
 export class BudgetResponseDto extends createZodDto(typedBudgetResponseSchema) {}
 export class CreateBudgetDto extends createZodDto(typedCreateBudgetSchema) {}
 export class UpdateBudgetDto extends createZodDto(typedUpdateBudgetSchema) {}
+export class DeleteBudgetDto extends createZodDto(z.object({ id: z.uuid() })) {}
 export class BudgetListQueryDto extends createZodDto(budgetListQuerySchema) {}
 export class BudgetPageResponseDto extends createZodDto(budgetPageResponseSchema) {}

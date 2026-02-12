@@ -1,9 +1,9 @@
-import { boolean, pgTable, timestamp, uniqueIndex, varchar } from "drizzle-orm/pg-core"
+import { boolean, pgTable, timestamp, uniqueIndex, uuid, varchar } from "drizzle-orm/pg-core"
 
 export const authUser = pgTable(
   "auth_user",
   {
-    userId: varchar("user_id", { length: 32 }).primaryKey().notNull(),
+    userId: uuid("user_id").primaryKey().defaultRandom(),
     username: varchar("username", { length: 30 }).notNull(),
     password: varchar("password", { length: 100 }).notNull(),
     salt: varchar("salt", { length: 16 }).notNull(),

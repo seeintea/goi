@@ -1,63 +1,110 @@
-import { financeTag } from "@goi/infra"
-import { Inject, Injectable, NotFoundException } from "@nestjs/common"
-import { and, count, desc, eq, ilike } from "drizzle-orm"
-import type { DbType } from "@/database/postgresql"
-import { DATABASE_CONNECTION } from "@/database/postgresql"
-import { CreateTagDto, TagListQueryDto, UpdateTagDto } from "./tag.dto"
+import type { CreateTag, Tag, UpdateTag } from "@goi/contracts"
+import { normalizePage, toPageResult } from "@goi/utils"
+import { Injectable, NotFoundException } from "@nestjs/common"
+import { and, desc, eq, ilike, sql } from "drizzle-orm"
+import { PgService, pgSchema } from "@/database/postgresql"
+import type { PageResult } from "@/types/response"
+
+const { financeTag } = pgSchema
 
 @Injectable()
 export class TagService {
-  constructor(@Inject(DATABASE_CONNECTION) private readonly db: DbType) {}
+  constructor(private readonly pg: PgService) {}
 
-  async create(dto: CreateTagDto) {
-    const [created] = await this.db.insert(financeTag).values(dto).returning()
-    return created
-  }
-
-  async findAll(query: TagListQueryDto) {
-    const page = query.page || 1
-    const pageSize = query.pageSize || 10
-    const offset = (page - 1) * pageSize
-
-    const conditions = [eq(financeTag.familyId, query.familyId)]
-    if (query.name) {
-      conditions.push(ilike(financeTag.name, `%${query.name}%`))
-    }
-
-    const where = and(...conditions)
-
-    const [total] = await this.db.select({ count: count() }).from(financeTag).where(where)
-    const items = await this.db
-      .select()
+  async find(id: string): Promise<Tag> {
+    const rows = await this.pg.pdb
+      .select({
+        id: financeTag.id,
+        familyId: financeTag.familyId,
+        name: financeTag.name,
+        color: financeTag.color,
+        isDeleted: financeTag.isDeleted,
+        createdAt: financeTag.createdAt,
+      })
       .from(financeTag)
-      .where(where)
-      .limit(pageSize)
-      .offset(offset)
-      .orderBy(desc(financeTag.createdAt))
+      .where(and(eq(financeTag.id, id), eq(financeTag.isDeleted, false)))
+      .limit(1)
 
-    return {
-      items,
-      total: Number(total.count),
-      page,
-      pageSize,
-    }
+    const row = rows[0]
+    if (!row) throw new NotFoundException("Tag not found")
+
+    return row as Tag
   }
 
-  async findOne(id: string) {
-    const [item] = await this.db.select().from(financeTag).where(eq(financeTag.id, id))
-    if (!item) throw new NotFoundException("Tag not found")
-    return item
+  async create(dto: CreateTag & { id: string }): Promise<Tag> {
+    const [inserted] = await this.pg.pdb
+      .insert(financeTag)
+      .values({
+        id: dto.id,
+        familyId: dto.familyId,
+        name: dto.name,
+        color: dto.color,
+      })
+      .returning({ id: financeTag.id })
+
+    return this.find(inserted.id)
   }
 
-  async update(id: string, dto: UpdateTagDto) {
-    const [updated] = await this.db.update(financeTag).set(dto).where(eq(financeTag.id, id)).returning()
-    if (!updated) throw new NotFoundException("Tag not found")
-    return updated
+  async update(dto: UpdateTag): Promise<Tag> {
+    await this.pg.pdb
+      .update(financeTag)
+      .set({
+        ...(dto.name !== undefined ? { name: dto.name } : {}),
+        ...(dto.color !== undefined ? { color: dto.color } : {}),
+      })
+      .where(eq(financeTag.id, dto.id))
+
+    return this.find(dto.id)
   }
 
-  async remove(id: string) {
-    const [deleted] = await this.db.delete(financeTag).where(eq(financeTag.id, id)).returning()
+  async delete(id: string): Promise<boolean> {
+    const [deleted] = await this.pg.pdb
+      .update(financeTag)
+      .set({ isDeleted: true })
+      .where(eq(financeTag.id, id))
+      .returning({
+        id: financeTag.id,
+      })
+
     if (!deleted) throw new NotFoundException("Tag not found")
-    return deleted
+    return true
+  }
+
+  async list(query: {
+    familyId: string
+    name?: string
+    page?: number | string
+    pageSize?: number | string
+  }): Promise<PageResult<Tag>> {
+    const where: Parameters<typeof and> = [eq(financeTag.familyId, query.familyId), eq(financeTag.isDeleted, false)]
+
+    if (query.name) {
+      where.push(ilike(financeTag.name, `%${query.name}%`))
+    }
+
+    const pageParams = normalizePage(query)
+
+    const totalRows = await this.pg.pdb
+      .select({ count: sql<number>`count(*)` })
+      .from(financeTag)
+      .where(and(...where))
+    const total = Number(totalRows[0]?.count ?? 0)
+
+    const rows = await this.pg.pdb
+      .select({
+        id: financeTag.id,
+        familyId: financeTag.familyId,
+        name: financeTag.name,
+        color: financeTag.color,
+        isDeleted: financeTag.isDeleted,
+        createdAt: financeTag.createdAt,
+      })
+      .from(financeTag)
+      .where(and(...where))
+      .orderBy(desc(financeTag.createdAt))
+      .limit(pageParams.limit)
+      .offset(pageParams.offset)
+
+    return toPageResult(pageParams, total, rows as Tag[])
   }
 }

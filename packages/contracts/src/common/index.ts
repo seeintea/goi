@@ -25,7 +25,7 @@ export const pageQuerySchema = z.object({
 
 export const pageResponseSchema = <T extends z.ZodTypeAny>(itemSchema: T) =>
   z.object({
-    items: z.array(itemSchema),
+    list: z.array(itemSchema),
     total: z.number(),
     page: z.number(),
     pageSize: z.number(),

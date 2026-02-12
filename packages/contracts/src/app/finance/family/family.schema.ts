@@ -1,20 +1,16 @@
 import { z } from "zod"
-import { extendZodWithOpenApi } from "@asteasolutions/zod-to-openapi"
 import { pageQuerySchema, pageResponseSchema } from "../../../common"
 
-extendZodWithOpenApi(z)
-
-export const familySchema = z
-  .object({
-    id: z.string().uuid(),
-    name: z.string().min(1).max(50),
-    ownerUserId: z.string().min(1).max(32),
-    baseCurrency: z.string().min(1).max(10).default("CNY"),
-    timezone: z.string().min(1).max(50).default("Asia/Shanghai"),
-    createdAt: z.date(),
-    updatedAt: z.date(),
-  })
-  .openapi("Family")
+export const familySchema = z.object({
+  id: z.uuid(),
+  name: z.string().min(1).max(50),
+  ownerUserId: z.uuid(),
+  baseCurrency: z.string().min(1).max(10).default("CNY"),
+  timezone: z.string().min(1).max(50).default("Asia/Shanghai"),
+  isDeleted: z.boolean().default(false),
+  createdAt: z.date(),
+  updatedAt: z.date(),
+})
 
 export const createFamilySchema = familySchema.pick({
   name: true,
@@ -30,7 +26,7 @@ export const updateFamilySchema = familySchema
   })
   .partial()
   .extend({
-    id: z.string().uuid(),
+    id: z.uuid(),
   })
 
 export const familyResponseSchema = familySchema

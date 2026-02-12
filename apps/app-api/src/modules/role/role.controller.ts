@@ -1,8 +1,8 @@
 import { Permission } from "@goi/nest-kit"
 import { Body, Controller, Get, Post, Query } from "@nestjs/common"
 import { ApiOperation, ApiTags } from "@nestjs/swagger"
-import { nanoid } from "nanoid"
 import { ZodResponse } from "nestjs-zod"
+import { v4 as uuid } from "uuid"
 import {
   CreateRoleDto,
   DeleteRoleDto,
@@ -23,7 +23,7 @@ export class RoleController {
   @ApiOperation({ summary: "创建角色" })
   @ZodResponse({ type: RoleResponseDto })
   async create(@Body() body: CreateRoleDto) {
-    return this.roleService.create({ ...body, roleId: nanoid(32) })
+    return this.roleService.create({ ...body, roleId: uuid() })
   }
 
   @Get("find")

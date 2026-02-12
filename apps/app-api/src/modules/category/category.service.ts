@@ -1,66 +1,136 @@
-import { financeCategory } from "@goi/infra"
-import { Inject, Injectable, NotFoundException } from "@nestjs/common"
-import { and, count, desc, eq, ilike } from "drizzle-orm"
-import type { DbType } from "@/database/postgresql"
-import { DATABASE_CONNECTION } from "@/database/postgresql"
-import { CategoryListQueryDto, CreateCategoryDto, UpdateCategoryDto } from "./category.dto"
+import type { Category, CreateCategory, UpdateCategory } from "@goi/contracts"
+import { normalizePage, toPageResult } from "@goi/utils"
+import { Injectable, NotFoundException } from "@nestjs/common"
+import { and, desc, eq, ilike, sql } from "drizzle-orm"
+import { PgService, pgSchema } from "@/database/postgresql"
+import type { PageResult } from "@/types/response"
+
+const { financeCategory } = pgSchema
 
 @Injectable()
 export class CategoryService {
-  constructor(@Inject(DATABASE_CONNECTION) private readonly db: DbType) {}
+  constructor(private readonly pg: PgService) {}
 
-  async create(dto: CreateCategoryDto) {
-    const [created] = await this.db.insert(financeCategory).values(dto).returning()
-    return created
+  async find(id: string): Promise<Category> {
+    const rows = await this.pg.pdb
+      .select({
+        id: financeCategory.id,
+        familyId: financeCategory.familyId,
+        name: financeCategory.name,
+        type: financeCategory.type,
+        parentId: financeCategory.parentId,
+        isHidden: financeCategory.isHidden,
+        sortOrder: financeCategory.sortOrder,
+        icon: financeCategory.icon,
+        color: financeCategory.color,
+        isDeleted: financeCategory.isDeleted,
+        createdAt: financeCategory.createdAt,
+        updatedAt: financeCategory.updatedAt,
+      })
+      .from(financeCategory)
+      .where(and(eq(financeCategory.id, id), eq(financeCategory.isDeleted, false)))
+      .limit(1)
+
+    const row = rows[0]
+    if (!row) throw new NotFoundException("Category not found")
+
+    return row as Category
   }
 
-  async findAll(query: CategoryListQueryDto) {
-    const page = query.page || 1
-    const pageSize = query.pageSize || 10
-    const offset = (page - 1) * pageSize
+  async create(dto: CreateCategory & { id: string }): Promise<Category> {
+    const [inserted] = await this.pg.pdb
+      .insert(financeCategory)
+      .values({
+        id: dto.id,
+        familyId: dto.familyId,
+        name: dto.name,
+        type: dto.type,
+        parentId: dto.parentId,
+        isHidden: dto.isHidden ?? false,
+        sortOrder: dto.sortOrder ?? 0,
+        icon: dto.icon,
+        color: dto.color,
+      })
+      .returning({ id: financeCategory.id })
 
-    const conditions = [eq(financeCategory.familyId, query.familyId)]
+    return this.find(inserted.id)
+  }
+
+  async update(dto: UpdateCategory): Promise<Category> {
+    await this.pg.pdb
+      .update(financeCategory)
+      .set({
+        ...(dto.name !== undefined ? { name: dto.name } : {}),
+        ...(dto.type !== undefined ? { type: dto.type } : {}),
+        ...(dto.parentId !== undefined ? { parentId: dto.parentId } : {}),
+        ...(dto.isHidden !== undefined ? { isHidden: dto.isHidden } : {}),
+        ...(dto.sortOrder !== undefined ? { sortOrder: dto.sortOrder } : {}),
+        ...(dto.icon !== undefined ? { icon: dto.icon } : {}),
+        ...(dto.color !== undefined ? { color: dto.color } : {}),
+      })
+      .where(eq(financeCategory.id, dto.id))
+
+    return this.find(dto.id)
+  }
+
+  async delete(id: string): Promise<boolean> {
+    const [deleted] = await this.pg.pdb
+      .update(financeCategory)
+      .set({ isDeleted: true })
+      .where(eq(financeCategory.id, id))
+      .returning({ id: financeCategory.id })
+
+    if (!deleted) throw new NotFoundException("Category not found")
+    return true
+  }
+
+  async list(query: {
+    familyId: string
+    name?: string
+    type?: string
+    page?: number | string
+    pageSize?: number | string
+  }): Promise<PageResult<Category>> {
+    const where: Parameters<typeof and> = [
+      eq(financeCategory.familyId, query.familyId),
+      eq(financeCategory.isDeleted, false),
+    ]
+
     if (query.name) {
-      conditions.push(ilike(financeCategory.name, `%${query.name}%`))
+      where.push(ilike(financeCategory.name, `%${query.name}%`))
     }
     if (query.type) {
-      conditions.push(eq(financeCategory.type, query.type))
+      where.push(eq(financeCategory.type, query.type))
     }
 
-    const where = and(...conditions)
+    const pageParams = normalizePage(query)
 
-    const [total] = await this.db.select({ count: count() }).from(financeCategory).where(where)
-    const items = await this.db
-      .select()
+    const totalRows = await this.pg.pdb
+      .select({ count: sql<number>`count(*)` })
       .from(financeCategory)
-      .where(where)
-      .limit(pageSize)
-      .offset(offset)
-      .orderBy(desc(financeCategory.createdAt))
+      .where(and(...where))
+    const total = Number(totalRows[0]?.count ?? 0)
 
-    return {
-      items,
-      total: Number(total.count),
-      page,
-      pageSize,
-    }
-  }
+    const rows = await this.pg.pdb
+      .select({
+        id: financeCategory.id,
+        familyId: financeCategory.familyId,
+        name: financeCategory.name,
+        type: financeCategory.type,
+        parentId: financeCategory.parentId,
+        isHidden: financeCategory.isHidden,
+        sortOrder: financeCategory.sortOrder,
+        icon: financeCategory.icon,
+        color: financeCategory.color,
+        createdAt: financeCategory.createdAt,
+        updatedAt: financeCategory.updatedAt,
+      })
+      .from(financeCategory)
+      .where(and(...where))
+      .orderBy(desc(financeCategory.sortOrder), desc(financeCategory.createdAt))
+      .limit(pageParams.limit)
+      .offset(pageParams.offset)
 
-  async findOne(id: string) {
-    const [item] = await this.db.select().from(financeCategory).where(eq(financeCategory.id, id))
-    if (!item) throw new NotFoundException("Category not found")
-    return item
-  }
-
-  async update(id: string, dto: UpdateCategoryDto) {
-    const [updated] = await this.db.update(financeCategory).set(dto).where(eq(financeCategory.id, id)).returning()
-    if (!updated) throw new NotFoundException("Category not found")
-    return updated
-  }
-
-  async remove(id: string) {
-    const [deleted] = await this.db.delete(financeCategory).where(eq(financeCategory.id, id)).returning()
-    if (!deleted) throw new NotFoundException("Category not found")
-    return deleted
+    return toPageResult(pageParams, total, rows as Category[])
   }
 }

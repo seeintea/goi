@@ -1,35 +1,59 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from "@nestjs/common"
-import { ApiTags } from "@nestjs/swagger"
-import { BudgetListQueryDto, CreateBudgetDto, UpdateBudgetDto } from "./budget.dto"
+import { Permission } from "@goi/nest-kit"
+import { Body, Controller, Get, Post, Query } from "@nestjs/common"
+import { ApiOperation, ApiTags } from "@nestjs/swagger"
+import { ZodResponse } from "nestjs-zod"
+import { v4 as uuid } from "uuid"
+import {
+  BudgetListQueryDto,
+  BudgetPageResponseDto,
+  BudgetResponseDto,
+  CreateBudgetDto,
+  DeleteBudgetDto,
+  UpdateBudgetDto,
+} from "./budget.dto"
 import { BudgetService } from "./budget.service"
 
-@ApiTags("Budget")
+@ApiTags("预算管理")
 @Controller("budgets")
 export class BudgetController {
   constructor(private readonly budgetService: BudgetService) {}
 
-  @Post()
+  @Post("create")
+  @Permission("fin:budget:create")
+  @ApiOperation({ summary: "创建预算" })
+  @ZodResponse({ type: BudgetResponseDto })
   create(@Body() createBudgetDto: CreateBudgetDto) {
-    return this.budgetService.create(createBudgetDto)
+    return this.budgetService.create({ ...createBudgetDto, id: uuid() })
   }
 
-  @Get()
-  findAll(@Query() query: BudgetListQueryDto) {
-    return this.budgetService.findAll(query)
+  @Get("list")
+  @Permission("fin:budget:read")
+  @ApiOperation({ summary: "查询预算列表" })
+  @ZodResponse({ type: BudgetPageResponseDto })
+  list(@Query() query: BudgetListQueryDto) {
+    return this.budgetService.list(query)
   }
 
-  @Get(":id")
-  findOne(@Param("id") id: string) {
-    return this.budgetService.findOne(id)
+  @Get("find")
+  @Permission("fin:budget:read")
+  @ApiOperation({ summary: "查询预算详情" })
+  @ZodResponse({ type: BudgetResponseDto })
+  find(@Query("id") id: string) {
+    return this.budgetService.find(id)
   }
 
-  @Patch(":id")
-  update(@Param("id") id: string, @Body() updateBudgetDto: UpdateBudgetDto) {
-    return this.budgetService.update(id, updateBudgetDto)
+  @Post("update")
+  @Permission("fin:budget:update")
+  @ApiOperation({ summary: "更新预算" })
+  @ZodResponse({ type: BudgetResponseDto })
+  update(@Body() updateBudgetDto: UpdateBudgetDto) {
+    return this.budgetService.update(updateBudgetDto)
   }
 
-  @Delete(":id")
-  remove(@Param("id") id: string) {
-    return this.budgetService.remove(id)
+  @Post("delete")
+  @Permission("fin:budget:delete")
+  @ApiOperation({ summary: "删除预算" })
+  delete(@Body() deleteBudgetDto: DeleteBudgetDto) {
+    return this.budgetService.delete(deleteBudgetDto.id)
   }
 }

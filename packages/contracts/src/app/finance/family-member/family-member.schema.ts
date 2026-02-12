@@ -1,19 +1,15 @@
-import { extendZodWithOpenApi } from "@asteasolutions/zod-to-openapi"
 import { z } from "zod"
 import { pageQuerySchema, pageResponseSchema } from "../../../common"
 
-extendZodWithOpenApi(z)
-
-export const familyMemberSchema = z
-  .object({
-    id: z.string().uuid(),
-    familyId: z.string().uuid(),
-    userId: z.string().min(1).max(32),
-    roleId: z.string().min(1).max(32),
-    status: z.string().min(1).max(20).default("ACTIVE"),
-    joinedAt: z.date(),
-  })
-  .openapi("FamilyMember")
+export const familyMemberSchema = z.object({
+  id: z.uuid(),
+  familyId: z.uuid(),
+  userId: z.uuid(),
+  roleId: z.uuid(),
+  status: z.string().min(1).max(20).default("ACTIVE"),
+  isDeleted: z.boolean().default(false),
+  joinedAt: z.date(),
+})
 
 export const createFamilyMemberSchema = familyMemberSchema.pick({
   familyId: true,
@@ -29,13 +25,13 @@ export const updateFamilyMemberSchema = familyMemberSchema
   })
   .partial()
   .extend({
-    id: z.string().uuid(),
+    id: z.uuid(),
   })
 
 export const familyMemberResponseSchema = familyMemberSchema
 
 export const familyMemberListQuerySchema = pageQuerySchema.extend({
-  familyId: z.string().uuid(),
+  familyId: z.uuid(),
   userId: z.string().optional(),
   roleId: z.string().optional(),
 })

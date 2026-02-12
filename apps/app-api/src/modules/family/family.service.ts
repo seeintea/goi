@@ -1,69 +1,115 @@
-import { financeFamily } from "@goi/infra"
-import { Inject, Injectable, NotFoundException } from "@nestjs/common"
-import { and, count, desc, eq, ilike, type SQL } from "drizzle-orm"
-import type { DbType } from "@/database/postgresql"
-import { DATABASE_CONNECTION } from "@/database/postgresql"
-import { CreateFamilyDto, FamilyListQueryDto, UpdateFamilyDto } from "./family.dto"
+import type { CreateFamily, Family, UpdateFamily } from "@goi/contracts"
+import { normalizePage, toPageResult } from "@goi/utils"
+import { Injectable, NotFoundException } from "@nestjs/common"
+import { and, desc, eq, ilike, sql } from "drizzle-orm"
+import { PgService, pgSchema } from "@/database/postgresql"
+import type { PageResult } from "@/types/response"
+
+const { financeFamily } = pgSchema
 
 @Injectable()
 export class FamilyService {
-  constructor(@Inject(DATABASE_CONNECTION) private readonly db: DbType) {}
+  constructor(private readonly pg: PgService) {}
 
-  async create(userId: string, dto: CreateFamilyDto) {
-    const [created] = await this.db
+  async find(id: string): Promise<Family> {
+    const rows = await this.pg.pdb
+      .select({
+        id: financeFamily.id,
+        name: financeFamily.name,
+        ownerUserId: financeFamily.ownerUserId,
+        baseCurrency: financeFamily.baseCurrency,
+        timezone: financeFamily.timezone,
+        isDeleted: financeFamily.isDeleted,
+        createdAt: financeFamily.createdAt,
+        updatedAt: financeFamily.updatedAt,
+      })
+      .from(financeFamily)
+      .where(and(eq(financeFamily.id, id), eq(financeFamily.isDeleted, false)))
+      .limit(1)
+
+    const row = rows[0]
+    if (!row) throw new NotFoundException("Family not found")
+
+    return row as Family
+  }
+
+  async create(userId: string, dto: CreateFamily & { id: string }): Promise<Family> {
+    const [inserted] = await this.pg.pdb
       .insert(financeFamily)
       .values({
-        ...dto,
+        id: dto.id,
+        name: dto.name,
         ownerUserId: userId,
+        baseCurrency: dto.baseCurrency,
+        timezone: dto.timezone,
       })
-      .returning()
-    return created
+      .returning({ id: financeFamily.id })
+
+    return this.find(inserted.id)
   }
 
-  async findAll(query: FamilyListQueryDto) {
-    const page = query.page || 1
-    const pageSize = query.pageSize || 10
-    const offset = (page - 1) * pageSize
+  async update(id: string, dto: UpdateFamily): Promise<Family> {
+    await this.pg.pdb
+      .update(financeFamily)
+      .set({
+        ...(dto.name !== undefined ? { name: dto.name } : {}),
+        ...(dto.baseCurrency !== undefined ? { baseCurrency: dto.baseCurrency } : {}),
+        ...(dto.timezone !== undefined ? { timezone: dto.timezone } : {}),
+      })
+      .where(eq(financeFamily.id, id))
 
-    const conditions: SQL[] = []
-    if (query.name) {
-      conditions.push(ilike(financeFamily.name, `%${query.name}%`))
-    }
-
-    const where = conditions.length ? and(...conditions) : undefined
-
-    const [total] = await this.db.select({ count: count() }).from(financeFamily).where(where)
-    const items = await this.db
-      .select()
-      .from(financeFamily)
-      .where(where)
-      .limit(pageSize)
-      .offset(offset)
-      .orderBy(desc(financeFamily.createdAt))
-
-    return {
-      items,
-      total: Number(total.count),
-      page,
-      pageSize,
-    }
+    return this.find(id)
   }
 
-  async findOne(id: string) {
-    const [item] = await this.db.select().from(financeFamily).where(eq(financeFamily.id, id))
-    if (!item) throw new NotFoundException("Family not found")
-    return item
-  }
+  async delete(id: string): Promise<boolean> {
+    const [deleted] = await this.pg.pdb
+      .update(financeFamily)
+      .set({ isDeleted: true })
+      .where(eq(financeFamily.id, id))
+      .returning({
+        id: financeFamily.id,
+      })
 
-  async update(id: string, dto: UpdateFamilyDto) {
-    const [updated] = await this.db.update(financeFamily).set(dto).where(eq(financeFamily.id, id)).returning()
-    if (!updated) throw new NotFoundException("Family not found")
-    return updated
-  }
-
-  async remove(id: string) {
-    const [deleted] = await this.db.delete(financeFamily).where(eq(financeFamily.id, id)).returning()
     if (!deleted) throw new NotFoundException("Family not found")
-    return deleted
+    return true
+  }
+
+  async list(query: {
+    name?: string
+    page?: number | string
+    pageSize?: number | string
+  }): Promise<PageResult<Family>> {
+    const where: Parameters<typeof and> = []
+
+    if (query.name) {
+      where.push(ilike(financeFamily.name, `%${query.name}%`))
+    }
+
+    const pageParams = normalizePage(query)
+
+    const totalRows = await this.pg.pdb
+      .select({ count: sql<number>`count(*)` })
+      .from(financeFamily)
+      .where(and(...where))
+    const total = Number(totalRows[0]?.count ?? 0)
+
+    const rows = await this.pg.pdb
+      .select({
+        id: financeFamily.id,
+        name: financeFamily.name,
+        ownerUserId: financeFamily.ownerUserId,
+        baseCurrency: financeFamily.baseCurrency,
+        timezone: financeFamily.timezone,
+        isDeleted: financeFamily.isDeleted,
+        createdAt: financeFamily.createdAt,
+        updatedAt: financeFamily.updatedAt,
+      })
+      .from(financeFamily)
+      .where(and(...where))
+      .orderBy(desc(financeFamily.createdAt))
+      .limit(pageParams.limit)
+      .offset(pageParams.offset)
+
+    return toPageResult(pageParams, total, rows as Family[])
   }
 }

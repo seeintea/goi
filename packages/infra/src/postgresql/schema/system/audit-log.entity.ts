@@ -6,7 +6,7 @@ export const sysAuditLog = pgTable(
   "sys_audit_log",
   {
     id: uuid("id").primaryKey().defaultRandom(),
-    userId: varchar("user_id", { length: 32 }).references(() => authUser.userId),
+    userId: uuid("user_id").references(() => authUser.userId),
     familyId: uuid("family_id").references(() => financeFamily.id),
     action: varchar("action", { length: 50 }).notNull(),
     targetEntity: varchar("target_entity", { length: 50 }).notNull(),
@@ -14,7 +14,7 @@ export const sysAuditLog = pgTable(
     changes: jsonb("changes"),
     ipAddress: varchar("ip_address", { length: 45 }),
     userAgent: varchar("user_agent"),
-    createdAt: timestamp("created_at").defaultNow(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
   },
   (table) => [
     index("sys_audit_log_user_id_idx").on(table.userId),

@@ -1,10 +1,10 @@
-import { boolean, index, integer, pgTable, timestamp, uniqueIndex, varchar } from "drizzle-orm/pg-core"
+import { boolean, index, integer, pgTable, timestamp, uniqueIndex, uuid, varchar } from "drizzle-orm/pg-core"
 
 export const authModule = pgTable(
   "auth_module",
   {
-    moduleId: varchar("module_id", { length: 32 }).primaryKey().notNull(),
-    parentId: varchar("parent_id", { length: 32 }).references(() => authModule.moduleId, {
+    moduleId: uuid("module_id").primaryKey().defaultRandom(),
+    parentId: uuid("parent_id").references(() => authModule.moduleId, {
       onDelete: "restrict",
       onUpdate: "cascade",
     }),

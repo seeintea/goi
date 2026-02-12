@@ -1,35 +1,59 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from "@nestjs/common"
-import { ApiTags } from "@nestjs/swagger"
-import { CreateTransactionDto, TransactionListQueryDto, UpdateTransactionDto } from "./transaction.dto"
+import { Permission } from "@goi/nest-kit"
+import { Body, Controller, Get, Post, Query } from "@nestjs/common"
+import { ApiOperation, ApiTags } from "@nestjs/swagger"
+import { ZodResponse } from "nestjs-zod"
+import { v4 as uuid } from "uuid"
+import {
+  CreateTransactionDto,
+  DeleteTransactionDto,
+  TransactionListQueryDto,
+  TransactionPageResponseDto,
+  TransactionResponseDto,
+  UpdateTransactionDto,
+} from "./transaction.dto"
 import { TransactionService } from "./transaction.service"
 
-@ApiTags("Transaction")
+@ApiTags("交易管理")
 @Controller("transactions")
 export class TransactionController {
   constructor(private readonly transactionService: TransactionService) {}
 
-  @Post()
+  @Post("create")
+  @Permission("fin:transaction:create")
+  @ApiOperation({ summary: "创建交易" })
+  @ZodResponse({ type: TransactionResponseDto })
   create(@Body() createTransactionDto: CreateTransactionDto) {
-    return this.transactionService.create(createTransactionDto)
+    return this.transactionService.create({ ...createTransactionDto, id: uuid() })
   }
 
-  @Get()
-  findAll(@Query() query: TransactionListQueryDto) {
-    return this.transactionService.findAll(query)
+  @Get("list")
+  @Permission("fin:transaction:read")
+  @ApiOperation({ summary: "查询交易列表" })
+  @ZodResponse({ type: TransactionPageResponseDto })
+  list(@Query() query: TransactionListQueryDto) {
+    return this.transactionService.list(query)
   }
 
-  @Get(":id")
-  findOne(@Param("id") id: string) {
-    return this.transactionService.findOne(id)
+  @Get("find")
+  @Permission("fin:transaction:read")
+  @ApiOperation({ summary: "查询交易详情" })
+  @ZodResponse({ type: TransactionResponseDto })
+  find(@Query("id") id: string) {
+    return this.transactionService.find(id)
   }
 
-  @Patch(":id")
-  update(@Param("id") id: string, @Body() updateTransactionDto: UpdateTransactionDto) {
-    return this.transactionService.update(id, updateTransactionDto)
+  @Post("update")
+  @Permission("fin:transaction:update")
+  @ApiOperation({ summary: "更新交易" })
+  @ZodResponse({ type: TransactionResponseDto })
+  update(@Body() updateTransactionDto: UpdateTransactionDto) {
+    return this.transactionService.update(updateTransactionDto)
   }
 
-  @Delete(":id")
-  remove(@Param("id") id: string) {
-    return this.transactionService.remove(id)
+  @Post("delete")
+  @Permission("fin:transaction:delete")
+  @ApiOperation({ summary: "删除交易" })
+  delete(@Body() deleteTransactionDto: DeleteTransactionDto) {
+    return this.transactionService.delete(deleteTransactionDto.id)
   }
 }

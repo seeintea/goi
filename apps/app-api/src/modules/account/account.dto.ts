@@ -20,3 +20,9 @@ export class CreateAccountDto extends createZodDto(typedCreateAccountSchema) {}
 export class UpdateAccountDto extends createZodDto(typedUpdateAccountSchema) {}
 export class AccountListQueryDto extends createZodDto(accountListQuerySchema) {}
 export class AccountPageResponseDto extends createZodDto(accountPageResponseSchema) {}
+
+const deleteAccountSchema = z.object({
+  id: z.uuid(),
+})
+
+export class DeleteAccountDto extends createZodDto(deleteAccountSchema) {}

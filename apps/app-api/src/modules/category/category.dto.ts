@@ -1,9 +1,9 @@
 import {
   Category,
+  CreateCategory,
   categoryListQuerySchema,
   categoryPageResponseSchema,
   categoryResponseSchema,
-  CreateCategory,
   createCategorySchema,
   UpdateCategory,
   updateCategorySchema,
@@ -18,5 +18,6 @@ const typedUpdateCategorySchema = updateCategorySchema as z.ZodType<UpdateCatego
 export class CategoryResponseDto extends createZodDto(typedCategoryResponseSchema) {}
 export class CreateCategoryDto extends createZodDto(typedCreateCategorySchema) {}
 export class UpdateCategoryDto extends createZodDto(typedUpdateCategorySchema) {}
+export class DeleteCategoryDto extends createZodDto(z.object({ id: z.uuid() })) {}
 export class CategoryListQueryDto extends createZodDto(categoryListQuerySchema) {}
 export class CategoryPageResponseDto extends createZodDto(categoryPageResponseSchema) {}

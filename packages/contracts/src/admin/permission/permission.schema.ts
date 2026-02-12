@@ -1,7 +1,7 @@
 import { z } from "zod"
 
 const shape = {
-  permissionId: z.string().length(32).describe("权限ID"),
+  permissionId: z.uuid().describe("权限ID"),
   code: z.string().min(1).max(80).describe("权限编码"),
   name: z.string().max(80).describe("权限名称"),
   moduleId: z.string().length(32).describe("模块ID"),

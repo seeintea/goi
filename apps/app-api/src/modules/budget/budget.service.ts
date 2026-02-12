@@ -1,63 +1,131 @@
-import { financeBudget } from "@goi/infra"
-import { Inject, Injectable, NotFoundException } from "@nestjs/common"
-import { and, count, desc, eq } from "drizzle-orm"
-import type { DbType } from "@/database/postgresql"
-import { DATABASE_CONNECTION } from "@/database/postgresql"
-import { BudgetListQueryDto, CreateBudgetDto, UpdateBudgetDto } from "./budget.dto"
+import type { Budget, CreateBudget, UpdateBudget } from "@goi/contracts"
+import { normalizePage, toPageResult } from "@goi/utils"
+import { Injectable, NotFoundException } from "@nestjs/common"
+import { and, desc, eq, sql } from "drizzle-orm"
+import { PgService, pgSchema } from "@/database/postgresql"
+import type { PageResult } from "@/types/response"
+
+const { financeBudget } = pgSchema
 
 @Injectable()
 export class BudgetService {
-  constructor(@Inject(DATABASE_CONNECTION) private readonly db: DbType) {}
+  constructor(private readonly pg: PgService) {}
 
-  async create(dto: CreateBudgetDto) {
-    const [created] = await this.db.insert(financeBudget).values(dto).returning()
-    return created
-  }
-
-  async findAll(query: BudgetListQueryDto) {
-    const page = query.page || 1
-    const pageSize = query.pageSize || 10
-    const offset = (page - 1) * pageSize
-
-    const conditions = [eq(financeBudget.familyId, query.familyId)]
-    if (query.periodType) {
-      conditions.push(eq(financeBudget.periodType, query.periodType))
-    }
-
-    const where = and(...conditions)
-
-    const [total] = await this.db.select({ count: count() }).from(financeBudget).where(where)
-    const items = await this.db
-      .select()
+  async find(id: string): Promise<Budget> {
+    const rows = await this.pg.pdb
+      .select({
+        id: financeBudget.id,
+        familyId: financeBudget.familyId,
+        categoryId: financeBudget.categoryId,
+        amount: financeBudget.amount,
+        periodType: financeBudget.periodType,
+        startDate: financeBudget.startDate,
+        endDate: financeBudget.endDate,
+        isDeleted: financeBudget.isDeleted,
+        createdAt: financeBudget.createdAt,
+        updatedAt: financeBudget.updatedAt,
+      })
       .from(financeBudget)
-      .where(where)
-      .limit(pageSize)
-      .offset(offset)
-      .orderBy(desc(financeBudget.createdAt))
+      .where(and(eq(financeBudget.id, id), eq(financeBudget.isDeleted, false)))
+      .limit(1)
+
+    const row = rows[0]
+    if (!row) throw new NotFoundException("Budget not found")
 
     return {
-      items,
-      total: Number(total.count),
-      page,
-      pageSize,
-    }
+      ...row,
+      // Ensure types match Budget interface
+      startDate: row.startDate, // Assuming string or Date matches
+      endDate: row.endDate,
+      createdAt: row.createdAt,
+      updatedAt: row.updatedAt,
+    } as Budget
   }
 
-  async findOne(id: string) {
-    const [item] = await this.db.select().from(financeBudget).where(eq(financeBudget.id, id))
-    if (!item) throw new NotFoundException("Budget not found")
-    return item
+  async create(dto: CreateBudget & { id: string }): Promise<Budget> {
+    const [inserted] = await this.pg.pdb
+      .insert(financeBudget)
+      .values({
+        id: dto.id,
+        familyId: dto.familyId,
+        categoryId: dto.categoryId,
+        amount: dto.amount,
+        periodType: dto.periodType,
+        startDate: dto.startDate,
+        endDate: dto.endDate,
+      })
+      .returning({ id: financeBudget.id })
+
+    return this.find(inserted.id)
   }
 
-  async update(id: string, dto: UpdateBudgetDto) {
-    const [updated] = await this.db.update(financeBudget).set(dto).where(eq(financeBudget.id, id)).returning()
-    if (!updated) throw new NotFoundException("Budget not found")
-    return updated
+  async update(dto: UpdateBudget): Promise<Budget> {
+    await this.pg.pdb
+      .update(financeBudget)
+      .set({
+        ...(dto.categoryId !== undefined ? { categoryId: dto.categoryId } : {}),
+        ...(dto.amount !== undefined ? { amount: dto.amount } : {}),
+        ...(dto.periodType !== undefined ? { periodType: dto.periodType } : {}),
+        ...(dto.startDate !== undefined ? { startDate: dto.startDate } : {}),
+        ...(dto.endDate !== undefined ? { endDate: dto.endDate } : {}),
+      })
+      .where(eq(financeBudget.id, dto.id))
+
+    return this.find(dto.id)
   }
 
-  async remove(id: string) {
-    const [deleted] = await this.db.delete(financeBudget).where(eq(financeBudget.id, id)).returning()
+  async delete(id: string): Promise<boolean> {
+    const [deleted] = await this.pg.pdb
+      .update(financeBudget)
+      .set({ isDeleted: true })
+      .where(eq(financeBudget.id, id))
+      .returning({ id: financeBudget.id })
+
     if (!deleted) throw new NotFoundException("Budget not found")
-    return deleted
+    return true
+  }
+
+  async list(query: {
+    familyId: string
+    periodType?: string
+    page?: number | string
+    pageSize?: number | string
+  }): Promise<PageResult<Budget>> {
+    const where: Parameters<typeof and> = [
+      eq(financeBudget.familyId, query.familyId),
+      eq(financeBudget.isDeleted, false),
+    ]
+
+    if (query.periodType) {
+      where.push(eq(financeBudget.periodType, query.periodType))
+    }
+
+    const pageParams = normalizePage(query)
+
+    const totalRows = await this.pg.pdb
+      .select({ count: sql<number>`count(*)` })
+      .from(financeBudget)
+      .where(and(...where))
+    const total = Number(totalRows[0]?.count ?? 0)
+
+    const rows = await this.pg.pdb
+      .select({
+        id: financeBudget.id,
+        familyId: financeBudget.familyId,
+        categoryId: financeBudget.categoryId,
+        amount: financeBudget.amount,
+        periodType: financeBudget.periodType,
+        startDate: financeBudget.startDate,
+        endDate: financeBudget.endDate,
+        createdAt: financeBudget.createdAt,
+        updatedAt: financeBudget.updatedAt,
+      })
+      .from(financeBudget)
+      .where(and(...where))
+      .orderBy(desc(financeBudget.createdAt))
+      .limit(pageParams.limit)
+      .offset(pageParams.offset)
+
+    return toPageResult(pageParams, total, rows as Budget[])
   }
 }

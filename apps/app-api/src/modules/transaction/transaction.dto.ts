@@ -20,3 +20,9 @@ export class CreateTransactionDto extends createZodDto(typedCreateTransactionSch
 export class UpdateTransactionDto extends createZodDto(typedUpdateTransactionSchema) {}
 export class TransactionListQueryDto extends createZodDto(transactionListQuerySchema) {}
 export class TransactionPageResponseDto extends createZodDto(transactionPageResponseSchema) {}
+
+const deleteTransactionSchema = z.object({
+  id: z.uuid(),
+})
+
+export class DeleteTransactionDto extends createZodDto(deleteTransactionSchema) {}

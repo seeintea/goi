@@ -1,8 +1,8 @@
 import { Permission } from "@goi/nest-kit"
 import { Body, Controller, Get, Post, Query } from "@nestjs/common"
 import { ApiOperation, ApiTags } from "@nestjs/swagger"
-import { nanoid } from "nanoid"
 import { ZodResponse } from "nestjs-zod"
+import { v4 as uuid } from "uuid"
 import {
   AdminPermissionListQueryDto,
   AdminPermissionPageResponseDto,
@@ -23,7 +23,7 @@ export class PermissionController {
   @ApiOperation({ summary: "创建管理员权限" })
   @ZodResponse({ type: AdminPermissionResponseDto })
   async create(@Body() body: CreateAdminPermissionDto) {
-    return this.permissionService.create({ ...body, permissionId: nanoid(32) })
+    return this.permissionService.create({ ...body, permissionId: uuid() })
   }
 
   @Get("find")

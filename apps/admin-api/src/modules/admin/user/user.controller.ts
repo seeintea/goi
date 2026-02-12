@@ -2,8 +2,8 @@ import { Permission } from "@goi/nest-kit"
 import { generateSalt, hashPassword } from "@goi/utils-node"
 import { Body, Controller, Get, Post, Query } from "@nestjs/common"
 import { ApiOperation, ApiTags } from "@nestjs/swagger"
-import { nanoid } from "nanoid"
 import { ZodResponse } from "nestjs-zod"
+import { v4 as uuid } from "uuid"
 import {
   AdminUserListQueryDto,
   AdminUserPageResponseDto,
@@ -26,7 +26,7 @@ export class UserController {
   async create(@Body() body: CreateAdminUserDto) {
     const salt = generateSalt(16)
     const password = hashPassword(body.password, salt)
-    return this.userService.create({ ...body, password, salt, userId: nanoid(32) })
+    return this.userService.create({ ...body, password, salt, userId: uuid() })
   }
 
   @Get("find")

@@ -20,3 +20,9 @@ export class CreateTagDto extends createZodDto(typedCreateTagSchema) {}
 export class UpdateTagDto extends createZodDto(typedUpdateTagSchema) {}
 export class TagListQueryDto extends createZodDto(tagListQuerySchema) {}
 export class TagPageResponseDto extends createZodDto(tagPageResponseSchema) {}
+
+const deleteTagSchema = z.object({
+  id: z.uuid(),
+})
+
+export class DeleteTagDto extends createZodDto(deleteTagSchema) {}
