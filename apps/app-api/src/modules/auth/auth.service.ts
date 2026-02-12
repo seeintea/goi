@@ -9,7 +9,7 @@ import { RedisService } from "@/database/redis"
 import { UserService } from "@/modules/user/user.service"
 import type { LoginResponse } from "./auth.dto"
 
-const { financeBook: bookSchema, financeBookMember: bookMemberSchema, authRole: roleSchema } = pgSchema
+const { financeFamily: familySchema, financeFamilyMember: familyMemberSchema, authRole: roleSchema } = pgSchema
 
 @Injectable()
 export class AuthService {
@@ -49,7 +49,7 @@ export class AuthService {
       accessToken,
       roleId: context.roleId,
       roleName: context.roleName,
-      bookId: context.bookId,
+      familyId: context.familyId,
     }
   }
 
@@ -75,52 +75,28 @@ export class AuthService {
 
   private async resolveLoginContext(
     userId: string,
-  ): Promise<{ roleId: string | null; roleName: string | null; bookId: string | null }> {
+  ): Promise<{ roleId: string | null; roleName: string | null; familyId: string | null }> {
     const memberRows = await this.pg.pdb
       .select({
-        bookId: bookMemberSchema.bookId,
-        roleCode: bookMemberSchema.roleCode,
+        familyId: familyMemberSchema.familyId,
+        roleId: familyMemberSchema.roleId,
       })
-      .from(bookMemberSchema)
-      .innerJoin(bookSchema, eq(bookMemberSchema.bookId, bookSchema.bookId))
-      .where(
-        and(
-          eq(bookMemberSchema.userId, userId),
-          eq(bookMemberSchema.isDeleted, false),
-          eq(bookSchema.isDeleted, false),
-        ),
-      )
-      .orderBy(desc(bookMemberSchema.createdAt))
+      .from(familyMemberSchema)
+      .innerJoin(familySchema, eq(familyMemberSchema.familyId, familySchema.id))
+      .where(and(eq(familyMemberSchema.userId, userId), eq(familyMemberSchema.status, "ACTIVE")))
+      .orderBy(desc(familyMemberSchema.joinedAt))
       .limit(1)
 
     if (memberRows[0]) {
-      const role = await this.resolveRoleByCode(memberRows[0].roleCode)
-      return { bookId: memberRows[0].bookId, roleId: role?.roleId ?? null, roleName: role?.roleName ?? null }
+      const role = await this.resolveRoleById(memberRows[0].roleId)
+      return { familyId: memberRows[0].familyId, roleId: role?.roleId ?? null, roleName: role?.roleName ?? null }
     }
 
-    const ownerRows = await this.pg.pdb
-      .select({ bookId: bookSchema.bookId })
-      .from(bookSchema)
-      .where(and(eq(bookSchema.ownerUserId, userId), eq(bookSchema.isDeleted, false)))
-      .orderBy(desc(bookSchema.createdAt))
-      .limit(1)
-
-    if (ownerRows[0]) {
-      const role = await this.resolveRoleByCode("Owner")
-      return { bookId: ownerRows[0].bookId, roleId: role?.roleId ?? null, roleName: role?.roleName ?? null }
-    }
-
-    return { bookId: null, roleId: null, roleName: null }
+    return { roleId: null, roleName: null, familyId: null }
   }
 
-  private async resolveRoleByCode(roleCode: string): Promise<{ roleId: string; roleName: string } | undefined> {
-    const rows = await this.pg.pdb
-      .select({ roleId: roleSchema.roleId, roleName: roleSchema.roleName })
-      .from(roleSchema)
-      .where(and(eq(roleSchema.roleCode, roleCode), eq(roleSchema.isDeleted, false), eq(roleSchema.isDisabled, false)))
-      .limit(1)
-    const row = rows[0]
-    if (!row) return undefined
-    return row
+  private async resolveRoleById(roleId: string) {
+    const [role] = await this.pg.pdb.select().from(roleSchema).where(eq(roleSchema.roleId, roleId))
+    return role
   }
 }

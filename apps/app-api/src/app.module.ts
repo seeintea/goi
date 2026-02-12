@@ -13,13 +13,19 @@ import { AppAuthenticator, FinanceAuthorizer } from "@/common/guards/auth.guard"
 import { PgModule } from "@/database/postgresql"
 import { RedisModule } from "@/database/redis"
 import {
+  AccountModule,
+  AuditLogModule,
   AuthModule,
-  BookMemberModule,
-  BookModule,
+  BudgetModule,
+  CategoryModule,
+  FamilyMemberModule,
+  FamilyModule,
   ModuleModule,
   PermissionModule,
   RoleModule,
   RolePermissionModule,
+  TagModule,
+  TransactionModule,
   UserModule,
 } from "@/modules"
 
@@ -30,12 +36,18 @@ import {
     RedisModule,
     AuthModule,
     UserModule,
-    BookModule,
-    BookMemberModule,
+    FamilyModule,
+    FamilyMemberModule,
+    AccountModule,
+    CategoryModule,
+    TransactionModule,
+    TagModule,
+    BudgetModule,
     ModuleModule,
     PermissionModule,
     RoleModule,
     RolePermissionModule,
+    AuditLogModule,
   ],
   controllers: [],
   providers: [
