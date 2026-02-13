@@ -9,12 +9,12 @@ export const transactionSchema = z.object({
   categoryId: z.uuid().optional().nullable(),
   amount: z.string(), // Decimal as string
   type: z.string().min(1).max(20), // EXPENSE, INCOME, TRANSFER
-  occurredAt: z.date(),
+  occurredAt: z.iso.datetime(),
   description: z.string().optional().nullable(),
   createdBy: z.uuid().optional().nullable(),
   isDeleted: z.boolean().default(false),
-  createdAt: z.date(),
-  updatedAt: z.date(),
+  createdAt: z.iso.datetime(),
+  updatedAt: z.iso.datetime(),
 })
 
 export const createTransactionSchema = transactionSchema.pick({

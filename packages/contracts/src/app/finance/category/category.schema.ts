@@ -12,8 +12,8 @@ export const categorySchema = z.object({
   icon: z.string().max(50).optional().nullable(),
   color: z.string().max(20).optional().nullable(),
   isDeleted: z.boolean().default(false),
-  createdAt: z.date(),
-  updatedAt: z.date(),
+  createdAt: z.iso.datetime(),
+  updatedAt: z.iso.datetime(),
 })
 
 export const createCategorySchema = categorySchema.pick({

@@ -34,7 +34,11 @@ export class CategoryService {
     const row = rows[0]
     if (!row) throw new NotFoundException("Category not found")
 
-    return row as Category
+    return {
+      ...row,
+      createdAt: row.createdAt.toISOString(),
+      updatedAt: row.updatedAt.toISOString(),
+    } as unknown as Category
   }
 
   async create(dto: CreateCategory & { id: string }): Promise<Category> {
@@ -122,6 +126,7 @@ export class CategoryService {
         sortOrder: financeCategory.sortOrder,
         icon: financeCategory.icon,
         color: financeCategory.color,
+        isDeleted: financeCategory.isDeleted,
         createdAt: financeCategory.createdAt,
         updatedAt: financeCategory.updatedAt,
       })
@@ -131,6 +136,14 @@ export class CategoryService {
       .limit(pageParams.limit)
       .offset(pageParams.offset)
 
-    return toPageResult(pageParams, total, rows as Category[])
+    return toPageResult(
+      pageParams,
+      total,
+      rows.map((r) => ({
+        ...r,
+        createdAt: r.createdAt.toISOString(),
+        updatedAt: r.updatedAt.toISOString(),
+      })) as unknown as Category[],
+    )
   }
 }

@@ -11,7 +11,7 @@ export const auditLogSchema = z.object({
   changes: z.any().nullable().optional(),
   ipAddress: z.string().nullable().optional(),
   userAgent: z.string().nullable().optional(),
-  createdAt: z.date(),
+  createdAt: z.iso.datetime(),
 })
 
 export const auditLogListQuerySchema = pageQuerySchema.extend({

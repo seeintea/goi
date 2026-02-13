@@ -8,8 +8,8 @@ export const familySchema = z.object({
   baseCurrency: z.string().min(1).max(10).default("CNY"),
   timezone: z.string().min(1).max(50).default("Asia/Shanghai"),
   isDeleted: z.boolean().default(false),
-  createdAt: z.date(),
-  updatedAt: z.date(),
+  createdAt: z.iso.datetime(),
+  updatedAt: z.iso.datetime(),
 })
 
 export const createFamilySchema = familySchema.pick({

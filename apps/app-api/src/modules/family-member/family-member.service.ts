@@ -29,7 +29,10 @@ export class FamilyMemberService {
     const row = rows[0]
     if (!row) throw new NotFoundException("FamilyMember not found")
 
-    return row as FamilyMember
+    return {
+      ...row,
+      joinedAt: row.joinedAt.toISOString(),
+    } as unknown as FamilyMember
   }
 
   async create(dto: CreateFamilyMember & { id: string }): Promise<FamilyMember> {
@@ -111,6 +114,13 @@ export class FamilyMemberService {
       .limit(pageParams.limit)
       .offset(pageParams.offset)
 
-    return toPageResult(pageParams, total, rows as FamilyMember[])
+    return toPageResult(
+      pageParams,
+      total,
+      rows.map((r) => ({
+        ...r,
+        joinedAt: r.joinedAt.toISOString(),
+      })) as unknown as FamilyMember[],
+    )
   }
 }

@@ -37,7 +37,11 @@ export class AccountService {
     const row = rows[0]
     if (!row) throw new NotFoundException("Account not found")
 
-    return row as Account
+    return {
+      ...row,
+      createdAt: row.createdAt.toISOString(),
+      updatedAt: row.updatedAt.toISOString(),
+    } as unknown as Account
   }
 
   async create(dto: CreateAccount & { id: string }): Promise<Account> {
@@ -132,6 +136,7 @@ export class AccountService {
         excludeFromStats: financeAccount.excludeFromStats,
         archived: financeAccount.archived,
         sortOrder: financeAccount.sortOrder,
+        isDeleted: financeAccount.isDeleted,
         createdAt: financeAccount.createdAt,
         updatedAt: financeAccount.updatedAt,
       })
@@ -141,6 +146,14 @@ export class AccountService {
       .limit(pageParams.limit)
       .offset(pageParams.offset)
 
-    return toPageResult(pageParams, total, rows as Account[])
+    return toPageResult(
+      pageParams,
+      total,
+      rows.map((r) => ({
+        ...r,
+        createdAt: r.createdAt.toISOString(),
+        updatedAt: r.updatedAt.toISOString(),
+      })) as unknown as Account[],
+    )
   }
 }

@@ -7,7 +7,7 @@ export const tagSchema = z.object({
   name: z.string().min(1).max(50),
   color: z.string().max(20).optional().nullable(),
   isDeleted: z.boolean().default(false),
-  createdAt: z.date(),
+  createdAt: z.iso.datetime(),
 })
 
 export const createTagSchema = tagSchema.pick({

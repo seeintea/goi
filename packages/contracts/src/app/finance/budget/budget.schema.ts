@@ -10,8 +10,8 @@ export const budgetSchema = z.object({
   startDate: z.string(), // Date string YYYY-MM-DD
   endDate: z.string().optional().nullable(),
   isDeleted: z.boolean().default(false),
-  createdAt: z.date(),
-  updatedAt: z.date(),
+  createdAt: z.iso.datetime(),
+  updatedAt: z.iso.datetime(),
 })
 
 export const createBudgetSchema = budgetSchema.pick({

@@ -35,7 +35,7 @@ export class TransactionService {
     const row = rows[0]
     if (!row) throw new NotFoundException("Transaction not found")
 
-    return row as Transaction
+    return row as unknown as Transaction
   }
 
   async create(dto: CreateTransaction & { id: string }): Promise<Transaction> {
@@ -49,7 +49,7 @@ export class TransactionService {
         categoryId: dto.categoryId,
         amount: dto.amount,
         type: dto.type,
-        occurredAt: dto.occurredAt,
+        occurredAt: new Date(dto.occurredAt),
         description: dto.description,
       })
       .returning({ id: financeTransaction.id })
@@ -66,7 +66,7 @@ export class TransactionService {
         ...(dto.categoryId !== undefined ? { categoryId: dto.categoryId } : {}),
         ...(dto.amount !== undefined ? { amount: dto.amount } : {}),
         ...(dto.type !== undefined ? { type: dto.type } : {}),
-        ...(dto.occurredAt !== undefined ? { occurredAt: dto.occurredAt } : {}),
+        ...(dto.occurredAt !== undefined ? { occurredAt: new Date(dto.occurredAt) } : {}),
         ...(dto.description !== undefined ? { description: dto.description } : {}),
       })
       .where(eq(financeTransaction.id, dto.id))
@@ -147,6 +147,15 @@ export class TransactionService {
       .limit(pageParams.limit)
       .offset(pageParams.offset)
 
-    return toPageResult(pageParams, total, rows as Transaction[])
+    return toPageResult(
+      pageParams,
+      total,
+      rows.map((r) => ({
+        ...r,
+        occurredAt: r.occurredAt.toISOString(),
+        createdAt: r.createdAt.toISOString(),
+        updatedAt: r.updatedAt.toISOString(),
+      })) as unknown as Transaction[],
+    )
   }
 }

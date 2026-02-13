@@ -28,7 +28,10 @@ export class TagService {
     const row = rows[0]
     if (!row) throw new NotFoundException("Tag not found")
 
-    return row as Tag
+    return {
+      ...row,
+      createdAt: row.createdAt.toISOString(),
+    } as unknown as Tag
   }
 
   async create(dto: CreateTag & { id: string }): Promise<Tag> {
@@ -105,6 +108,13 @@ export class TagService {
       .limit(pageParams.limit)
       .offset(pageParams.offset)
 
-    return toPageResult(pageParams, total, rows as Tag[])
+    return toPageResult(
+      pageParams,
+      total,
+      rows.map((r) => ({
+        ...r,
+        createdAt: r.createdAt.toISOString(),
+      })) as unknown as Tag[],
+    )
   }
 }

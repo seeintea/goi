@@ -8,7 +8,7 @@ export const familyMemberSchema = z.object({
   roleId: z.uuid(),
   status: z.string().min(1).max(20).default("ACTIVE"),
   isDeleted: z.boolean().default(false),
-  joinedAt: z.date(),
+  joinedAt: z.iso.datetime(),
 })
 
 export const createFamilyMemberSchema = familyMemberSchema.pick({

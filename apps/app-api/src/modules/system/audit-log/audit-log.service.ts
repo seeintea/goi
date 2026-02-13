@@ -61,6 +61,13 @@ export class AuditLogService {
       .limit(pageParams.limit)
       .offset(pageParams.offset)
 
-    return toPageResult(pageParams, total, rows as AuditLog[])
+    return toPageResult(
+      pageParams,
+      total,
+      rows.map((r) => ({
+        ...r,
+        createdAt: r.createdAt.toISOString(),
+      })) as unknown as AuditLog[],
+    )
   }
 }

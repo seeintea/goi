@@ -30,7 +30,11 @@ export class FamilyService {
     const row = rows[0]
     if (!row) throw new NotFoundException("Family not found")
 
-    return row as Family
+    return {
+      ...row,
+      createdAt: row.createdAt.toISOString(),
+      updatedAt: row.updatedAt.toISOString(),
+    } as unknown as Family
   }
 
   async create(userId: string, dto: CreateFamily & { id: string }): Promise<Family> {
@@ -110,6 +114,14 @@ export class FamilyService {
       .limit(pageParams.limit)
       .offset(pageParams.offset)
 
-    return toPageResult(pageParams, total, rows as Family[])
+    return toPageResult(
+      pageParams,
+      total,
+      rows.map((r) => ({
+        ...r,
+        createdAt: r.createdAt.toISOString(),
+        updatedAt: r.updatedAt.toISOString(),
+      })) as unknown as Family[],
+    )
   }
 }

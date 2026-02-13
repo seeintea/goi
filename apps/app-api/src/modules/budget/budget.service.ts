@@ -37,9 +37,9 @@ export class BudgetService {
       // Ensure types match Budget interface
       startDate: row.startDate, // Assuming string or Date matches
       endDate: row.endDate,
-      createdAt: row.createdAt,
-      updatedAt: row.updatedAt,
-    } as Budget
+      createdAt: row.createdAt.toISOString(),
+      updatedAt: row.updatedAt.toISOString(),
+    } as unknown as Budget
   }
 
   async create(dto: CreateBudget & { id: string }): Promise<Budget> {
@@ -117,6 +117,7 @@ export class BudgetService {
         periodType: financeBudget.periodType,
         startDate: financeBudget.startDate,
         endDate: financeBudget.endDate,
+        isDeleted: financeBudget.isDeleted,
         createdAt: financeBudget.createdAt,
         updatedAt: financeBudget.updatedAt,
       })
@@ -126,6 +127,16 @@ export class BudgetService {
       .limit(pageParams.limit)
       .offset(pageParams.offset)
 
-    return toPageResult(pageParams, total, rows as Budget[])
+    return toPageResult(
+      pageParams,
+      total,
+      rows.map((r) => ({
+        ...r,
+        startDate: r.startDate,
+        endDate: r.endDate,
+        createdAt: r.createdAt.toISOString(),
+        updatedAt: r.updatedAt.toISOString(),
+      })) as unknown as Budget[],
+    )
   }
 }

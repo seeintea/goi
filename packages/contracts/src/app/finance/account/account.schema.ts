@@ -15,8 +15,8 @@ export const accountSchema = z.object({
   archived: z.boolean().default(false),
   sortOrder: z.number().int().default(0),
   isDeleted: z.boolean().default(false),
-  createdAt: z.date(),
-  updatedAt: z.date(),
+  createdAt: z.iso.datetime(),
+  updatedAt: z.iso.datetime(),
 })
 
 export const createAccountSchema = accountSchema.pick({
