@@ -1,4 +1,4 @@
-import { api } from "@/api/client"
+import { api } from "../client"
 
 export type LoginParams = {
   username: string

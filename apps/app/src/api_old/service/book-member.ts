@@ -1,5 +1,5 @@
-import { api } from "@/api/client"
 import type { PageQuery, PageResult } from "@/types/api"
+import { api } from "../client"
 
 export type BookMember = {
   memberId: string

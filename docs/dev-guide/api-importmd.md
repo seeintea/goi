@@ -121,3 +121,34 @@
 避免的误用：
 
 - 不要用 `list()`（即 `["module","list",null]`）当作“列表集合 key”，它无法匹配 `["module","list", { ... }]` 这种真实列表缓存。
+
+### SSR 环境支持
+
+本架构天然支持 SSR（服务端渲染）与 RSC（React Server Components），因其将“数据获取”（Service）与“状态管理”（Queries）解耦。
+
+#### Service 层适配
+
+- **纯函数优势**：Service 函数不依赖 React 环境，可在 `getServerSideProps`、API Routes 或 Server Components 中直接调用。
+- **Context 传递**：在服务端环境中（无全局 Cookie/LocalStorage），Service 函数需支持透传请求配置（如 Headers/Token）。
+  ```typescript
+  // 推荐：支持可选的 config 参数
+  export const listModules = (params: QueryParams, config?: RequestConfig) =>
+    client.get("/modules", { params, ...config })
+  ```
+
+#### Queries 层适配 (Hydration)
+
+- **统一 Key 重要性**：SSR 的核心是 Hydration（注水）。服务端 Prefetch 使用的 queryKey 必须与客户端 useQuery 完全一致。本指南要求的集中式 Key 工厂（如 `moduleKeys`）可确保端到端的一致性。
+- **推荐 queryOptions (TanStack Query v5)**：建议在 queries 层导出 `queryOptions` 对象，以便在 Server Prefetch 和 Client Hook 中复用同一套配置。
+
+  ```typescript
+  // queries/module.ts
+  export const moduleListOptions = (params) =>
+    queryOptions({
+      queryKey: moduleKeys.list(params),
+      queryFn: () => listModules(params),
+    })
+
+  // Client: useQuery(moduleListOptions(params))
+  // Server: queryClient.prefetchQuery(moduleListOptions(params))
+  ```
