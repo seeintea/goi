@@ -1,6 +1,6 @@
 import type { Account, accountListQuerySchema, CreateAccount, UpdateAccount } from "@goi/contracts"
 import type { z } from "zod"
-import { api } from "@/api/client"
+import { api } from "@/api/client-csr"
 import type { PageResult } from "@/types/api"
 
 export type AccountListQuery = z.infer<typeof accountListQuerySchema>

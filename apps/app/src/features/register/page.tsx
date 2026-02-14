@@ -23,23 +23,25 @@ export function Register() {
       const password = await sha1Hex(values.password)
 
       const resp = await register({
-        username,
-        password,
-        email: values.email.trim() || undefined,
-        phone: values.phone.trim() || undefined,
+        data: {
+          username,
+          password,
+          email: values.email.trim() || undefined,
+          phone: values.phone.trim() || undefined,
+        },
       })
 
-      if (resp.code !== 200) {
-        setSubmitError(resp.message || "注册失败")
+      if (resp.error) {
+        setSubmitError(resp.error)
         return
       }
 
       setSubmitSuccess("注册成功，正在登录...")
 
       // Auto login
-      const loginResp = await login({ username, password })
-      if (loginResp.code !== 200) {
-        setSubmitError(loginResp.message || "登录失败")
+      const loginResp = await login({ data: { username, password } })
+      if (loginResp.error || !loginResp.data) {
+        setSubmitError(loginResp.error || "登录失败")
         setSubmitSuccess("")
         return
       }

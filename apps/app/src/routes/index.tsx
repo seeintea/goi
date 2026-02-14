@@ -1,6 +1,6 @@
 import { createFileRoute, redirect, useRouter } from "@tanstack/react-router"
+import { logout } from "@/api/service/auth"
 import { Button } from "@/components/ui/button"
-import { logoutFn } from "@/features/auth/server"
 import { useUser } from "@/stores/useUser"
 
 export const Route = createFileRoute("/")({
@@ -32,7 +32,7 @@ function HomeComponent() {
   const resetUser = useUser((state) => state.reset)
 
   const handleLogout = async () => {
-    await logoutFn()
+    await logout()
     resetUser()
     await router.invalidate()
   }

@@ -1,6 +1,6 @@
 import type { Budget, budgetListQuerySchema, CreateBudget, UpdateBudget } from "@goi/contracts"
 import type { z } from "zod"
-import { api } from "@/api/client"
+import { api } from "@/api/client-csr"
 import type { PageResult } from "@/types/api"
 
 export type BudgetListQuery = z.infer<typeof budgetListQuerySchema>

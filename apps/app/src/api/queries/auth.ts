@@ -12,9 +12,9 @@ export function useLogin() {
   const queryClient = useQueryClient()
   return useMutation({
     mutationKey: authKeys.login(),
-    mutationFn: (params: LoginParams) => login(params),
+    mutationFn: (params: LoginParams) => login({ data: params }),
     onSuccess: (resp) => {
-      if (resp.code === 200) {
+      if (!resp.error && resp.data) {
         const { reset, setUser } = useUser.getState()
         reset()
         setUser({

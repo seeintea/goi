@@ -1,6 +1,6 @@
 import type { CreateFamily, Family, familyListQuerySchema, UpdateFamily } from "@goi/contracts"
 import type { z } from "zod"
-import { api } from "@/api/client"
+import { api } from "@/api/client-csr"
 import type { PageResult } from "@/types/api"
 
 export type FamilyListQuery = z.infer<typeof familyListQuerySchema>

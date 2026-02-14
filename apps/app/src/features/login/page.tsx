@@ -1,8 +1,8 @@
 import { Link } from "@tanstack/react-router"
 import { useState } from "react"
+import { login } from "@/api/service/auth"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { FieldError } from "@/components/ui/field"
-import { loginFn } from "@/features/auth/server"
 import { sha1Hex } from "@/lib/crypto"
 import { LoginForm, type LoginFormValues } from "./components/login-form"
 
@@ -15,7 +15,7 @@ export function Login() {
     setIsPending(true)
     try {
       const password = await sha1Hex(values.password)
-      const res = await loginFn({ data: { username: values.username, password } })
+      const res = await login({ data: { username: values.username, password } })
 
       if (res?.error) {
         setSubmitError(res.error)

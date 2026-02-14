@@ -2,9 +2,9 @@ import type { QueryClient } from "@tanstack/react-query"
 import { createRootRouteWithContext, HeadContent, Outlet, Scripts } from "@tanstack/react-router"
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools"
 import { useEffect } from "react"
+import { getAuthUser, type LoginResponse } from "@/api/service/auth"
 import { DefaultCatchBoundary } from "@/components/default-catch-boundary"
 import { NotFound } from "@/components/not-found"
-import { authFn, type LoginResponse } from "@/features/auth/server"
 import { useUser } from "@/stores/useUser"
 import appCss from "@/styles/app.css?url"
 import { seo } from "@/utils/seo"
@@ -16,7 +16,7 @@ type RouterContext = {
 
 export const Route = createRootRouteWithContext<RouterContext>()({
   beforeLoad: async () => {
-    const user = await authFn()
+    const user = await getAuthUser()
     return { user }
   },
   head: () => ({

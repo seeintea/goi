@@ -1,5 +1,6 @@
-import type { AppUser } from "@goi/contracts"
-import { api } from "@/api/client"
+import { redirect } from "@tanstack/react-router"
+import { createServerFn } from "@tanstack/react-start"
+import { serverFetch } from "../client"
 
 export type LoginParams = {
   username: string
@@ -22,8 +23,91 @@ export type LoginResponse = {
   bookId: string
 }
 
-export const login = (params: LoginParams) => api.post<LoginResponse>("/api/sys/auth/login", params)
+const loginFnBase = createServerFn({ method: "POST" }).handler(async (ctx: { data: unknown }) => {
+  const data = ctx.data as LoginParams
+  if (!data || typeof data !== "object" || !("username" in data) || !("password" in data)) {
+    throw new Error("Invalid input")
+  }
+  const payload = data
 
-export const register = (params: RegisterParams) => api.post<AppUser>("/api/sys/auth/register", params)
+  try {
+    const res = await serverFetch<LoginResponse>("/api/sys/auth/login", {
+      method: "POST",
+      body: payload as unknown as BodyInit,
+    })
 
-export const logout = () => api.post<boolean>("/api/sys/auth/logout")
+    // Dynamic import to avoid bundling server code on client
+    const { getAppSession } = await import("@/utils/session.server")
+    const session = await getAppSession()
+
+    // Map familyId to bookId as per requirement
+    const sessionData = {
+      ...res,
+      bookId: (res as any).familyId, // serverFetch returns data directly, but we need to check if familyId is in the response. Assuming serverFetch returns T (res.data)
+      token: res.accessToken,
+    }
+
+    await session.update(sessionData)
+
+    return {
+      data: sessionData,
+    }
+  } catch (error) {
+    console.error("Login error:", error)
+    return {
+      error: (error as Error).message || "登录服务异常",
+    }
+  }
+})
+
+export const login = loginFnBase as unknown as (ctx: {
+  data: LoginParams
+}) => Promise<{ data?: LoginResponse; error?: string }>
+
+const registerFnBase = createServerFn({ method: "POST" }).handler(async (ctx: { data: unknown }) => {
+  const data = ctx.data as RegisterParams
+  if (!data || typeof data !== "object" || !("username" in data) || !("password" in data)) {
+    throw new Error("Invalid input")
+  }
+  const payload = data
+
+  try {
+    await serverFetch("/api/sys/auth/register", {
+      method: "POST",
+      body: payload as unknown as BodyInit,
+    })
+
+    return {
+      success: true,
+    }
+  } catch (error) {
+    console.error("Register error:", error)
+    return {
+      error: (error as Error).message || "注册服务异常",
+    }
+  }
+})
+
+export const register = registerFnBase as unknown as (ctx: {
+  data: RegisterParams
+}) => Promise<{ success?: boolean; error?: string }>
+
+const logoutFnBase = createServerFn({ method: "POST" }).handler(async () => {
+  const { getAppSession } = await import("@/utils/session.server")
+  const session = await getAppSession()
+  await session.clear()
+  throw redirect({
+    to: "/login",
+  })
+})
+
+export const logout = logoutFnBase as unknown as () => Promise<void>
+
+const getAuthUserFnBase = createServerFn({ method: "GET" }).handler(async () => {
+  const { getAppSession } = await import("@/utils/session.server")
+  const session = await getAppSession()
+  if (!session.data?.userId) return undefined
+  return session.data as LoginResponse
+})
+
+export const getAuthUser = getAuthUserFnBase as unknown as () => Promise<LoginResponse | undefined>

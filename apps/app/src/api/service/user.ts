@@ -1,5 +1,6 @@
-import { api } from "@/api/client"
+import { createServerFn } from "@tanstack/react-start"
 import type { PageQuery, PageResult } from "@/types/api"
+import { serverFetch } from "../client"
 
 export type User = {
   userId: string
@@ -35,12 +36,74 @@ export type UserListQuery = PageQuery & {
   username?: string
 }
 
-export const createUser = (body: CreateUser) => api.post<User>("/api/sys/user/create", body)
+const createUserFnBase = createServerFn({ method: "POST" }).handler(async (ctx: { data: unknown }) => {
+  const data = ctx.data as CreateUser
+  if (!data || typeof data !== "object" || !("username" in data) || !("password" in data)) {
+    throw new Error("Invalid input")
+  }
+  return await serverFetch<User>("/api/sys/user/create", {
+    method: "POST",
+    body: data as unknown as BodyInit,
+  })
+})
 
-export const findUser = (userId: string) => api.get<User>("/api/sys/user/find", { userId })
+export const createUser = createUserFnBase as unknown as (ctx: { data: CreateUser }) => Promise<User>
 
-export const listUsers = (query?: UserListQuery) => api.get<PageResult<User>>("/api/sys/user/list", query)
+const findUserFnBase = createServerFn({ method: "GET" }).handler(async (ctx: { data: unknown }) => {
+  const userId = ctx.data as string
+  if (!userId || typeof userId !== "string") {
+    throw new Error("Invalid input: userId is required")
+  }
+  const params = new URLSearchParams({ userId })
+  return await serverFetch<User>(`/api/sys/user/find?${params}`, {
+    method: "GET",
+  })
+})
 
-export const updateUser = (body: UpdateUser) => api.post<User>("/api/sys/user/update", body)
+export const findUser = findUserFnBase as unknown as (ctx: { data: string }) => Promise<User>
 
-export const deleteUser = (userId: string) => api.post<boolean>("/api/sys/user/delete", { userId })
+const listUsersFnBase = createServerFn({ method: "GET" }).handler(async (ctx: { data: unknown }) => {
+  const query = ctx.data as UserListQuery | undefined
+  const params = new URLSearchParams()
+  if (query && typeof query === "object") {
+    Object.entries(query).forEach(([key, value]) => {
+      if (value !== undefined && value !== null) {
+        params.append(key, String(value))
+      }
+    })
+  }
+
+  return await serverFetch<PageResult<User>>(`/api/sys/user/list?${params}`, {
+    method: "GET",
+  })
+})
+
+export const listUsers = listUsersFnBase as unknown as (ctx: {
+  data: UserListQuery | undefined
+}) => Promise<PageResult<User>>
+
+const updateUserFnBase = createServerFn({ method: "POST" }).handler(async (ctx: { data: unknown }) => {
+  const data = ctx.data as UpdateUser
+  if (!data || typeof data !== "object" || !("userId" in data)) {
+    throw new Error("Invalid input: userId is required")
+  }
+  return await serverFetch<User>("/api/sys/user/update", {
+    method: "POST",
+    body: data as unknown as BodyInit,
+  })
+})
+
+export const updateUser = updateUserFnBase as unknown as (ctx: { data: UpdateUser }) => Promise<User>
+
+const deleteUserFnBase = createServerFn({ method: "POST" }).handler(async (ctx: { data: unknown }) => {
+  const userId = ctx.data as string
+  if (!userId || typeof userId !== "string") {
+    throw new Error("Invalid input: userId is required")
+  }
+  return await serverFetch<boolean>("/api/sys/user/delete", {
+    method: "POST",
+    body: { userId } as unknown as BodyInit,
+  })
+})
+
+export const deleteUser = deleteUserFnBase as unknown as (ctx: { data: string }) => Promise<boolean>

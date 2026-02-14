@@ -1,40 +1,58 @@
-import { FetchInstance, withHeader } from "@goi/utils-web"
-import { useUser } from "@/stores"
+import { FetchInstance } from "@goi/utils-web"
 
-function isFinanceBookOpenEndpoint(url: string): boolean {
-  return url.includes("/ff/book/list") || url.includes("/ff/book/create")
-}
+// Helper to get headers with token
+async function getHeaders() {
+  const { getAppSession } = await import("@/utils/session.server")
+  const session = await getAppSession()
+  const token = session.data?.accessToken
 
-function shouldAttachBookId(url: string): boolean {
-  return url.includes("/ff/") && !isFinanceBookOpenEndpoint(url)
-}
+  const headers: HeadersInit = {
+    "Content-Type": "application/json",
+  }
 
-export const api = new FetchInstance({
-  baseURL: import.meta.env.PUBLIC_BASE_URL || "",
-  timeout: 60000,
-  retries: 0,
-})
-
-api.addRequestInterceptor(({ url, options }) => {
-  const { token, bookId } = useUser.getState()
-
-  let headers = options.headers
   if (token) {
-    headers = withHeader(headers, "Authorization", `Bearer ${token}`)
-  }
-  if (bookId && shouldAttachBookId(url)) {
-    headers = withHeader(headers, "x-book-id", bookId)
+    headers["Authorization"] = `Bearer ${token}`
   }
 
-  return { url, options: { ...options, headers } }
-})
+  return headers
+}
 
-api.addResponseInterceptor((response) => {
-  if (response.status === 401 || response.status === 403) {
-    useUser.getState().reset()
-    if (typeof window !== "undefined" && window.location.pathname !== "/login") {
-      window.location.assign("/login")
-    }
+// Server-side specific fetch wrapper
+export async function serverFetch<T>(url: string, options: RequestInit = {}): Promise<T> {
+  const BASE_URL = import.meta.env.PUBLIC_BASE_URL || "http://localhost:3000"
+  const headers = await getHeaders()
+  
+  // Merge headers
+  const finalHeaders = new Headers(headers)
+  if (options.headers) {
+    const optsHeaders = new Headers(options.headers)
+    optsHeaders.forEach((value, key) => {
+      finalHeaders.append(key, value)
+    })
   }
-  return response
-})
+
+  // Ensure body is stringified if it's an object
+  let body = options.body
+  if (body && typeof body === 'object' && !(body instanceof FormData) && !(body instanceof URLSearchParams)) {
+    body = JSON.stringify(body)
+  }
+
+  const response = await fetch(`${BASE_URL}${url}`, {
+    ...options,
+    headers: finalHeaders,
+    body,
+  })
+
+  const res = await response.json()
+  
+  // Standard API response handling
+  if (res.code !== 200) {
+    throw new Error(res.message || "Request failed")
+  }
+  
+  return res.data as T
+}
+
+// Re-export session utilities to keep logic aggregated
+export { getAppSession } from "@/utils/session.server"
+export type { UserSession } from "@/utils/session.server"

@@ -1,4 +1,4 @@
-import { api } from "@/api/client"
+import { api } from "@/api/client-csr"
 import type { PageQuery, PageResult } from "@/types/api"
 
 export type Module = {
