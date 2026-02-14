@@ -1,4 +1,4 @@
-import { type Account, accountListQuerySchema, type CreateAccount, type UpdateAccount } from "@goi/contracts"
+import type { Account, accountListQuerySchema, CreateAccount, UpdateAccount } from "@goi/contracts"
 import type { z } from "zod"
 import { api } from "@/api/client"
 import type { PageResult } from "@/types/api"

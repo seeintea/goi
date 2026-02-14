@@ -1,4 +1,4 @@
-import { type AuditLog, auditLogListQuerySchema } from "@goi/contracts"
+import type { AuditLog, auditLogListQuerySchema } from "@goi/contracts"
 import type { z } from "zod"
 import { api } from "@/api/client"
 import type { PageResult } from "@/types/api"

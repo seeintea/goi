@@ -1,4 +1,4 @@
-import { type CreateTag, type Tag, tagListQuerySchema, type UpdateTag } from "@goi/contracts"
+import type { CreateTag, Tag, tagListQuerySchema, UpdateTag } from "@goi/contracts"
 import type { z } from "zod"
 import { api } from "@/api/client"
 import type { PageResult } from "@/types/api"

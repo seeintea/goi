@@ -1,4 +1,4 @@
-import { type Category, type CreateCategory, categoryListQuerySchema, type UpdateCategory } from "@goi/contracts"
+import type { Category, CreateCategory, categoryListQuerySchema, UpdateCategory } from "@goi/contracts"
 import type { z } from "zod"
 import { api } from "@/api/client"
 import type { PageResult } from "@/types/api"

@@ -1,4 +1,4 @@
-import { type Budget, budgetListQuerySchema, type CreateBudget, type UpdateBudget } from "@goi/contracts"
+import type { Budget, budgetListQuerySchema, CreateBudget, UpdateBudget } from "@goi/contracts"
 import type { z } from "zod"
 import { api } from "@/api/client"
 import type { PageResult } from "@/types/api"
