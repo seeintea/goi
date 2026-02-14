@@ -1,0 +1,33 @@
+export const seo = ({
+  title,
+  description,
+  keywords,
+  image,
+}: {
+  title: string
+  description?: string
+  keywords?: string
+  image?: string
+}) => {
+  const tags = [
+    { title },
+    { name: "description", content: description },
+    { name: "keywords", content: keywords },
+    { name: "twitter:title", content: title },
+    { name: "twitter:description", content: description },
+    { name: "twitter:creator", content: "@tanstack" },
+    { name: "twitter:site", content: "@tanstack" },
+    { name: "og:type", content: "website" },
+    { name: "og:title", content: title },
+    { name: "og:description", content: description },
+  ]
+
+  if (image) {
+    tags.push(
+      { name: "twitter:image", content: image },
+      { name: "og:image", content: image },
+    )
+  }
+
+  return tags
+}

@@ -1,28 +1,84 @@
 import type { QueryClient } from "@tanstack/react-query"
 import { createRootRouteWithContext, HeadContent, Outlet, Scripts } from "@tanstack/react-router"
-import { TanStackDevtools } from "@/components/tanstack-devtools"
-import appCss from "../app.css?url"
+import { TanStackRouterDevtools } from "@tanstack/react-router-devtools"
+import { useEffect } from "react"
+import { DefaultCatchBoundary } from "@/components/default-catch-boundary"
+import { NotFound } from "@/components/not-found"
+import { authFn, type LoginResponse } from "@/features/auth/server"
+import { useUser } from "@/stores/useUser"
+import appCss from "@/styles/app.css?url"
+import { seo } from "@/utils/seo"
 
-export interface RouterContext {
+type RouterContext = {
+  user?: LoginResponse
   queryClient: QueryClient
 }
 
 export const Route = createRootRouteWithContext<RouterContext>()({
+  beforeLoad: async () => {
+    const user = await authFn()
+    return { user }
+  },
   head: () => ({
+    meta: [
+      {
+        charSet: "utf-8",
+      },
+      {
+        name: "viewport",
+        content: "width=device-width, initial-scale=1",
+      },
+      ...seo({
+        title: "TanStack Start | Type-Safe, Client-First, Full-Stack React Framework",
+        description: "TanStack Start is a type-safe, client-first, full-stack React framework. ",
+      }),
+    ],
     links: [{ rel: "stylesheet", href: appCss }],
   }),
+  errorComponent: (props) => {
+    return (
+      <RootDocument>
+        <DefaultCatchBoundary {...props} />
+      </RootDocument>
+    )
+  },
+  notFoundComponent: () => (
+    <RootDocument>
+      <NotFound />
+    </RootDocument>
+  ),
   component: RootComponent,
 })
 
 function RootComponent() {
+  const { user } = Route.useRouteContext()
+  const setUser = useUser((state) => state.setUser)
+  const resetUser = useUser((state) => state.reset)
+
+  useEffect(() => {
+    if (user?.userId) {
+      setUser(user)
+    } else {
+      resetUser()
+    }
+  }, [user, setUser, resetUser])
+
   return (
-    <html lang="en">
+    <RootDocument>
+      <Outlet />
+    </RootDocument>
+  )
+}
+
+function RootDocument({ children }: { children: React.ReactNode }) {
+  return (
+    <html lang="zh-CN">
       <head>
         <HeadContent />
       </head>
       <body>
-        <Outlet />
-        <TanStackDevtools />
+        {children}
+        <TanStackRouterDevtools position="bottom-right" />
         <Scripts />
       </body>
     </html>

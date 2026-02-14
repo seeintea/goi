@@ -1,12 +1,52 @@
-import { createFileRoute } from "@tanstack/react-router"
+import { createFileRoute, redirect, useRouter } from "@tanstack/react-router"
+import { Button } from "@/components/ui/button"
+import { logoutFn } from "@/features/auth/server"
+import { useUser } from "@/stores/useUser"
 
 export const Route = createFileRoute("/")({
-  component: () => {
-    return "tanstack-router ssr"
+  beforeLoad: ({ context }) => {
+    if (!context.user?.userId) {
+      throw redirect({
+        to: "/login",
+        replace: true,
+      })
+    }
+    if (context.user.bookId) {
+      throw redirect({
+        to: "/dashboard" as any,
+        replace: true,
+      })
+    }
   },
+  component: HomeComponent,
   staticData: {
     name: "绑定",
     permission: "unauthed",
     icon: null,
   },
 })
+
+function HomeComponent() {
+  const { user } = Route.useRouteContext()
+  const router = useRouter()
+  const resetUser = useUser((state) => state.reset)
+
+  const handleLogout = async () => {
+    await logoutFn()
+    resetUser()
+    await router.invalidate()
+  }
+
+  return (
+    <div className="p-10 flex flex-col items-start gap-4">
+      <h1 className="text-2xl font-bold">Hello, {user?.username}!</h1>
+      <p>Welcome to the SSR App.</p>
+      <Button
+        onClick={handleLogout}
+        variant="destructive"
+      >
+        退出登录
+      </Button>
+    </div>
+  )
+}

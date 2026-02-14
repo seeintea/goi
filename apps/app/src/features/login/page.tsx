@@ -1,15 +1,12 @@
-import { Link, useNavigate } from "@tanstack/react-router"
+import { Link } from "@tanstack/react-router"
 import { useState } from "react"
-import { login } from "@/api/service/auth"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { FieldError } from "@/components/ui/field"
+import { loginFn } from "@/features/auth/server"
 import { sha1Hex } from "@/lib/crypto"
-import { useUser } from "@/stores/useUser"
 import { LoginForm, type LoginFormValues } from "./components/login-form"
 
 export function Login() {
-  const navigate = useNavigate()
-  const setUser = useUser((state) => state.setUser)
   const [submitError, setSubmitError] = useState("")
   const [isPending, setIsPending] = useState(false)
 
@@ -18,26 +15,14 @@ export function Login() {
     setIsPending(true)
     try {
       const password = await sha1Hex(values.password)
-      const resp = await login({ username: values.username, password })
+      const res = await loginFn({ data: { username: values.username, password } })
 
-      if (resp.code !== 200) {
-        setSubmitError(resp.message || "登录失败")
-        return
+      if (res?.error) {
+        setSubmitError(res.error)
       }
-
-      setUser({
-        token: resp.data.accessToken,
-        userId: resp.data.userId,
-        username: resp.data.username,
-        roleId: resp.data.roleId,
-        roleName: resp.data.roleName,
-        bookId: resp.data.bookId,
-      })
-
-      navigate({ to: "/" })
     } catch (error) {
-      const e = error as Error
-      setSubmitError(e.message || "登录失败")
+      console.error(error)
+      // Redirects are handled automatically by the router/server function
     } finally {
       setIsPending(false)
     }
