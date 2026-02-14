@@ -1,9 +1,9 @@
+import type { AppRolePermission, CreateAppRolePermission } from "@goi/contracts"
 import { normalizePage, toIsoString, toPageResult } from "@goi/utils"
 import { Injectable, NotFoundException } from "@nestjs/common"
 import { and, desc, eq, sql } from "drizzle-orm"
 import { PgService, pgSchema } from "@/database/postgresql"
 import type { PageResult } from "@/types/response"
-import type { CreateRolePermission, RolePermission } from "./role-permission.dto"
 
 const { authRolePermission: rolePermissionSchema } = pgSchema
 
@@ -11,7 +11,7 @@ const { authRolePermission: rolePermissionSchema } = pgSchema
 export class RolePermissionService {
   constructor(private readonly pg: PgService) {}
 
-  async find(roleId: string, permissionId: string): Promise<RolePermission> {
+  async find(roleId: string, permissionId: string): Promise<AppRolePermission> {
     const rows = await this.pg.pdb
       .select({
         roleId: rolePermissionSchema.roleId,
@@ -28,7 +28,7 @@ export class RolePermissionService {
     }
   }
 
-  async create(values: CreateRolePermission): Promise<RolePermission> {
+  async create(values: CreateAppRolePermission): Promise<AppRolePermission> {
     await this.pg.pdb.insert(rolePermissionSchema).values({
       roleId: values.roleId,
       permissionId: values.permissionId,
@@ -48,7 +48,7 @@ export class RolePermissionService {
     permissionId?: string
     page?: number | string
     pageSize?: number | string
-  }): Promise<PageResult<RolePermission>> {
+  }): Promise<PageResult<AppRolePermission>> {
     const where: Parameters<typeof and> = []
     if (query.roleId) where.push(eq(rolePermissionSchema.roleId, query.roleId))
     if (query.permissionId) where.push(eq(rolePermissionSchema.permissionId, query.permissionId))

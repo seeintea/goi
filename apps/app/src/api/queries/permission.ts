@@ -1,5 +1,9 @@
+import type {
+  CreateAppPermission as CreatePermission,
+  PageQuery,
+  UpdateAppPermission as UpdatePermission,
+} from "@goi/contracts"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import type { CreatePermission, PermissionListQuery, UpdatePermission } from "../service/permission"
 import {
   createPermission,
   deletePermission,
@@ -7,6 +11,11 @@ import {
   listPermissions,
   updatePermission,
 } from "../service/permission"
+
+export type PermissionListQuery = PageQuery & {
+  code?: string
+  moduleId?: string
+}
 
 export const permissionKeys = {
   all: ["permission"] as const,
@@ -19,8 +28,8 @@ export function usePermissionList(query?: PermissionListQuery) {
   return useQuery({
     queryKey: permissionKeys.list(query),
     queryFn: async () => {
-      const resp = await listPermissions(query)
-      return resp.data
+      const resp = await listPermissions({ data: query ?? { page: 1, pageSize: 10 } })
+      return resp
     },
   })
 }
@@ -29,8 +38,8 @@ export function usePermission(permissionId: string) {
   return useQuery({
     queryKey: permissionKeys.find(permissionId),
     queryFn: async () => {
-      const resp = await findPermission(permissionId)
-      return resp.data
+      const resp = await findPermission({ data: permissionId })
+      return resp
     },
     enabled: Boolean(permissionId),
   })
@@ -40,8 +49,8 @@ export function useCreatePermission() {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: async (body: CreatePermission) => {
-      const resp = await createPermission(body)
-      return resp.data
+      const resp = await createPermission({ data: body })
+      return resp
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: permissionKeys.lists() })
@@ -53,8 +62,8 @@ export function useUpdatePermission() {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: async (body: UpdatePermission) => {
-      const resp = await updatePermission(body)
-      return resp.data
+      const resp = await updatePermission({ data: body })
+      return resp
     },
     onSuccess: (permission) => {
       queryClient.invalidateQueries({ queryKey: permissionKeys.lists() })
@@ -67,8 +76,8 @@ export function useDeletePermission() {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: async (permissionId: string) => {
-      const resp = await deletePermission(permissionId)
-      return resp.data
+      const resp = await deletePermission({ data: permissionId })
+      return resp
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: permissionKeys.lists() })

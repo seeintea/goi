@@ -57,7 +57,14 @@ function RootComponent() {
 
   useEffect(() => {
     if (user?.userId) {
-      setUser(user)
+      setUser({
+        userId: user.userId,
+        username: user.username,
+        token: user.accessToken,
+        roleId: user.roleId || "",
+        roleName: user.roleName || "",
+        familyId: user.familyId || "",
+      })
     } else {
       resetUser()
     }

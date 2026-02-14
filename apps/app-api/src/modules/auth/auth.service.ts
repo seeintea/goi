@@ -1,4 +1,4 @@
-import { AppUser } from "@goi/contracts"
+import { AppUser, LoginResponse } from "@goi/contracts"
 import { BusinessException } from "@goi/nest-kit"
 import { generateSalt, hashPassword, verifyPassword } from "@goi/utils-node"
 import { Injectable, UnauthorizedException } from "@nestjs/common"
@@ -9,7 +9,7 @@ import { v4 as uuid } from "uuid"
 import { PgService, pgSchema } from "@/database/postgresql"
 import { RedisService } from "@/database/redis"
 import { UserService } from "@/modules/user/user.service"
-import type { LoginResponse, RegisterDto } from "./auth.dto"
+import type { RegisterDto } from "./auth.dto"
 
 const { financeFamily: familySchema, financeFamilyMember: familyMemberSchema, authRole: roleSchema } = pgSchema
 

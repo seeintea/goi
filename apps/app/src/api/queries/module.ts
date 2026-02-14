@@ -1,5 +1,5 @@
+import type { CreateAppModule as CreateModule, PageQuery, UpdateAppModule as UpdateModule } from "@goi/contracts"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import type { CreateModule, ModuleListQuery, UpdateModule } from "../service/module"
 import {
   createModule,
   deleteModule,
@@ -9,6 +9,13 @@ import {
   listRootModules,
   updateModule,
 } from "../service/module"
+
+export type ModuleListQuery = PageQuery & {
+  parentId?: string
+  name?: string
+  routePath?: string
+  permissionCode?: string
+}
 
 export const moduleKeys = {
   all: ["module"] as const,
@@ -24,8 +31,8 @@ export function useModuleList(query?: ModuleListQuery) {
   return useQuery({
     queryKey: moduleKeys.list(query),
     queryFn: async () => {
-      const resp = await listModules(query)
-      return resp.data
+      const resp = await listModules({ data: query ?? { page: 1, pageSize: 10 } })
+      return resp
     },
   })
 }
@@ -34,8 +41,8 @@ export function useModuleAll(query?: Omit<ModuleListQuery, "page" | "pageSize">)
   return useQuery({
     queryKey: moduleKeys.allList(query),
     queryFn: async () => {
-      const resp = await listAllModules(query)
-      return resp.data
+      const resp = await listAllModules({ data: query ?? {} })
+      return resp
     },
   })
 }
@@ -45,7 +52,7 @@ export function useRootModules() {
     queryKey: moduleKeys.roots(),
     queryFn: async () => {
       const resp = await listRootModules()
-      return resp.data
+      return resp
     },
   })
 }
@@ -54,8 +61,8 @@ export function useModule(moduleId: string) {
   return useQuery({
     queryKey: moduleKeys.find(moduleId),
     queryFn: async () => {
-      const resp = await findModule(moduleId)
-      return resp.data
+      const resp = await findModule({ data: moduleId })
+      return resp
     },
     enabled: Boolean(moduleId),
   })
@@ -65,8 +72,8 @@ export function useCreateModule() {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: async (body: CreateModule) => {
-      const resp = await createModule(body)
-      return resp.data
+      const resp = await createModule({ data: body })
+      return resp
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: moduleKeys.lists() })
@@ -80,8 +87,8 @@ export function useUpdateModule() {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: async (body: UpdateModule) => {
-      const resp = await updateModule(body)
-      return resp.data
+      const resp = await updateModule({ data: body })
+      return resp
     },
     onSuccess: (module) => {
       queryClient.invalidateQueries({ queryKey: moduleKeys.lists() })
@@ -96,8 +103,8 @@ export function useDeleteModule() {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: async (moduleId: string) => {
-      const resp = await deleteModule(moduleId)
-      return resp.data
+      const resp = await deleteModule({ data: moduleId })
+      return resp
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: moduleKeys.lists() })

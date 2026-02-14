@@ -1,8 +1,5 @@
-import {
-  type AuditLogListQuery,
-  listAuditLogs,
-} from "../service/audit-log"
 import { queryOptions, useQuery } from "@tanstack/react-query"
+import { type AuditLogListQuery, listAuditLogs } from "../service/audit-log"
 
 export const auditLogKeys = {
   all: ["audit-log"] as const,
@@ -13,7 +10,7 @@ export const auditLogKeys = {
 export const auditLogListOptions = (query?: AuditLogListQuery) =>
   queryOptions({
     queryKey: auditLogKeys.list(query),
-    queryFn: () => listAuditLogs(query),
+    queryFn: () => listAuditLogs({ data: query }),
   })
 
 export function useAuditLogList(query?: AuditLogListQuery) {

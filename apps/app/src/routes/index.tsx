@@ -11,7 +11,7 @@ export const Route = createFileRoute("/")({
         replace: true,
       })
     }
-    if (context.user.bookId) {
+    if (context.user.familyId) {
       throw redirect({
         to: "/dashboard" as any,
         replace: true,

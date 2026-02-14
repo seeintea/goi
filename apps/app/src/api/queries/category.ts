@@ -20,13 +20,13 @@ export const categoryKeys = {
 export const categoryListOptions = (query?: CategoryListQuery) =>
   queryOptions({
     queryKey: categoryKeys.list(query),
-    queryFn: () => listCategories(query),
+    queryFn: () => listCategories({ data: query }),
   })
 
 export const categoryOptions = (id: string) =>
   queryOptions({
     queryKey: categoryKeys.find(id),
-    queryFn: () => findCategory(id),
+    queryFn: () => findCategory({ data: id }),
     enabled: Boolean(id),
   })
 
@@ -42,8 +42,8 @@ export function useCreateCategory() {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: async (body: CreateCategory) => {
-      const res = await createCategory(body)
-      return res.data
+      const res = await createCategory({ data: body })
+      return res
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: categoryKeys.lists() })
@@ -55,8 +55,8 @@ export function useUpdateCategory() {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: async (body: UpdateCategory) => {
-      const res = await updateCategory(body)
-      return res.data
+      const res = await updateCategory({ data: body })
+      return res
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: categoryKeys.lists() })
@@ -69,8 +69,8 @@ export function useDeleteCategory() {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: async (id: string) => {
-      const res = await deleteCategory(id)
-      return res.data
+      const res = await deleteCategory({ data: id })
+      return res
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: categoryKeys.lists() })

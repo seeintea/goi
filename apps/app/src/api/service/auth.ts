@@ -1,30 +1,12 @@
+import type { Login, LoginResponse, Register } from "@goi/contracts"
 import { redirect } from "@tanstack/react-router"
 import { createServerFn } from "@tanstack/react-start"
 import { serverFetch } from "../client"
 
-export type LoginParams = {
-  username: string
-  password: string
-}
-
-export type RegisterParams = {
-  username: string
-  password: string
-  email?: string
-  phone?: string
-}
-
-export type LoginResponse = {
-  userId: string
-  username: string
-  accessToken: string
-  roleId: string
-  roleName: string
-  bookId: string
-}
+export type { LoginResponse }
 
 const loginFnBase = createServerFn({ method: "POST" }).handler(async (ctx: { data: unknown }) => {
-  const data = ctx.data as LoginParams
+  const data = ctx.data as Login
   if (!data || typeof data !== "object" || !("username" in data) || !("password" in data)) {
     throw new Error("Invalid input")
   }
@@ -61,11 +43,11 @@ const loginFnBase = createServerFn({ method: "POST" }).handler(async (ctx: { dat
 })
 
 export const login = loginFnBase as unknown as (ctx: {
-  data: LoginParams
-}) => Promise<{ data?: LoginResponse; error?: string }>
+  data: Login
+}) => Promise<{ data?: LoginResponse & { bookId: string }; error?: string }>
 
 const registerFnBase = createServerFn({ method: "POST" }).handler(async (ctx: { data: unknown }) => {
-  const data = ctx.data as RegisterParams
+  const data = ctx.data as Register
   if (!data || typeof data !== "object" || !("username" in data) || !("password" in data)) {
     throw new Error("Invalid input")
   }
@@ -89,7 +71,7 @@ const registerFnBase = createServerFn({ method: "POST" }).handler(async (ctx: { 
 })
 
 export const register = registerFnBase as unknown as (ctx: {
-  data: RegisterParams
+  data: Register
 }) => Promise<{ success?: boolean; error?: string }>
 
 const logoutFnBase = createServerFn({ method: "POST" }).handler(async () => {

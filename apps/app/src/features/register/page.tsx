@@ -50,9 +50,8 @@ export function Register() {
         token: loginResp.data.accessToken,
         userId: loginResp.data.userId,
         username: loginResp.data.username,
-        roleId: loginResp.data.roleId,
-        roleName: loginResp.data.roleName,
-        bookId: loginResp.data.bookId,
+        roleId: loginResp.data.roleId ?? "",
+        roleName: loginResp.data.roleName ?? "",
       })
 
       navigate({ to: "/" })

@@ -20,13 +20,13 @@ export const accountKeys = {
 export const accountListOptions = (query?: AccountListQuery) =>
   queryOptions({
     queryKey: accountKeys.list(query),
-    queryFn: () => listAccounts(query),
+    queryFn: () => listAccounts({ data: query }),
   })
 
 export const accountOptions = (id: string) =>
   queryOptions({
     queryKey: accountKeys.find(id),
-    queryFn: () => findAccount(id),
+    queryFn: () => findAccount({ data: id }),
     enabled: Boolean(id),
   })
 
@@ -42,8 +42,8 @@ export function useCreateAccount() {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: async (body: CreateAccount) => {
-      const res = await createAccount(body)
-      return res.data
+      const res = await createAccount({ data: body })
+      return res
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: accountKeys.lists() })
@@ -55,8 +55,8 @@ export function useUpdateAccount() {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: async (body: UpdateAccount) => {
-      const res = await updateAccount(body)
-      return res.data
+      const res = await updateAccount({ data: body })
+      return res
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: accountKeys.lists() })
@@ -69,8 +69,8 @@ export function useDeleteAccount() {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: async (id: string) => {
-      const res = await deleteAccount(id)
-      return res.data
+      const res = await deleteAccount({ data: id })
+      return res
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: accountKeys.lists() })

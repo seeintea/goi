@@ -1,14 +1,14 @@
+import { queryOptions, useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import {
   type CreateTag,
-  type TagListQuery,
-  type UpdateTag,
   createTag,
   deleteTag,
   findTag,
   listTags,
+  type TagListQuery,
+  type UpdateTag,
   updateTag,
 } from "../service/tag"
-import { queryOptions, useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 
 export const tagKeys = {
   all: ["tag"] as const,
@@ -20,13 +20,13 @@ export const tagKeys = {
 export const tagListOptions = (query?: TagListQuery) =>
   queryOptions({
     queryKey: tagKeys.list(query),
-    queryFn: () => listTags(query),
+    queryFn: () => listTags({ data: query }),
   })
 
 export const tagOptions = (id: string) =>
   queryOptions({
     queryKey: tagKeys.find(id),
-    queryFn: () => findTag(id),
+    queryFn: () => findTag({ data: id }),
     enabled: Boolean(id),
   })
 
@@ -42,8 +42,8 @@ export function useCreateTag() {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: async (body: CreateTag) => {
-      const res = await createTag(body)
-      return res.data
+      const res = await createTag({ data: body })
+      return res
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: tagKeys.lists() })
@@ -55,8 +55,8 @@ export function useUpdateTag() {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: async (body: UpdateTag) => {
-      const res = await updateTag(body)
-      return res.data
+      const res = await updateTag({ data: body })
+      return res
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: tagKeys.lists() })
@@ -69,8 +69,8 @@ export function useDeleteTag() {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: async (id: string) => {
-      const res = await deleteTag(id)
-      return res.data
+      const res = await deleteTag({ data: id })
+      return res
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: tagKeys.lists() })

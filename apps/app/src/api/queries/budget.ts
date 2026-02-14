@@ -1,14 +1,14 @@
+import { queryOptions, useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import {
   type BudgetListQuery,
   type CreateBudget,
-  type UpdateBudget,
   createBudget,
   deleteBudget,
   findBudget,
   listBudgets,
+  type UpdateBudget,
   updateBudget,
 } from "../service/budget"
-import { queryOptions, useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 
 export const budgetKeys = {
   all: ["budget"] as const,
@@ -20,13 +20,13 @@ export const budgetKeys = {
 export const budgetListOptions = (query?: BudgetListQuery) =>
   queryOptions({
     queryKey: budgetKeys.list(query),
-    queryFn: () => listBudgets(query),
+    queryFn: () => listBudgets({ data: query }),
   })
 
 export const budgetOptions = (id: string) =>
   queryOptions({
     queryKey: budgetKeys.find(id),
-    queryFn: () => findBudget(id),
+    queryFn: () => findBudget({ data: id }),
     enabled: Boolean(id),
   })
 
@@ -42,8 +42,8 @@ export function useCreateBudget() {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: async (body: CreateBudget) => {
-      const res = await createBudget(body)
-      return res.data
+      const res = await createBudget({ data: body })
+      return res
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: budgetKeys.lists() })
@@ -55,8 +55,8 @@ export function useUpdateBudget() {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: async (body: UpdateBudget) => {
-      const res = await updateBudget(body)
-      return res.data
+      const res = await updateBudget({ data: body })
+      return res
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: budgetKeys.lists() })
@@ -69,8 +69,8 @@ export function useDeleteBudget() {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: async (id: string) => {
-      const res = await deleteBudget(id)
-      return res.data
+      const res = await deleteBudget({ data: id })
+      return res
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: budgetKeys.lists() })

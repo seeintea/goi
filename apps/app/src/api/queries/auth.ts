@@ -1,6 +1,7 @@
+import type { Login } from "@goi/contracts"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useUser } from "@/stores"
-import { type LoginParams, login, logout } from "../service/auth"
+import { login, logout } from "../service/auth"
 
 export const authKeys = {
   all: ["auth"] as const,
@@ -12,7 +13,7 @@ export function useLogin() {
   const queryClient = useQueryClient()
   return useMutation({
     mutationKey: authKeys.login(),
-    mutationFn: (params: LoginParams) => login({ data: params }),
+    mutationFn: (params: Login) => login({ data: params }),
     onSuccess: (resp) => {
       if (!resp.error && resp.data) {
         const { reset, setUser } = useUser.getState()
@@ -21,9 +22,9 @@ export function useLogin() {
           token: resp.data.accessToken,
           userId: resp.data.userId,
           username: resp.data.username,
-          bookId: resp.data.bookId,
-          roleId: resp.data.roleId,
-          roleName: resp.data.roleName,
+          familyId: resp.data.familyId ?? "",
+          roleId: resp.data.roleId ?? "",
+          roleName: resp.data.roleName ?? "",
           roles: resp.data.roleId ? [resp.data.roleId] : [],
         })
         queryClient.invalidateQueries()

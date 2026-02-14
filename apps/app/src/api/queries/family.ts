@@ -1,14 +1,14 @@
+import { queryOptions, useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import {
   type CreateFamily,
-  type FamilyListQuery,
-  type UpdateFamily,
   createFamily,
   deleteFamily,
+  type FamilyListQuery,
   findFamily,
   listFamilies,
+  type UpdateFamily,
   updateFamily,
 } from "../service/family"
-import { queryOptions, useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 
 export const familyKeys = {
   all: ["family"] as const,
@@ -20,13 +20,13 @@ export const familyKeys = {
 export const familyListOptions = (query?: FamilyListQuery) =>
   queryOptions({
     queryKey: familyKeys.list(query),
-    queryFn: () => listFamilies(query),
+    queryFn: () => listFamilies({ data: query }),
   })
 
 export const familyOptions = (id: string) =>
   queryOptions({
     queryKey: familyKeys.find(id),
-    queryFn: () => findFamily(id),
+    queryFn: () => findFamily({ data: id }),
     enabled: Boolean(id),
   })
 
@@ -42,8 +42,8 @@ export function useCreateFamily() {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: async (body: CreateFamily) => {
-      const res = await createFamily(body)
-      return res.data
+      const res = await createFamily({ data: body })
+      return res
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: familyKeys.lists() })
@@ -55,8 +55,8 @@ export function useUpdateFamily() {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: async (body: UpdateFamily) => {
-      const res = await updateFamily(body)
-      return res.data
+      const res = await updateFamily({ data: body })
+      return res
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: familyKeys.lists() })
@@ -69,8 +69,8 @@ export function useDeleteFamily() {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: async (id: string) => {
-      const res = await deleteFamily(id)
-      return res.data
+      const res = await deleteFamily({ data: id })
+      return res
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: familyKeys.lists() })

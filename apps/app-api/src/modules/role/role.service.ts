@@ -1,9 +1,9 @@
+import type { AppRole, CreateAppRole, UpdateAppRole } from "@goi/contracts"
 import { normalizePage, toIsoString, toPageResult } from "@goi/utils"
 import { Injectable, NotFoundException } from "@nestjs/common"
 import { and, desc, eq, like, sql } from "drizzle-orm"
 import { PgService, pgSchema } from "@/database/postgresql"
 import type { PageResult } from "@/types/response"
-import type { CreateRole, Role, UpdateRole } from "./role.dto"
 
 const { authRole: roleSchema } = pgSchema
 
@@ -11,7 +11,7 @@ const { authRole: roleSchema } = pgSchema
 export class RoleService {
   constructor(private readonly pg: PgService) {}
 
-  async find(roleId: string): Promise<Role> {
+  async find(roleId: string): Promise<AppRole> {
     const roles = await this.pg.pdb
       .select({
         roleId: roleSchema.roleId,
@@ -33,7 +33,7 @@ export class RoleService {
     }
   }
 
-  async create(values: CreateRole & { roleId: string }): Promise<Role> {
+  async create(values: CreateAppRole & { roleId: string }): Promise<AppRole> {
     const [inserted] = await this.pg.pdb
       .insert(roleSchema)
       .values({
@@ -47,7 +47,7 @@ export class RoleService {
     return this.find(inserted.roleId)
   }
 
-  async update(values: UpdateRole): Promise<Role> {
+  async update(values: UpdateAppRole): Promise<AppRole> {
     await this.pg.pdb
       .update(roleSchema)
       .set({
@@ -70,7 +70,7 @@ export class RoleService {
     roleName?: string
     page?: number | string
     pageSize?: number | string
-  }): Promise<PageResult<Role>> {
+  }): Promise<PageResult<AppRole>> {
     const where: Parameters<typeof and> = [eq(roleSchema.isDeleted, false)]
     if (query.roleCode) where.push(like(roleSchema.roleCode, `%${query.roleCode}%`))
     if (query.roleName) where.push(like(roleSchema.roleName, `%${query.roleName}%`))

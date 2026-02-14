@@ -1,84 +1,66 @@
-import type { PageQuery, PageResult } from "@goi/contracts"
+import type { AppRole, CreateAppRole, PageQuery, PageResult, UpdateAppRole } from "@goi/contracts"
 import { createServerFn } from "@tanstack/react-start"
 import { serverFetch } from "../client"
 
-export type Role = {
-  roleId: string
-  roleCode: string
-  roleName: string
-  isDisabled: boolean
-  isDeleted: boolean
-  createdAt: string
-  updatedAt: string
-}
-
-export type CreateRole = {
-  roleCode: string
-  roleName: string
-  isDisabled?: boolean
-}
-
-export type UpdateRole = {
-  roleId: string
-  roleCode?: string
-  roleName?: string
-  isDisabled?: boolean
-  isDeleted?: boolean
-}
+export type Role = AppRole
+export type CreateRole = CreateAppRole
+export type UpdateRole = UpdateAppRole
 
 export type RoleListQuery = PageQuery & {
   roleCode?: string
   roleName?: string
 }
 
-export const createRoleFnBase = createServerFn({ method: "POST" }).handler(async (ctx: { data: unknown }) => {
-  const data = ctx.data as CreateRole
-  return await serverFetch<Role>("/api/sys/role/create", {
+const createRoleFnBase = createServerFn({ method: "POST" }).handler(async (ctx: { data: unknown }) => {
+  const data = ctx.data as CreateAppRole
+  return await serverFetch<AppRole>("/api/sys/role/create", {
     method: "POST",
     body: data as unknown as BodyInit,
   })
 })
 
-export const createRole = createRoleFnBase as unknown as (ctx: { data: CreateRole }) => Promise<Role>
+export const createRole = createRoleFnBase as unknown as (ctx: { data: CreateAppRole }) => Promise<AppRole>
 
-export const findRoleFnBase = createServerFn({ method: "GET" }).handler(async (ctx: { data: unknown }) => {
+const findRoleFnBase = createServerFn({ method: "GET" }).handler(async (ctx: { data: unknown }) => {
   const roleId = ctx.data as string
   const params = new URLSearchParams({ roleId })
-  return await serverFetch<Role>(`/api/sys/role/find?${params}`, {
+  return await serverFetch<AppRole>(`/api/sys/role/find?${params}`, {
     method: "GET",
   })
 })
 
-export const findRole = findRoleFnBase as unknown as (ctx: { data: string }) => Promise<Role>
+export const findRole = findRoleFnBase as unknown as (ctx: { data: string }) => Promise<AppRole>
 
-export const listRolesFnBase = createServerFn({ method: "GET" }).handler(async (ctx: { data: unknown }) => {
-  const query = ctx.data as RoleListQuery
+const listRolesFnBase = createServerFn({ method: "GET" }).handler(async (ctx: { data: unknown }) => {
+  const query = ctx.data as RoleListQuery | undefined
   const params = new URLSearchParams()
-  if (query) {
+  if (query && typeof query === "object") {
     Object.entries(query).forEach(([key, value]) => {
       if (value !== undefined && value !== null) {
         params.append(key, String(value))
       }
     })
   }
-  return await serverFetch<PageResult<Role>>(`/api/sys/role/list?${params}`, {
+  return await serverFetch<PageResult<AppRole>>(`/api/sys/role/list?${params}`, {
     method: "GET",
   })
 })
 
-export const listRoles = listRolesFnBase as unknown as (ctx: { data: RoleListQuery }) => Promise<PageResult<Role>>
+export const listRoles = listRolesFnBase as unknown as (ctx: {
+  data: RoleListQuery | undefined
+}) => Promise<PageResult<AppRole>>
 
-export const updateRoleFnBase = createServerFn({ method: "POST" }).handler(async (ctx: { data: unknown }) => {
-  const data = ctx.data as UpdateRole
-  return await serverFetch<Role>("/api/sys/role/update", {
+const updateRoleFnBase = createServerFn({ method: "POST" }).handler(async (ctx: { data: unknown }) => {
+  const data = ctx.data as UpdateAppRole
+  return await serverFetch<AppRole>("/api/sys/role/update", {
     method: "POST",
     body: data as unknown as BodyInit,
   })
 })
 
-export const updateRole = updateRoleFnBase as unknown as (ctx: { data: UpdateRole }) => Promise<Role>
+export const updateRole = updateRoleFnBase as unknown as (ctx: { data: UpdateAppRole }) => Promise<AppRole>
 
-export const deleteRoleFnBase = createServerFn({ method: "POST" }).handler(async (ctx: { data: unknown }) => {
+const deleteRoleFnBase = createServerFn({ method: "POST" }).handler(async (ctx: { data: unknown }) => {
   const roleId = ctx.data as string
   return await serverFetch<boolean>("/api/sys/role/delete", {
     method: "POST",

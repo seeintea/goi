@@ -18,8 +18,8 @@ export function useRolePermissionList(query?: RolePermissionListQuery) {
   return useQuery({
     queryKey: rolePermissionKeys.list(query),
     queryFn: async () => {
-      const resp = await listRolePermissions(query)
-      return resp.data
+      const resp = await listRolePermissions({ data: query })
+      return resp
     },
   })
 }
@@ -28,8 +28,8 @@ export function useRolePermission(roleId: string, permissionId: string) {
   return useQuery({
     queryKey: rolePermissionKeys.find(roleId, permissionId),
     queryFn: async () => {
-      const resp = await findRolePermission(roleId, permissionId)
-      return resp.data
+      const resp = await findRolePermission({ data: { roleId, permissionId } })
+      return resp
     },
     enabled: Boolean(roleId) && Boolean(permissionId),
   })
@@ -39,8 +39,8 @@ export function useCreateRolePermission() {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: async (body: CreateRolePermission) => {
-      const resp = await createRolePermission(body)
-      return resp.data
+      const resp = await createRolePermission({ data: body })
+      return resp
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: rolePermissionKeys.lists() })
@@ -52,8 +52,8 @@ export function useDeleteRolePermission() {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: async (body: CreateRolePermission) => {
-      const resp = await deleteRolePermission(body)
-      return resp.data
+      const resp = await deleteRolePermission({ data: body })
+      return resp
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: rolePermissionKeys.lists() })

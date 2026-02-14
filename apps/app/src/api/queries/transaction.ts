@@ -1,14 +1,14 @@
+import { queryOptions, useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import {
   type CreateTransaction,
-  type TransactionListQuery,
-  type UpdateTransaction,
   createTransaction,
   deleteTransaction,
   findTransaction,
   listTransactions,
+  type TransactionListQuery,
+  type UpdateTransaction,
   updateTransaction,
 } from "../service/transaction"
-import { queryOptions, useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 
 export const transactionKeys = {
   all: ["transaction"] as const,
@@ -20,13 +20,13 @@ export const transactionKeys = {
 export const transactionListOptions = (query?: TransactionListQuery) =>
   queryOptions({
     queryKey: transactionKeys.list(query),
-    queryFn: () => listTransactions(query),
+    queryFn: () => listTransactions({ data: query }),
   })
 
 export const transactionOptions = (id: string) =>
   queryOptions({
     queryKey: transactionKeys.find(id),
-    queryFn: () => findTransaction(id),
+    queryFn: () => findTransaction({ data: id }),
     enabled: Boolean(id),
   })
 
@@ -42,8 +42,8 @@ export function useCreateTransaction() {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: async (body: CreateTransaction) => {
-      const res = await createTransaction(body)
-      return res.data
+      const res = await createTransaction({ data: body })
+      return res
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: transactionKeys.lists() })
@@ -55,8 +55,8 @@ export function useUpdateTransaction() {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: async (body: UpdateTransaction) => {
-      const res = await updateTransaction(body)
-      return res.data
+      const res = await updateTransaction({ data: body })
+      return res
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: transactionKeys.lists() })
@@ -69,8 +69,8 @@ export function useDeleteTransaction() {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: async (id: string) => {
-      const res = await deleteTransaction(id)
-      return res.data
+      const res = await deleteTransaction({ data: id })
+      return res
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: transactionKeys.lists() })
