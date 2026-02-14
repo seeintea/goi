@@ -7,7 +7,7 @@ export function useHead() {
   useEffect(() => {
     const lastMatch = matches.at(-1)
     if (lastMatch) {
-      document.title = `${lastMatch?.staticData?.name ?? ""} - 书符`
+      document.title = `${(lastMatch?.staticData as any)?.name ?? ""} - 书符`
     }
   }, [matches])
 }

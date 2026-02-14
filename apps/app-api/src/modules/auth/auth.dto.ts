@@ -1,5 +1,8 @@
 import { createZodDto } from "nestjs-zod"
 import { z } from "zod"
+import { CreateUserDto } from "../user/user.dto"
+
+export class RegisterDto extends CreateUserDto {}
 
 const loginSchema = z
   .object({

@@ -1,13 +1,15 @@
+import { AppUser } from "@goi/contracts"
 import { BusinessException } from "@goi/nest-kit"
-import { verifyPassword } from "@goi/utils-node"
+import { generateSalt, hashPassword, verifyPassword } from "@goi/utils-node"
 import { Injectable, UnauthorizedException } from "@nestjs/common"
 import { ConfigService } from "@nestjs/config"
 import { JwtService } from "@nestjs/jwt"
 import { and, desc, eq } from "drizzle-orm"
+import { v4 as uuid } from "uuid"
 import { PgService, pgSchema } from "@/database/postgresql"
 import { RedisService } from "@/database/redis"
 import { UserService } from "@/modules/user/user.service"
-import type { LoginResponse } from "./auth.dto"
+import type { LoginResponse, RegisterDto } from "./auth.dto"
 
 const { financeFamily: familySchema, financeFamilyMember: familyMemberSchema, authRole: roleSchema } = pgSchema
 
@@ -51,6 +53,12 @@ export class AuthService {
       roleName: context.roleName,
       familyId: context.familyId,
     }
+  }
+
+  async register(dto: RegisterDto): Promise<AppUser> {
+    const salt = generateSalt(16)
+    const password = hashPassword(dto.password, salt)
+    return this.userService.create({ ...dto, password, salt, userId: uuid() })
   }
 
   async logout(token?: string): Promise<boolean> {

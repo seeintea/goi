@@ -1,7 +1,6 @@
 import { TanStackDevtools as ReactTanStackDevtools } from "@tanstack/react-devtools"
+import { ReactQueryDevtoolsPanel } from "@tanstack/react-query-devtools"
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools"
-
-import TanStackQueryDevtools from "@/integrations/tanstack-query/devtools"
 
 export function TanStackDevtools() {
   return (
@@ -14,7 +13,10 @@ export function TanStackDevtools() {
           name: "Tanstack Router",
           render: <TanStackRouterDevtoolsPanel />,
         },
-        TanStackQueryDevtools,
+        {
+          name: "Tanstack Query",
+          render: <ReactQueryDevtoolsPanel />,
+        },
       ]}
     />
   )

@@ -3,7 +3,8 @@ import { Body, Controller, Post, Req } from "@nestjs/common"
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger"
 import type { Request } from "express"
 import { ZodResponse } from "nestjs-zod"
-import { LoginDto, LoginResponseDto } from "./auth.dto"
+import { UserResponseDto } from "../user/user.dto"
+import { LoginDto, LoginResponseDto, RegisterDto } from "./auth.dto"
 import { AuthService } from "./auth.service"
 
 @ApiTags("授权")
@@ -17,6 +18,14 @@ export class AuthController {
   @ZodResponse({ type: LoginResponseDto })
   async login(@Body() body: LoginDto): Promise<LoginResponseDto> {
     return this.authService.login(body.username, body.password)
+  }
+
+  @Public()
+  @Post("register")
+  @ApiOperation({ summary: "用户注册" })
+  @ZodResponse({ type: UserResponseDto })
+  async register(@Body() body: RegisterDto) {
+    return this.authService.register(body)
   }
 
   @Post("logout")
