@@ -1,58 +1,41 @@
 import { FetchInstance } from "@goi/utils-web"
+import { getAppSession } from "@/utils/session.server"
 
-// Helper to get headers with token
-async function getHeaders() {
-  const { getAppSession } = await import("@/utils/session.server")
-  const session = await getAppSession()
-  const token = session.data?.accessToken
+const fetcher = new FetchInstance({
+  baseURL: import.meta.env.PUBLIC_BASE_URL || "http://localhost:3000",
+})
 
-  const headers: HeadersInit = {
-    "Content-Type": "application/json",
-  }
-
-  if (token) {
-    headers["Authorization"] = `Bearer ${token}`
-  }
-
-  return headers
-}
-
-// Server-side specific fetch wrapper
 export async function serverFetch<T>(url: string, options: RequestInit = {}): Promise<T> {
-  const BASE_URL = import.meta.env.PUBLIC_BASE_URL || "http://localhost:3000"
-  const headers = await getHeaders()
-  
-  // Merge headers
-  const finalHeaders = new Headers(headers)
-  if (options.headers) {
-    const optsHeaders = new Headers(options.headers)
-    optsHeaders.forEach((value, key) => {
-      finalHeaders.append(key, value)
-    })
+  const session = await getAppSession()
+  const token = session.data?.token || session.data?.accessToken
+
+  const headers = new Headers(options.headers)
+  if (token) {
+    headers.set("Authorization", `Bearer ${token}`)
   }
 
-  // Ensure body is stringified if it's an object
-  let body = options.body
-  if (body && typeof body === 'object' && !(body instanceof FormData) && !(body instanceof URLSearchParams)) {
-    body = JSON.stringify(body)
+  // Ensure Content-Type is set for JSON bodies if not already set
+  if (options.body && typeof options.body === "string" && !headers.has("Content-Type")) {
+    try {
+      JSON.parse(options.body)
+      headers.set("Content-Type", "application/json")
+    } catch (e) {
+      // not json, ignore
+    }
   }
 
-  const response = await fetch(`${BASE_URL}${url}`, {
+  // FetchInstance.request returns the parsed JSON body
+  const response = await fetcher.request<{ code: number; message: string; data: T }>(url, {
     ...options,
-    headers: finalHeaders,
-    body,
+    headers,
   })
 
-  const res = await response.json()
-  
-  // Standard API response handling
-  if (res.code !== 200) {
-    throw new Error(res.message || "Request failed")
+  if (response.code !== 200) {
+    throw new Error(response.message || "Request failed")
   }
-  
-  return res.data as T
+
+  return response.data
 }
 
-// Re-export session utilities to keep logic aggregated
-export { getAppSession } from "@/utils/session.server"
+export { getAppSession }
 export type { UserSession } from "@/utils/session.server"

@@ -1,47 +1,72 @@
-import { api } from "@/api/client-csr"
-import type { PageQuery, PageResult } from "@/types/api"
+import type { AppPermission, CreateAppPermission, PageQuery, PageResult, UpdateAppPermission } from "@goi/contracts"
+import { createServerFn } from "@tanstack/react-start"
+import { serverFetch } from "../client"
 
-export type Permission = {
-  permissionId: string
-  code: string
-  name: string
-  moduleId: string
-  isDisabled: boolean
-  isDeleted: boolean
-  createdAt: string
-  updatedAt: string
-}
+export const createPermissionFnBase = createServerFn({ method: "POST" }).handler(async (ctx: { data: unknown }) => {
+  const data = ctx.data as CreateAppPermission
+  return await serverFetch<AppPermission>("/api/sys/permission/create", {
+    method: "POST",
+    body: data as unknown as BodyInit,
+  })
+})
 
-export type CreatePermission = {
-  code: string
-  name?: string
-  moduleId: string
-  isDisabled?: boolean
-}
+export const createPermission = createPermissionFnBase as unknown as (ctx: {
+  data: CreateAppPermission
+}) => Promise<AppPermission>
 
-export type UpdatePermission = {
-  permissionId: string
-  code?: string
-  name?: string
-  moduleId?: string
-  isDisabled?: boolean
-  isDeleted?: boolean
-}
+export const findPermissionFnBase = createServerFn({ method: "GET" }).handler(async (ctx: { data: unknown }) => {
+  const permissionId = ctx.data as string
+  const params = new URLSearchParams({ permissionId })
+  return await serverFetch<AppPermission>(`/api/sys/permission/find?${params}`, {
+    method: "GET",
+  })
+})
 
-export type PermissionListQuery = PageQuery & {
-  code?: string
-  moduleId?: string
-}
+export const findPermission = findPermissionFnBase as unknown as (ctx: { data: string }) => Promise<AppPermission>
 
-export const createPermission = (body: CreatePermission) => api.post<Permission>("/api/sys/permission/create", body)
+export const listPermissionsFnBase = createServerFn({ method: "GET" }).handler(async (ctx: { data: unknown }) => {
+  const query = ctx.data as PageQuery & {
+    code?: string
+    moduleId?: string
+  }
+  const params = new URLSearchParams()
+  if (query) {
+    Object.entries(query).forEach(([key, value]) => {
+      if (value !== undefined && value !== null) {
+        params.append(key, String(value))
+      }
+    })
+  }
+  return await serverFetch<PageResult<AppPermission>>(`/api/sys/permission/list?${params}`, {
+    method: "GET",
+  })
+})
 
-export const findPermission = (permissionId: string) =>
-  api.get<Permission>("/api/sys/permission/find", { permissionId })
+export const listPermissions = listPermissionsFnBase as unknown as (ctx: {
+  data: PageQuery & {
+    code?: string
+    moduleId?: string
+  }
+}) => Promise<PageResult<AppPermission>>
 
-export const listPermissions = (query?: PermissionListQuery) =>
-  api.get<PageResult<Permission>>("/api/sys/permission/list", query)
+export const updatePermissionFnBase = createServerFn({ method: "POST" }).handler(async (ctx: { data: unknown }) => {
+  const data = ctx.data as UpdateAppPermission
+  return await serverFetch<AppPermission>("/api/sys/permission/update", {
+    method: "POST",
+    body: data as unknown as BodyInit,
+  })
+})
 
-export const updatePermission = (body: UpdatePermission) => api.post<Permission>("/api/sys/permission/update", body)
+export const updatePermission = updatePermissionFnBase as unknown as (ctx: {
+  data: UpdateAppPermission
+}) => Promise<AppPermission>
 
-export const deletePermission = (permissionId: string) =>
-  api.post<boolean>("/api/sys/permission/delete", { permissionId })
+export const deletePermissionFnBase = createServerFn({ method: "POST" }).handler(async (ctx: { data: unknown }) => {
+  const permissionId = ctx.data as string
+  return await serverFetch<boolean>("/api/sys/permission/delete", {
+    method: "POST",
+    body: { permissionId } as unknown as BodyInit,
+  })
+})
+
+export const deletePermission = deletePermissionFnBase as unknown as (ctx: { data: string }) => Promise<boolean>

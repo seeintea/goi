@@ -1,54 +1,109 @@
-import { api } from "@/api/client-csr"
-import type { PageQuery, PageResult } from "@/types/api"
+import type { AppModule, CreateAppModule, PageQuery, PageResult, UpdateAppModule } from "@goi/contracts"
+import { createServerFn } from "@tanstack/react-start"
+import { serverFetch } from "../client"
 
-export type Module = {
-  moduleId: string
-  parentId: string | null
-  name: string
-  routePath: string
-  permissionCode: string
-  sort: number
-  isDeleted: boolean
-  createdAt: string
-  updatedAt: string
-}
+export const createModuleFnBase = createServerFn({ method: "POST" }).handler(async (ctx: { data: unknown }) => {
+  const data = ctx.data as CreateAppModule
+  return await serverFetch<AppModule>("/api/sys/module/create", {
+    method: "POST",
+    body: data as unknown as BodyInit,
+  })
+})
 
-export type CreateModule = {
-  name: string
-  routePath: string
-  permissionCode: string
-  parentId?: string | null
-  sort?: number
-}
+export const createModule = createModuleFnBase as unknown as (ctx: { data: CreateAppModule }) => Promise<AppModule>
 
-export type UpdateModule = {
-  moduleId: string
-  parentId?: string | null
-  name?: string
-  routePath?: string
-  permissionCode?: string
-  sort?: number
-  isDeleted?: boolean
-}
+export const findModuleFnBase = createServerFn({ method: "GET" }).handler(async (ctx: { data: unknown }) => {
+  const moduleId = ctx.data as string
+  const params = new URLSearchParams({ moduleId })
+  return await serverFetch<AppModule>(`/api/sys/module/find?${params}`, {
+    method: "GET",
+  })
+})
 
-export type ModuleListQuery = PageQuery & {
-  parentId?: string
-  name?: string
-  routePath?: string
-  permissionCode?: string
-}
+export const findModule = findModuleFnBase as unknown as (ctx: { data: string }) => Promise<AppModule>
 
-export const createModule = (body: CreateModule) => api.post<Module>("/api/sys/module/create", body)
+export const listModulesFnBase = createServerFn({ method: "GET" }).handler(async (ctx: { data: unknown }) => {
+  const query = ctx.data as PageQuery & {
+    parentId?: string
+    name?: string
+    routePath?: string
+    permissionCode?: string
+  }
+  const params = new URLSearchParams()
+  if (query) {
+    Object.entries(query).forEach(([key, value]) => {
+      if (value !== undefined && value !== null) {
+        params.append(key, String(value))
+      }
+    })
+  }
+  return await serverFetch<PageResult<AppModule>>(`/api/sys/module/list?${params}`, {
+    method: "GET",
+  })
+})
 
-export const findModule = (moduleId: string) => api.get<Module>("/api/sys/module/find", { moduleId })
+export const listModules = listModulesFnBase as unknown as (ctx: {
+  data: PageQuery & {
+    parentId?: string
+    name?: string
+    routePath?: string
+    permissionCode?: string
+  }
+}) => Promise<PageResult<AppModule>>
 
-export const listModules = (query?: ModuleListQuery) => api.get<PageResult<Module>>("/api/sys/module/list", query)
+export const listAllModulesFnBase = createServerFn({ method: "GET" }).handler(async (ctx: { data: unknown }) => {
+  const query = ctx.data as {
+    parentId?: string
+    name?: string
+    routePath?: string
+    permissionCode?: string
+  }
+  const params = new URLSearchParams()
+  if (query) {
+    Object.entries(query).forEach(([key, value]) => {
+      if (value !== undefined && value !== null) {
+        params.append(key, String(value))
+      }
+    })
+  }
+  return await serverFetch<AppModule[]>(`/api/sys/module/all?${params}`, {
+    method: "GET",
+  })
+})
 
-export const listAllModules = (query?: Omit<ModuleListQuery, "page" | "pageSize">) =>
-  api.get<Module[]>("/api/sys/module/all", query)
+export const listAllModules = listAllModulesFnBase as unknown as (ctx: {
+  data: {
+    parentId?: string
+    name?: string
+    routePath?: string
+    permissionCode?: string
+  }
+}) => Promise<AppModule[]>
 
-export const listRootModules = () => api.get<Module[]>("/api/sys/module/roots")
+export const listRootModulesFnBase = createServerFn({ method: "GET" }).handler(async () => {
+  return await serverFetch<AppModule[]>("/api/sys/module/roots", {
+    method: "GET",
+  })
+})
 
-export const updateModule = (body: UpdateModule) => api.post<Module>("/api/sys/module/update", body)
+export const listRootModules = listRootModulesFnBase as unknown as () => Promise<AppModule[]>
 
-export const deleteModule = (moduleId: string) => api.post<boolean>("/api/sys/module/delete", { moduleId })
+export const updateModuleFnBase = createServerFn({ method: "POST" }).handler(async (ctx: { data: unknown }) => {
+  const data = ctx.data as UpdateAppModule
+  return await serverFetch<AppModule>("/api/sys/module/update", {
+    method: "POST",
+    body: data as unknown as BodyInit,
+  })
+})
+
+export const updateModule = updateModuleFnBase as unknown as (ctx: { data: UpdateAppModule }) => Promise<AppModule>
+
+export const deleteModuleFnBase = createServerFn({ method: "POST" }).handler(async (ctx: { data: unknown }) => {
+  const moduleId = ctx.data as string
+  return await serverFetch<boolean>("/api/sys/module/delete", {
+    method: "POST",
+    body: { moduleId } as unknown as BodyInit,
+  })
+})
+
+export const deleteModule = deleteModuleFnBase as unknown as (ctx: { data: string }) => Promise<boolean>

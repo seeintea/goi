@@ -1,35 +1,10 @@
+import type { AppUser, CreateAppUser, PageQuery, PageResult, UpdateAppUser } from "@goi/contracts"
 import { createServerFn } from "@tanstack/react-start"
-import type { PageQuery, PageResult } from "@/types/api"
 import { serverFetch } from "../client"
 
-export type User = {
-  userId: string
-  username: string
-  email: string
-  phone: string
-  isDisabled: boolean
-  isDeleted: boolean
-  createdAt: string
-  updatedAt: string
-}
-
-export type CreateUser = {
-  username: string
-  password: string
-  email?: string
-  phone?: string
-}
-
-export type UpdateUser = {
-  userId: string
-  username?: string
-  password?: string
-  salt?: string
-  email?: string
-  phone?: string
-  isDisabled?: boolean
-  isDeleted?: boolean
-}
+export type User = AppUser
+export type CreateUser = CreateAppUser
+export type UpdateUser = UpdateAppUser
 
 export type UserListQuery = PageQuery & {
   userId?: string
@@ -37,17 +12,17 @@ export type UserListQuery = PageQuery & {
 }
 
 const createUserFnBase = createServerFn({ method: "POST" }).handler(async (ctx: { data: unknown }) => {
-  const data = ctx.data as CreateUser
+  const data = ctx.data as CreateAppUser
   if (!data || typeof data !== "object" || !("username" in data) || !("password" in data)) {
     throw new Error("Invalid input")
   }
-  return await serverFetch<User>("/api/sys/user/create", {
+  return await serverFetch<AppUser>("/api/sys/user/create", {
     method: "POST",
     body: data as unknown as BodyInit,
   })
 })
 
-export const createUser = createUserFnBase as unknown as (ctx: { data: CreateUser }) => Promise<User>
+export const createUser = createUserFnBase as unknown as (ctx: { data: CreateAppUser }) => Promise<AppUser>
 
 const findUserFnBase = createServerFn({ method: "GET" }).handler(async (ctx: { data: unknown }) => {
   const userId = ctx.data as string
@@ -55,12 +30,12 @@ const findUserFnBase = createServerFn({ method: "GET" }).handler(async (ctx: { d
     throw new Error("Invalid input: userId is required")
   }
   const params = new URLSearchParams({ userId })
-  return await serverFetch<User>(`/api/sys/user/find?${params}`, {
+  return await serverFetch<AppUser>(`/api/sys/user/find?${params}`, {
     method: "GET",
   })
 })
 
-export const findUser = findUserFnBase as unknown as (ctx: { data: string }) => Promise<User>
+export const findUser = findUserFnBase as unknown as (ctx: { data: string }) => Promise<AppUser>
 
 const listUsersFnBase = createServerFn({ method: "GET" }).handler(async (ctx: { data: unknown }) => {
   const query = ctx.data as UserListQuery | undefined
@@ -73,27 +48,27 @@ const listUsersFnBase = createServerFn({ method: "GET" }).handler(async (ctx: { 
     })
   }
 
-  return await serverFetch<PageResult<User>>(`/api/sys/user/list?${params}`, {
+  return await serverFetch<PageResult<AppUser>>(`/api/sys/user/list?${params}`, {
     method: "GET",
   })
 })
 
 export const listUsers = listUsersFnBase as unknown as (ctx: {
   data: UserListQuery | undefined
-}) => Promise<PageResult<User>>
+}) => Promise<PageResult<AppUser>>
 
 const updateUserFnBase = createServerFn({ method: "POST" }).handler(async (ctx: { data: unknown }) => {
-  const data = ctx.data as UpdateUser
+  const data = ctx.data as UpdateAppUser
   if (!data || typeof data !== "object" || !("userId" in data)) {
     throw new Error("Invalid input: userId is required")
   }
-  return await serverFetch<User>("/api/sys/user/update", {
+  return await serverFetch<AppUser>("/api/sys/user/update", {
     method: "POST",
     body: data as unknown as BodyInit,
   })
 })
 
-export const updateUser = updateUserFnBase as unknown as (ctx: { data: UpdateUser }) => Promise<User>
+export const updateUser = updateUserFnBase as unknown as (ctx: { data: UpdateAppUser }) => Promise<AppUser>
 
 const deleteUserFnBase = createServerFn({ method: "POST" }).handler(async (ctx: { data: unknown }) => {
   const userId = ctx.data as string
