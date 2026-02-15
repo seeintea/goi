@@ -14,7 +14,21 @@ export async function serverFetch<T>(url: string, options: RequestInit = {}): Pr
     headers.set("Authorization", `Bearer ${token}`)
   }
 
-  // Ensure Content-Type is set for JSON bodies if not already set
+  // Handle object body (auto stringify and set Content-Type)
+  if (
+    options.body &&
+    typeof options.body === "object" &&
+    !(options.body instanceof FormData) &&
+    !(options.body instanceof Blob) &&
+    !(options.body instanceof URLSearchParams)
+  ) {
+    options.body = JSON.stringify(options.body)
+    if (!headers.has("Content-Type")) {
+      headers.set("Content-Type", "application/json")
+    }
+  }
+
+  // Ensure Content-Type is set for JSON string bodies if not already set
   if (options.body && typeof options.body === "string" && !headers.has("Content-Type")) {
     try {
       JSON.parse(options.body)

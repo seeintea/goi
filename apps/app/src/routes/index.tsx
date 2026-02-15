@@ -1,4 +1,4 @@
-import { createFileRoute, redirect, useRouter } from "@tanstack/react-router"
+import { createFileRoute, redirect, useNavigate, useRouter } from "@tanstack/react-router"
 import { logout } from "@/api/service/auth"
 import { Button } from "@/components/ui/button"
 import { useUser } from "@/stores/useUser"
@@ -29,12 +29,14 @@ export const Route = createFileRoute("/")({
 function HomeComponent() {
   const { user } = Route.useRouteContext()
   const router = useRouter()
+  const navigate = useNavigate()
   const resetUser = useUser((state) => state.reset)
 
   const handleLogout = async () => {
     await logout()
     resetUser()
     await router.invalidate()
+    navigate({ to: "/login", replace: true })
   }
 
   return (

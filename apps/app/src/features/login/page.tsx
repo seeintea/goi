@@ -1,12 +1,15 @@
-import { Link } from "@tanstack/react-router"
+import { Link, useNavigate } from "@tanstack/react-router"
 import { useState } from "react"
 import { login } from "@/api/service/auth"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { FieldError } from "@/components/ui/field"
 import { sha1Hex } from "@/lib/crypto"
+import { useUser } from "@/stores/useUser"
 import { LoginForm, type LoginFormValues } from "./components/login-form"
 
 export function Login() {
+  const navigate = useNavigate()
+  const setUser = useUser((state) => state.setUser)
   const [submitError, setSubmitError] = useState("")
   const [isPending, setIsPending] = useState(false)
 
@@ -19,6 +22,18 @@ export function Login() {
 
       if (res?.error) {
         setSubmitError(res.error)
+        return
+      }
+
+      if (res.data) {
+        setUser({
+          token: res.data.accessToken,
+          userId: res.data.userId,
+          username: res.data.username,
+          roleId: res.data.roleId ?? "",
+          roleName: res.data.roleName ?? "",
+        })
+        navigate({ to: "/" })
       }
     } catch (error) {
       console.error(error)

@@ -1,5 +1,4 @@
 import type { Login, LoginResponse, Register } from "@goi/contracts"
-import { redirect } from "@tanstack/react-router"
 import { createServerFn } from "@tanstack/react-start"
 import { serverFetch } from "../client"
 
@@ -74,10 +73,18 @@ export const register = registerFnBase as unknown as (ctx: {
 const logoutFnBase = createServerFn({ method: "POST" }).handler(async () => {
   const { getAppSession } = await import("@/lib/server/session.server")
   const session = await getAppSession()
+
+  // Call backend logout API to clear server-side session/token
+  try {
+    await serverFetch("/api/sys/auth/logout", {
+      method: "POST",
+    })
+  } catch (error) {
+    // Ignore logout errors, just proceed to clear client session
+    console.warn("Backend logout failed:", error)
+  }
+
   await session.clear()
-  throw redirect({
-    to: "/login",
-  })
 })
 
 export const logout = logoutFnBase as unknown as () => Promise<void>
