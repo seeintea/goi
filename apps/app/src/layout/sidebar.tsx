@@ -13,13 +13,13 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar"
-import { useRouteTree } from "@/hooks/use-route-tree"
+import { Route } from "@/routes/__root"
 
 export function Sidebar() {
   const { pathname } = useLocation()
   const { open } = useSidebar()
 
-  const rootTree = useRouteTree()
+  const { menuTree: rootTree } = Route.useRouteContext()
   const flatItems = rootTree.filter((n) => !n.isGroup).flatMap((n) => n.children)
   const groupNodes = rootTree.filter((n) => n.isGroup)
 

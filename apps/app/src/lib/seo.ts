@@ -11,6 +11,8 @@ export const seo = ({
 }) => {
   const tags = [
     { title },
+    { charSet: "utf-8" },
+    { name: "viewport", content: "width=device-width, initial-scale=1" },
     { name: "description", content: description },
     { name: "keywords", content: keywords },
     { name: "twitter:title", content: title },

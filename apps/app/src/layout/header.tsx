@@ -3,13 +3,14 @@ import { useNavigate } from "@tanstack/react-router"
 import { useLogout } from "@/api"
 import { Button } from "@/components/ui/button"
 import { SidebarTrigger } from "@/components/ui/sidebar"
-import { useUser } from "@/stores"
+import { Route } from "@/routes/__root"
 import { Breadcrumb } from "./breadcrumb"
 
 export function Header() {
   const navigate = useNavigate()
   const logoutMutation = useLogout()
-  const username = useUser((s) => s.username)
+  const { user } = Route.useRouteContext()
+  const username = user?.username
 
   return (
     <header className="h-14 shrink-0 border-b bg-background flex items-center justify-between gap-3 px-3">

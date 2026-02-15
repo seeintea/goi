@@ -8,31 +8,25 @@ import { NotFound } from "@/features/core/pages/not-found"
 import { seo } from "@/lib/seo"
 import { useUser } from "@/stores/useUser"
 import appCss from "@/styles/app.css?url"
+import type { RouteTreeNode } from "@/utils/route-tree"
 
 type RouterContext = {
   user?: LoginResponse
   queryClient: QueryClient
+  menuTree: RouteTreeNode[]
 }
 
 export const Route = createRootRouteWithContext<RouterContext>()({
   beforeLoad: async () => {
+    // We only fetch the user here. menuTree is already provided via router context creation.
     const user = await getAuthUser()
     return { user }
   },
   head: () => ({
-    meta: [
-      {
-        charSet: "utf-8",
-      },
-      {
-        name: "viewport",
-        content: "width=device-width, initial-scale=1",
-      },
-      ...seo({
-        title: "TanStack Start | Type-Safe, Client-First, Full-Stack React Framework",
-        description: "TanStack Start is a type-safe, client-first, full-stack React framework. ",
-      }),
-    ],
+    meta: seo({
+      title: "",
+      description: "",
+    }),
     links: [{ rel: "stylesheet", href: appCss }],
   }),
   errorComponent: (props) => {

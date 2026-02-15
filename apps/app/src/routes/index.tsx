@@ -1,6 +1,7 @@
 import { createFileRoute, redirect, useNavigate, useRouter } from "@tanstack/react-router"
 import { logout } from "@/api/service/auth"
 import { Button } from "@/components/ui/button"
+import { seo } from "@/lib/seo"
 import { useUser } from "@/stores/useUser"
 
 export const Route = createFileRoute("/")({
@@ -18,12 +19,13 @@ export const Route = createFileRoute("/")({
       })
     }
   },
+  head: () => ({
+    meta: seo({
+      title: "绑定",
+      description: "绑定您的家庭",
+    }),
+  }),
   component: HomeComponent,
-  staticData: {
-    name: "绑定",
-    permission: "unauthed",
-    icon: null,
-  },
 })
 
 function HomeComponent() {
