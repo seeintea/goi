@@ -1,14 +1,9 @@
-export type UserSession = {
-  userId: string
-  username: string
-  accessToken: string
-  roleId: string
-  roleName: string
-  bookId: string
-}
+import type { LoginResponse } from "@goi/contracts"
+import { useSession } from "@tanstack/react-start/server"
 
-export async function getAppSession(): Promise<any> {
-  const { useSession } = await import("@tanstack/react-start/server")
+export type UserSession = LoginResponse
+
+export async function getAppSession(): Promise<ReturnType<typeof useSession<UserSession>>> {
   return useSession<UserSession>({
     name: "goi_session",
     password: import.meta.env.VITE_SESSION_SECRET || "change-this-to-a-secure-random-string-in-production",

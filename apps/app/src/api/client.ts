@@ -1,5 +1,5 @@
 import { FetchInstance } from "@goi/utils-web"
-import { getAppSession } from "@/utils/session.server"
+import { getAppSession } from "@/lib/server/session.server"
 
 const fetcher = new FetchInstance({
   baseURL: import.meta.env.PUBLIC_BASE_URL || "http://localhost:3000",
@@ -7,7 +7,7 @@ const fetcher = new FetchInstance({
 
 export async function serverFetch<T>(url: string, options: RequestInit = {}): Promise<T> {
   const session = await getAppSession()
-  const token = session.data?.token || session.data?.accessToken
+  const token = session.data?.accessToken
 
   const headers = new Headers(options.headers)
   if (token) {
@@ -19,7 +19,7 @@ export async function serverFetch<T>(url: string, options: RequestInit = {}): Pr
     try {
       JSON.parse(options.body)
       headers.set("Content-Type", "application/json")
-    } catch (e) {
+    } catch {
       // not json, ignore
     }
   }
@@ -38,4 +38,4 @@ export async function serverFetch<T>(url: string, options: RequestInit = {}): Pr
 }
 
 export { getAppSession }
-export type { UserSession } from "@/utils/session.server"
+export type { UserSession } from "@/lib/server/session.server"

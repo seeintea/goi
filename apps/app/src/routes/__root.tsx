@@ -3,11 +3,11 @@ import { createRootRouteWithContext, HeadContent, Outlet, Scripts } from "@tanst
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools"
 import { useEffect } from "react"
 import { getAuthUser, type LoginResponse } from "@/api/service/auth"
-import { DefaultCatchBoundary } from "@/components/default-catch-boundary"
-import { NotFound } from "@/components/not-found"
+import { DefaultCatchBoundary } from "@/features/core/pages/default-catch-boundary"
+import { NotFound } from "@/features/core/pages/not-found"
+import { seo } from "@/lib/seo"
 import { useUser } from "@/stores/useUser"
 import appCss from "@/styles/app.css?url"
-import { seo } from "@/utils/seo"
 
 type RouterContext = {
   user?: LoginResponse
