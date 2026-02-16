@@ -1,4 +1,4 @@
-import { type AnyRoute, type Route } from "@tanstack/react-router"
+import type { AnyRoute } from "@tanstack/react-router"
 import * as React from "react"
 
 export type RouteChildStaticData = {
@@ -51,7 +51,7 @@ function getRoutePath(route: RouteLike): string {
   return route.path ?? route.fullPath ?? route.id ?? ""
 }
 
-export function buildRouteTree(routeTree: AnyRoute, permissions: string[] = []): RouteTreeNode[] {
+export function buildRouteTree(routeTree: AnyRoute, _permissions: string[] = []): RouteTreeNode[] {
   const routes: RouteLike[] = []
 
   const collect = (route: RouteLike) => {
@@ -69,7 +69,7 @@ export function buildRouteTree(routeTree: AnyRoute, permissions: string[] = []):
   for (const route of routes) {
     const staticData = route.options?.staticData
     if (!staticData) continue
-    
+
     // Permission check
     if (staticData.permission === "unauthed") continue
     // Add your permission logic here if needed, e.g.:
