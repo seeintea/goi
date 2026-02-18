@@ -4,5 +4,6 @@ import { type PgDatabase, PgProvider } from "./postgresql.provider"
 import { PgService } from "./postgresql.service"
 import { POSTGRESQL_TOKEN } from "./postgresql.tokens"
 
+// Re-export postgresql schema
 export { PgModule, PgProvider, PgService, pgSchema, POSTGRESQL_TOKEN }
 export type { PgDatabase, PgSchema }

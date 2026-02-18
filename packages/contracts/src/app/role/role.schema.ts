@@ -85,6 +85,15 @@ export const appRolePageResponseSchema = z
   })
   .meta({ id: "角色分页响应" })
 
+export const updateRolePermissionsSchema = z
+  .object({
+    roleId: shape.roleId,
+    permissionIds: z.array(z.string()).describe("权限ID列表"),
+    moduleIds: z.array(z.string()).optional().describe("模块ID列表"),
+  })
+  .meta({ id: "更新角色权限关联请求" })
+
 export type AppRole = z.infer<typeof appRoleResponseSchema>
 export type CreateAppRole = z.infer<typeof createAppRoleSchema>
 export type UpdateAppRole = z.infer<typeof updateAppRoleSchema>
+export type UpdateRolePermissions = z.infer<typeof updateRolePermissionsSchema>

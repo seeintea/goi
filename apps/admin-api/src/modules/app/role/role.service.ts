@@ -5,9 +5,15 @@ import { and, desc, eq, inArray, like, sql } from "drizzle-orm"
 import { z } from "zod"
 import { PgService, pgSchema } from "@/database/postgresql"
 import type { PageResult } from "@/types/response"
-import type { CreateRole, Role, UpdateRole } from "./role.dto"
+import type { CreateRole, Role, UpdateRole, UpdateRolePermissions } from "./role.dto"
 
-const { authRole: roleSchema, authUser: userSchema, financeFamilyMember: familyMemberSchema } = pgSchema
+const {
+  authRole: roleSchema,
+  authUser: userSchema,
+  financeFamilyMember: familyMemberSchema,
+  authRolePermission: rolePermissionSchema,
+  authRoleModule: roleModuleSchema,
+} = pgSchema
 
 @Injectable()
 export class RoleService {
@@ -15,6 +21,61 @@ export class RoleService {
     private readonly pg: PgService,
     private readonly systemProtection: SystemProtectionService,
   ) {}
+
+  async getPermissions(roleId: string): Promise<string[]> {
+    if (!roleModuleSchema) {
+      throw new Error("roleModuleSchema is undefined. Please check if authRoleModule is exported from infra package.")
+    }
+
+    const [permissionRows, moduleRows] = await Promise.all([
+      this.pg.pdb
+        .select({ permissionId: rolePermissionSchema.permissionId })
+        .from(rolePermissionSchema)
+        .where(eq(rolePermissionSchema.roleId, roleId)),
+      this.pg.pdb
+        .select({ moduleId: roleModuleSchema.moduleId })
+        .from(roleModuleSchema)
+        .where(eq(roleModuleSchema.roleId, roleId)),
+    ])
+
+    return [...permissionRows.map((r) => r.permissionId), ...moduleRows.map((r) => r.moduleId)]
+  }
+
+  async updatePermissions(values: UpdateRolePermissions): Promise<boolean> {
+    if (!roleModuleSchema) {
+      throw new Error("roleModuleSchema is undefined")
+    }
+
+    const { roleId, permissionIds, moduleIds = [] } = values
+
+    await this.pg.pdb.transaction(async (tx) => {
+      // 1. Delete existing permissions
+      await tx.delete(rolePermissionSchema).where(eq(rolePermissionSchema.roleId, roleId))
+      await tx.delete(roleModuleSchema).where(eq(roleModuleSchema.roleId, roleId))
+
+      // 2. Insert new permissions
+      if (permissionIds.length > 0) {
+        await tx.insert(rolePermissionSchema).values(
+          permissionIds.map((pid) => ({
+            roleId,
+            permissionId: pid,
+          })),
+        )
+      }
+
+      // 3. Insert new module permissions
+      if (moduleIds.length > 0) {
+        await tx.insert(roleModuleSchema).values(
+          moduleIds.map((mid) => ({
+            roleId,
+            moduleId: mid,
+          })),
+        )
+      }
+    })
+
+    return true
+  }
 
   async find(roleId: string): Promise<Role> {
     const roles = await this.pg.pdb

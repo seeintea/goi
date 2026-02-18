@@ -6,6 +6,7 @@ import { type FilterField, FilterForm } from "@/components/filter-form"
 import { ShortId } from "@/components/short-id"
 import { useModal } from "@/hooks/use-modal"
 import { useTable } from "@/hooks/use-table"
+import { PermissionModal } from "./components/permission-modal"
 import { RoleModal } from "./components/role-modal"
 
 export function RoleList() {
@@ -23,6 +24,7 @@ export function RoleList() {
   })
 
   const roleModal = useModal<AppRole>()
+  const permissionModal = useModal<AppRole>()
 
   const handleCreate = () => {
     roleModal.show()
@@ -30,6 +32,10 @@ export function RoleList() {
 
   const handleEdit = (record: AppRole) => {
     roleModal.show(record)
+  }
+
+  const handlePermission = (record: AppRole) => {
+    permissionModal.show(record)
   }
 
   const handleDelete = async (record: AppRole) => {
@@ -133,6 +139,14 @@ export function RoleList() {
           <Button
             type="link"
             size="small"
+            onClick={() => handlePermission(record)}
+            className="p-0"
+          >
+            权限
+          </Button>
+          <Button
+            type="link"
+            size="small"
             onClick={() => handleEdit(record)}
             className="p-0"
           >
@@ -231,6 +245,12 @@ export function RoleList() {
         open={roleModal.open}
         record={roleModal.data}
         onOpenChange={roleModal.hide}
+        onSuccess={refresh}
+      />
+      <PermissionModal
+        open={permissionModal.open}
+        roleId={permissionModal.data?.roleId}
+        onClose={permissionModal.hide}
         onSuccess={refresh}
       />
     </Card>

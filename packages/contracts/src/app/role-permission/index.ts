@@ -1,3 +1,4 @@
+export type { AppRolePermission, CreateAppRolePermission } from "./role-permission.schema"
 export {
   appRolePermissionListQuerySchema,
   appRolePermissionPageResponseSchema,
@@ -5,4 +6,3 @@ export {
   createAppRolePermissionSchema,
   deleteAppRolePermissionSchema,
 } from "./role-permission.schema"
-export type { AppRolePermission, CreateAppRolePermission } from "./role-permission.schema"

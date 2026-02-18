@@ -1,4 +1,4 @@
-import type { PageQuery, PageResult } from "@goi/contracts"
+import type { PageQuery, PageResult, UpdateRolePermissions } from "@goi/contracts"
 import { api } from "../../client"
 
 export type AppRole = {
@@ -46,3 +46,9 @@ export const listAppRoles = (query?: AppRoleListQuery) => api.get<PageResult<App
 export const updateAppRole = (body: UpdateAppRole) => api.post<AppRole>("/api/app/role/update", body)
 
 export const deleteAppRole = (roleId: string) => api.post<boolean>("/api/app/role/delete", { roleId })
+
+export const getRolePermissions = (roleId: string) =>
+  api.get<string[]>("/api/app/role/permissions", { roleId })
+
+export const updateRolePermissions = (body: UpdateRolePermissions) =>
+  api.post<boolean>("/api/app/role/updatePermissions", body)

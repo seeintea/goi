@@ -1,12 +1,18 @@
-import type { AppPermission, CreateAppPermission, UpdateAppPermission } from "@goi/contracts"
+import type {
+  AppPermission,
+  AppPermissionTreeNode,
+  AppPermissionTreeResponse,
+  CreateAppPermission,
+  UpdateAppPermission,
+} from "@goi/contracts"
 import { normalizePage, toIsoString, toPageResult } from "@goi/utils"
 import { Injectable, NotFoundException } from "@nestjs/common"
-import { and, desc, eq, like, sql } from "drizzle-orm"
+import { and, asc, desc, eq, like, sql } from "drizzle-orm"
 import { PgService, pgSchema } from "@/database/postgresql"
 import type { PageResult } from "@/types/response"
 import { ModuleService } from "../module/module.service"
 
-const { authPermission: permissionSchema } = pgSchema
+const { authPermission: permissionSchema, authModule: moduleSchema } = pgSchema
 
 @Injectable()
 export class PermissionService {
@@ -14,6 +20,58 @@ export class PermissionService {
     private readonly pg: PgService,
     private readonly moduleService: ModuleService,
   ) {}
+
+  async tree(): Promise<AppPermissionTreeResponse> {
+    const modules = await this.pg.pdb
+      .select({
+        moduleId: moduleSchema.moduleId,
+        parentId: moduleSchema.parentId,
+        name: moduleSchema.name,
+        sort: moduleSchema.sort,
+      })
+      .from(moduleSchema)
+      .where(eq(moduleSchema.isDeleted, false))
+      .orderBy(asc(moduleSchema.sort))
+
+    const permissions = await this.pg.pdb
+      .select({
+        permissionId: permissionSchema.permissionId,
+        name: permissionSchema.name,
+        moduleId: permissionSchema.moduleId,
+      })
+      .from(permissionSchema)
+      .where(and(eq(permissionSchema.isDeleted, false), eq(permissionSchema.isDisabled, false)))
+
+    const buildTree = (parentId: string | null): AppPermissionTreeNode[] => {
+      const childrenModules = modules.filter((m) => m.parentId === parentId)
+      return childrenModules.map((m) => {
+        const modulePermissions = permissions.filter((p) => p.moduleId === m.moduleId)
+        const subModules = buildTree(m.moduleId)
+
+        const children: AppPermissionTreeNode[] = [
+          ...subModules,
+          ...modulePermissions.map((p) => ({
+            key: p.permissionId,
+            title: p.name,
+            isLeaf: true,
+            permissionId: p.permissionId,
+            type: "permission" as const,
+          })),
+        ]
+
+        return {
+          key: m.moduleId,
+          title: m.name,
+          isLeaf: false,
+          moduleId: m.moduleId,
+          children: children.length > 0 ? children : undefined,
+          type: "module" as const,
+        }
+      })
+    }
+
+    return buildTree(null)
+  }
 
   async find(permissionId: string): Promise<AppPermission> {
     const permissions = await this.pg.pdb

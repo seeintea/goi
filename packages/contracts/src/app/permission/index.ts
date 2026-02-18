@@ -1,8 +1,15 @@
-export type { AppPermission, CreateAppPermission, UpdateAppPermission } from "./permission.schema"
+export type {
+  AppPermission,
+  AppPermissionTreeNode,
+  AppPermissionTreeResponse,
+  CreateAppPermission,
+  UpdateAppPermission,
+} from "./permission.schema"
 export {
   appPermissionListQuerySchema,
   appPermissionPageResponseSchema,
   appPermissionResponseSchema,
+  appPermissionTreeResponseSchema,
   createAppPermissionSchema,
   deleteAppPermissionSchema,
   updateAppPermissionSchema,

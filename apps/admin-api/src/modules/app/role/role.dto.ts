@@ -7,7 +7,9 @@ import {
   createAppRoleSchema,
   deleteAppRoleSchema,
   UpdateAppRole,
+  UpdateRolePermissions,
   updateAppRoleSchema,
+  updateRolePermissionsSchema,
 } from "@goi/contracts"
 import { createZodDto } from "nestjs-zod"
 import { z } from "zod"
@@ -19,6 +21,7 @@ const typedRoleResponseSchema = appRoleResponseSchema.extend({
 const typedCreateRoleSchema = createAppRoleSchema as z.ZodType<CreateAppRole>
 const typedUpdateRoleSchema = updateAppRoleSchema as z.ZodType<UpdateAppRole>
 const typedDeleteRoleSchema = deleteAppRoleSchema as z.ZodType<{ roleId: string }>
+const typedUpdateRolePermissionsSchema = updateRolePermissionsSchema as z.ZodType<UpdateRolePermissions>
 
 const typedRolePageResponseSchema = appRolePageResponseSchema.extend({
   list: z.array(typedRoleResponseSchema),
@@ -33,6 +36,7 @@ export class UpdateRoleDto extends createZodDto(typedUpdateRoleSchema) {}
 export class DeleteRoleDto extends createZodDto(typedDeleteRoleSchema) {}
 export class RoleListQueryDto extends createZodDto(appRoleListQuerySchema) {}
 export class RolePageResponseDto extends createZodDto(typedRolePageResponseSchema) {}
+export class UpdateRolePermissionsDto extends createZodDto(typedUpdateRolePermissionsSchema) {}
 
 export type Role = AppRole & {
   allowDelete: boolean
@@ -40,3 +44,4 @@ export type Role = AppRole & {
 }
 export type CreateRole = CreateAppRole
 export type UpdateRole = UpdateAppRole
+export type { UpdateRolePermissions }

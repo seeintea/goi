@@ -10,6 +10,7 @@ import {
   RolePageResponseDto,
   RoleResponseDto,
   UpdateRoleDto,
+  UpdateRolePermissionsDto,
 } from "./role.dto"
 import { RoleService } from "./role.service"
 
@@ -17,6 +18,20 @@ import { RoleService } from "./role.service"
 @Controller("app/role")
 export class RoleController {
   constructor(private readonly roleService: RoleService) {}
+
+  @Get("permissions")
+  @Permission("app:role:read")
+  @ApiOperation({ summary: "查询角色权限列表" })
+  async getPermissions(@Query("roleId") roleId: string) {
+    return this.roleService.getPermissions(roleId)
+  }
+
+  @Post("updatePermissions")
+  @Permission("app:role:update")
+  @ApiOperation({ summary: "更新角色权限" })
+  async updatePermissions(@Body() body: UpdateRolePermissionsDto) {
+    return this.roleService.updatePermissions(body)
+  }
 
   @Post("create")
   @Permission("app:role:create")

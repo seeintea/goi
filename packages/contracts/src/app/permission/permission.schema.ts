@@ -84,6 +84,27 @@ export const appPermissionPageResponseSchema = z
   })
   .meta({ id: "权限分页响应" })
 
+export interface AppPermissionTreeNode {
+  key: string
+  title: string
+  children?: AppPermissionTreeNode[]
+  isLeaf?: boolean
+  type: "module" | "permission"
+}
+
+export const treeNodeSchema: z.ZodType<AppPermissionTreeNode> = z.lazy(() =>
+  z.object({
+    key: z.string(),
+    title: z.string(),
+    children: z.array(treeNodeSchema).optional(),
+    isLeaf: z.boolean().optional(),
+    type: z.enum(["module", "permission"]),
+  }),
+)
+
+export const appPermissionTreeResponseSchema = z.array(treeNodeSchema).meta({ id: "权限树响应" })
+
 export type AppPermission = z.infer<typeof appPermissionResponseSchema>
 export type CreateAppPermission = z.infer<typeof createAppPermissionSchema>
 export type UpdateAppPermission = z.infer<typeof updateAppPermissionSchema>
+export type AppPermissionTreeResponse = z.infer<typeof appPermissionTreeResponseSchema>

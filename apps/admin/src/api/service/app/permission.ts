@@ -1,4 +1,11 @@
-import type { AppPermission, CreateAppPermission, PageQuery, PageResult, UpdateAppPermission } from "@goi/contracts"
+import type {
+  AppPermission,
+  AppPermissionTreeResponse,
+  CreateAppPermission,
+  PageQuery,
+  PageResult,
+  UpdateAppPermission,
+} from "@goi/contracts"
 import { api } from "../../client"
 
 export type AppPermissionListQuery = PageQuery & {
@@ -20,3 +27,5 @@ export const updateAppPermission = (body: UpdateAppPermission) =>
 
 export const deleteAppPermission = (permissionId: string) =>
   api.post<boolean>("/api/app/permission/delete", { permissionId })
+
+export const getPermissionTree = () => api.get<AppPermissionTreeResponse>("/api/app/permission/tree")

@@ -4,6 +4,7 @@ import { ApiOperation, ApiTags } from "@nestjs/swagger"
 import { ZodResponse } from "nestjs-zod"
 import { v4 as uuid } from "uuid"
 import {
+  AppPermissionTreeResponseDto,
   CreatePermissionDto,
   DeletePermissionDto,
   PermissionListQueryDto,
@@ -17,6 +18,14 @@ import { PermissionService } from "./permission.service"
 @Controller("app/permission")
 export class PermissionController {
   constructor(private readonly permissionService: PermissionService) {}
+
+  @Get("tree")
+  @Permission("app:permission:read")
+  @ApiOperation({ summary: "查询权限树" })
+  @ZodResponse({ type: AppPermissionTreeResponseDto })
+  async tree() {
+    return this.permissionService.tree()
+  }
 
   @Post("create")
   @Permission("app:permission:create")

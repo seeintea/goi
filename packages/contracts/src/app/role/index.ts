@@ -5,5 +5,6 @@ export {
   createAppRoleSchema,
   deleteAppRoleSchema,
   updateAppRoleSchema,
+  updateRolePermissionsSchema,
 } from "./role.schema"
-export type { AppRole, CreateAppRole, UpdateAppRole } from "./role.schema"
+export type { AppRole, CreateAppRole, UpdateAppRole, UpdateRolePermissions } from "./role.schema"

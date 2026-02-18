@@ -8,6 +8,8 @@ import {
   deleteAppPermissionSchema,
   UpdateAppPermission,
   updateAppPermissionSchema,
+  AppPermissionTreeResponse,
+  appPermissionTreeResponseSchema,
 } from "@goi/contracts"
 import { createZodDto } from "nestjs-zod"
 import { z } from "zod"
@@ -16,6 +18,7 @@ const typedPermissionResponseSchema = appPermissionResponseSchema as z.ZodType<A
 const typedCreatePermissionSchema = createAppPermissionSchema as z.ZodType<CreateAppPermission>
 const typedUpdatePermissionSchema = updateAppPermissionSchema as z.ZodType<UpdateAppPermission>
 const typedDeletePermissionSchema = deleteAppPermissionSchema as z.ZodType<{ permissionId: string }>
+const typedAppPermissionTreeResponseSchema = appPermissionTreeResponseSchema as z.ZodType<AppPermissionTreeResponse>
 
 export class PermissionResponseDto extends createZodDto(typedPermissionResponseSchema) {}
 export class CreatePermissionDto extends createZodDto(typedCreatePermissionSchema) {}
@@ -23,3 +26,4 @@ export class UpdatePermissionDto extends createZodDto(typedUpdatePermissionSchem
 export class DeletePermissionDto extends createZodDto(typedDeletePermissionSchema) {}
 export class PermissionListQueryDto extends createZodDto(appPermissionListQuerySchema) {}
 export class PermissionPageResponseDto extends createZodDto(appPermissionPageResponseSchema) {}
+export class AppPermissionTreeResponseDto extends createZodDto(typedAppPermissionTreeResponseSchema) {}
