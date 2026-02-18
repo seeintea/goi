@@ -1,0 +1,12 @@
+{
+  "name": "rules",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/rules/src",
+  "projectType": "library",
+  "targets": {
+    "build": { "command": "pnpm -C packages/rules build", "outputs": ["{projectRoot}/dist"] },
+    "lint": { "command": "pnpm -C packages/rules lint" },
+    "typecheck": { "command": "pnpm -C packages/rules typecheck" },
+    "dev": { "command": "pnpm -C packages/rules dev" }
+  }
+}

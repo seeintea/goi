@@ -9,6 +9,8 @@ export type AppRole = {
   isDeleted: boolean
   createdAt: string
   updatedAt: string
+  allowDelete: boolean
+  allowDisable: boolean
 }
 
 export type CreateAppRole = {

@@ -25,7 +25,7 @@ export function FilterForm({ form, fields, onSearch, onReset }: FilterFormProps)
       onFinish={onSearch}
       className="mb-4"
     >
-      <Row gutter={[16, 16]}>
+      <Row gutter={[16, 0]}>
         {fields.map((field) => (
           <Col key={field.name}>
             <Form.Item

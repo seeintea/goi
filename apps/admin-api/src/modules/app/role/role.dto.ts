@@ -12,22 +12,31 @@ import {
 import { createZodDto } from "nestjs-zod"
 import { z } from "zod"
 
-const typedRoleResponseSchema = appRoleResponseSchema as z.ZodType<AppRole>
+const typedRoleResponseSchema = appRoleResponseSchema.extend({
+  allowDelete: z.boolean(),
+  allowDisable: z.boolean(),
+}) as z.ZodType<AppRole & { allowDelete: boolean; allowDisable: boolean }>
 const typedCreateRoleSchema = createAppRoleSchema as z.ZodType<CreateAppRole>
 const typedUpdateRoleSchema = updateAppRoleSchema as z.ZodType<UpdateAppRole>
 const typedDeleteRoleSchema = deleteAppRoleSchema as z.ZodType<{ roleId: string }>
 
-export class RoleResponseDto extends createZodDto(typedRoleResponseSchema) {}
+const typedRolePageResponseSchema = appRolePageResponseSchema.extend({
+  list: z.array(typedRoleResponseSchema),
+})
+
+export class RoleResponseDto extends createZodDto(typedRoleResponseSchema) {
+  declare allowDelete: boolean
+  declare allowDisable: boolean
+}
 export class CreateRoleDto extends createZodDto(typedCreateRoleSchema) {}
 export class UpdateRoleDto extends createZodDto(typedUpdateRoleSchema) {}
 export class DeleteRoleDto extends createZodDto(typedDeleteRoleSchema) {}
-export class RoleListQueryDto extends createZodDto(appRoleListQuerySchema) {
-  userId?: string
-  username?: string
-  isDeleted?: boolean
-}
-export class RolePageResponseDto extends createZodDto(appRolePageResponseSchema) {}
+export class RoleListQueryDto extends createZodDto(appRoleListQuerySchema) {}
+export class RolePageResponseDto extends createZodDto(typedRolePageResponseSchema) {}
 
-export type Role = AppRole
+export type Role = AppRole & {
+  allowDelete: boolean
+  allowDisable: boolean
+}
 export type CreateRole = CreateAppRole
 export type UpdateRole = UpdateAppRole

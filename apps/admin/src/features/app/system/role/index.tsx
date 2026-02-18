@@ -101,9 +101,10 @@ export function RoleList() {
       render: (isDisabled: boolean, record) => (
         <Switch
           checked={isDisabled}
-          onChange={(checked) => handleStatusChange(record, checked)}
+          disabled={!record.allowDisable}
           checkedChildren="是"
           unCheckedChildren="否"
+          onChange={(checked) => handleStatusChange(record, checked)}
         />
       ),
     },
@@ -143,12 +144,14 @@ export function RoleList() {
             onConfirm={() => handleDelete(record)}
             okText="确定"
             cancelText="取消"
+            disabled={!record.allowDelete}
           >
             <Button
               type="link"
               size="small"
               danger
               className="p-0"
+              disabled={!record.allowDelete}
             >
               删除
             </Button>

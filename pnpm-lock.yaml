@@ -144,6 +144,9 @@ importers:
       '@goi/nest-kit':
         specifier: workspace:*
         version: link:../../packages/nest-kit
+      '@goi/rules':
+        specifier: workspace:*
+        version: link:../../packages/rules
       '@goi/utils':
         specifier: workspace:^
         version: link:../../packages/utils
@@ -447,6 +450,12 @@ importers:
       '@microsoft/api-extractor':
         specifier: ^7.56.3
         version: 7.56.3(@types/node@25.2.3)
+      '@rslib/core':
+        specifier: ^0.19.5
+        version: 0.19.5(@microsoft/api-extractor@7.56.3(@types/node@25.2.3))(typescript@5.9.3)
+
+  packages/rules:
+    devDependencies:
       '@rslib/core':
         specifier: ^0.19.5
         version: 0.19.5(@microsoft/api-extractor@7.56.3(@types/node@25.2.3))(typescript@5.9.3)

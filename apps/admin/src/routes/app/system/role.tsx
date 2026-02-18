@@ -1,5 +1,5 @@
-import { RoleList } from "@/features/app/system/role"
 import { createFileRoute } from "@tanstack/react-router"
+import { RoleList } from "@/features/app/system/role"
 
 export const Route = createFileRoute("/app/system/role")({
   component: RoleList,

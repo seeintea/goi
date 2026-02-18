@@ -1,3 +1,4 @@
+import { SystemProtectionService } from "@goi/nest-kit"
 import { normalizePage, toIsoString, toPageResult } from "@goi/utils"
 import { Injectable, NotFoundException } from "@nestjs/common"
 import { and, desc, eq, inArray, like, sql } from "drizzle-orm"
@@ -10,7 +11,10 @@ const { authRole: roleSchema, authUser: userSchema, financeFamilyMember: familyM
 
 @Injectable()
 export class RoleService {
-  constructor(private readonly pg: PgService) {}
+  constructor(
+    private readonly pg: PgService,
+    private readonly systemProtection: SystemProtectionService,
+  ) {}
 
   async find(roleId: string): Promise<Role> {
     const roles = await this.pg.pdb
@@ -32,6 +36,8 @@ export class RoleService {
       ...role,
       createdAt: toIsoString(role.createdAt),
       updatedAt: toIsoString(role.updatedAt),
+      allowDelete: this.systemProtection.can("ROLE", "delete", role.roleCode),
+      allowDisable: this.systemProtection.can("ROLE", "updateStatus", role.roleCode),
     }
   }
 
@@ -48,6 +54,12 @@ export class RoleService {
   }
 
   async update(values: UpdateRole): Promise<Role> {
+    // Validate updateStatus action
+    if (values.isDisabled !== undefined) {
+      const role = await this.find(values.roleId)
+      this.systemProtection.validate("ROLE", "updateStatus", role.roleCode)
+    }
+
     await this.pg.pdb
       .update(roleSchema)
       .set({
@@ -62,6 +74,9 @@ export class RoleService {
   }
 
   async delete(roleId: string): Promise<boolean> {
+    const role = await this.find(roleId)
+    this.systemProtection.validate("ROLE", "delete", role.roleCode)
+
     await this.pg.pdb.update(roleSchema).set({ isDeleted: true }).where(eq(roleSchema.roleId, roleId))
     return true
   }
@@ -177,6 +192,8 @@ export class RoleService {
       familyId: row.familyId ?? null,
       createdAt: toIsoString(row.createdAt),
       updatedAt: toIsoString(row.updatedAt),
+      allowDelete: this.systemProtection.can("ROLE", "delete", row.roleCode),
+      allowDisable: this.systemProtection.can("ROLE", "updateStatus", row.roleCode),
     }))
 
     return toPageResult(pageParams, total, list)
