@@ -16,6 +16,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppUserRouteImport } from './routes/app/user'
 import { Route as AdminUserRouteImport } from './routes/admin/user'
 import { Route as AppSystemRouteRouteImport } from './routes/app/system/route'
+import { Route as AppSystemRoleRouteImport } from './routes/app/system/role'
 import { Route as AppSystemPermissionRouteImport } from './routes/app/system/permission'
 import { Route as AppSystemModuleRouteImport } from './routes/app/system/module'
 
@@ -54,6 +55,11 @@ const AppSystemRouteRoute = AppSystemRouteRouteImport.update({
   path: '/system',
   getParentRoute: () => AppRouteRoute,
 } as any)
+const AppSystemRoleRoute = AppSystemRoleRouteImport.update({
+  id: '/role',
+  path: '/role',
+  getParentRoute: () => AppSystemRouteRoute,
+} as any)
 const AppSystemPermissionRoute = AppSystemPermissionRouteImport.update({
   id: '/permission',
   path: '/permission',
@@ -75,6 +81,7 @@ export interface FileRoutesByFullPath {
   '/app/user': typeof AppUserRoute
   '/app/system/module': typeof AppSystemModuleRoute
   '/app/system/permission': typeof AppSystemPermissionRoute
+  '/app/system/role': typeof AppSystemRoleRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -86,6 +93,7 @@ export interface FileRoutesByTo {
   '/app/user': typeof AppUserRoute
   '/app/system/module': typeof AppSystemModuleRoute
   '/app/system/permission': typeof AppSystemPermissionRoute
+  '/app/system/role': typeof AppSystemRoleRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -98,6 +106,7 @@ export interface FileRoutesById {
   '/app/user': typeof AppUserRoute
   '/app/system/module': typeof AppSystemModuleRoute
   '/app/system/permission': typeof AppSystemPermissionRoute
+  '/app/system/role': typeof AppSystemRoleRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -111,6 +120,7 @@ export interface FileRouteTypes {
     | '/app/user'
     | '/app/system/module'
     | '/app/system/permission'
+    | '/app/system/role'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -122,6 +132,7 @@ export interface FileRouteTypes {
     | '/app/user'
     | '/app/system/module'
     | '/app/system/permission'
+    | '/app/system/role'
   id:
     | '__root__'
     | '/'
@@ -133,6 +144,7 @@ export interface FileRouteTypes {
     | '/app/user'
     | '/app/system/module'
     | '/app/system/permission'
+    | '/app/system/role'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -193,6 +205,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppSystemRouteRouteImport
       parentRoute: typeof AppRouteRoute
     }
+    '/app/system/role': {
+      id: '/app/system/role'
+      path: '/role'
+      fullPath: '/app/system/role'
+      preLoaderRoute: typeof AppSystemRoleRouteImport
+      parentRoute: typeof AppSystemRouteRoute
+    }
     '/app/system/permission': {
       id: '/app/system/permission'
       path: '/permission'
@@ -225,11 +244,13 @@ const AdminRouteRouteWithChildren = AdminRouteRoute._addFileChildren(
 interface AppSystemRouteRouteChildren {
   AppSystemModuleRoute: typeof AppSystemModuleRoute
   AppSystemPermissionRoute: typeof AppSystemPermissionRoute
+  AppSystemRoleRoute: typeof AppSystemRoleRoute
 }
 
 const AppSystemRouteRouteChildren: AppSystemRouteRouteChildren = {
   AppSystemModuleRoute: AppSystemModuleRoute,
   AppSystemPermissionRoute: AppSystemPermissionRoute,
+  AppSystemRoleRoute: AppSystemRoleRoute,
 }
 
 const AppSystemRouteRouteWithChildren = AppSystemRouteRoute._addFileChildren(

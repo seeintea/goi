@@ -2,6 +2,7 @@ import { z } from "zod"
 
 const shape = {
   roleId: z.string().length(32).describe("角色ID"),
+  familyId: z.string().uuid().nullable().describe("家庭ID"),
   roleCode: z.string().min(1).max(30).describe("角色编码"),
   roleName: z.string().min(1).max(50).describe("角色名称"),
   isDisabled: z.boolean().describe("是否禁用"),
@@ -15,6 +16,7 @@ const shape = {
 export const appRoleResponseSchema = z
   .object({
     roleId: shape.roleId,
+    familyId: shape.familyId,
     roleCode: shape.roleCode,
     roleName: shape.roleName,
     isDisabled: shape.isDisabled,
@@ -26,6 +28,7 @@ export const appRoleResponseSchema = z
 
 export const createAppRoleSchema = z
   .object({
+    familyId: shape.familyId.optional(),
     roleCode: shape.roleCode,
     roleName: shape.roleName,
     isDisabled: shape.isDisabled.optional(),
@@ -35,6 +38,7 @@ export const createAppRoleSchema = z
 export const updateAppRoleSchema = z
   .object({
     roleId: shape.roleId,
+    familyId: shape.familyId.optional(),
     roleCode: shape.roleCode.optional(),
     roleName: shape.roleName.optional(),
     isDisabled: shape.isDisabled.optional(),
@@ -50,8 +54,12 @@ export const deleteAppRoleSchema = z
 
 export const appRoleListQuerySchema = z
   .object({
+    familyId: shape.familyId.optional(),
     roleCode: shape.roleCode.optional(),
     roleName: shape.roleName.optional(),
+    userId: z.string().optional().describe("用户ID"),
+    username: z.string().min(1).max(30).optional().describe("用户名称"),
+    isDeleted: shape.isDeleted.optional(),
     page: shape.page.optional(),
     pageSize: shape.pageSize.optional(),
   })
@@ -59,6 +67,7 @@ export const appRoleListQuerySchema = z
 
 const rolePageItemSchema = z.object({
   roleId: shape.roleId,
+  familyId: shape.familyId,
   roleCode: shape.roleCode,
   roleName: shape.roleName,
   isDisabled: shape.isDisabled,

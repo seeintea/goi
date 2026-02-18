@@ -12,6 +12,7 @@ export type AppRole = {
 }
 
 export type CreateAppRole = {
+  familyId?: string
   roleCode: string
   roleName: string
   isDisabled?: boolean
@@ -19,6 +20,7 @@ export type CreateAppRole = {
 
 export type UpdateAppRole = {
   roleId: string
+  familyId?: string
   roleCode?: string
   roleName?: string
   isDisabled?: boolean
@@ -28,6 +30,9 @@ export type UpdateAppRole = {
 export type AppRoleListQuery = PageQuery & {
   roleCode?: string
   roleName?: string
+  userId?: string
+  username?: string
+  isDeleted?: boolean
 }
 
 export const createAppRole = (body: CreateAppRole) => api.post<AppRole>("/api/app/role/create", body)

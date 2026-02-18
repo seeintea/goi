@@ -39,7 +39,13 @@ export class RoleController {
   @ApiOperation({ summary: "查询角色列表" })
   @ZodResponse({ type: RolePageResponseDto })
   async list(@Query() query: RoleListQueryDto) {
-    return this.roleService.list(query)
+    return this.roleService.list({
+      ...query,
+      familyId: query.familyId ?? undefined,
+      userId: query.userId ?? undefined,
+      username: query.username ?? undefined,
+      isDeleted: query.isDeleted ?? undefined,
+    })
   }
 
   @Post("update")

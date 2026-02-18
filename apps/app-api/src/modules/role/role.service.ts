@@ -15,6 +15,7 @@ export class RoleService {
     const roles = await this.pg.pdb
       .select({
         roleId: roleSchema.roleId,
+        familyId: roleSchema.familyId,
         roleCode: roleSchema.roleCode,
         roleName: roleSchema.roleName,
         isDisabled: roleSchema.isDisabled,
@@ -38,6 +39,7 @@ export class RoleService {
       .insert(roleSchema)
       .values({
         roleId: values.roleId,
+        familyId: values.familyId,
         roleCode: values.roleCode,
         roleName: values.roleName,
         isDisabled: values.isDisabled ?? false,
@@ -51,6 +53,7 @@ export class RoleService {
     await this.pg.pdb
       .update(roleSchema)
       .set({
+        ...(values.familyId !== undefined ? { familyId: values.familyId } : {}),
         ...(values.roleCode !== undefined ? { roleCode: values.roleCode } : {}),
         ...(values.roleName !== undefined ? { roleName: values.roleName } : {}),
         ...(values.isDisabled !== undefined ? { isDisabled: values.isDisabled } : {}),
@@ -86,6 +89,7 @@ export class RoleService {
     const rows = await this.pg.pdb
       .select({
         roleId: roleSchema.roleId,
+        familyId: roleSchema.familyId,
         roleCode: roleSchema.roleCode,
         roleName: roleSchema.roleName,
         isDisabled: roleSchema.isDisabled,
