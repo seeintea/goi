@@ -5,7 +5,7 @@ import { and, desc, eq, inArray, like, sql } from "drizzle-orm"
 import { z } from "zod"
 import { PgService, pgSchema } from "@/database/postgresql"
 import type { PageResult } from "@/types/response"
-import type { CreateRole, Role, UpdateRole, UpdateRolePermissions } from "./role.dto"
+import type { CreateRole, Role, UpdateRole, UpdateRolePermissions, UpdateRoleStatus } from "./role.dto"
 
 const {
   authRole: roleSchema,
@@ -108,27 +108,33 @@ export class RoleService {
       familyId: values.familyId,
       roleCode: values.roleCode,
       roleName: values.roleName,
-      isDisabled: values.isDisabled ?? false,
+      isDisabled: true,
       isDeleted: false,
     })
     return this.find(values.roleId)
   }
 
   async update(values: UpdateRole): Promise<Role> {
-    // Validate updateStatus action
-    if (values.isDisabled !== undefined) {
-      const role = await this.find(values.roleId)
-      this.systemProtection.validate("ROLE", "updateStatus", role.roleCode)
-    }
-
     await this.pg.pdb
       .update(roleSchema)
       .set({
         ...(values.familyId !== undefined ? { familyId: values.familyId } : {}),
         ...(values.roleCode !== undefined ? { roleCode: values.roleCode } : {}),
         ...(values.roleName !== undefined ? { roleName: values.roleName } : {}),
-        ...(values.isDisabled !== undefined ? { isDisabled: values.isDisabled } : {}),
         ...(values.isDeleted !== undefined ? { isDeleted: values.isDeleted } : {}),
+      })
+      .where(eq(roleSchema.roleId, values.roleId))
+    return this.find(values.roleId)
+  }
+
+  async updateStatus(values: UpdateRoleStatus): Promise<Role> {
+    const role = await this.find(values.roleId)
+    this.systemProtection.validate("ROLE", "updateStatus", role.roleCode)
+
+    await this.pg.pdb
+      .update(roleSchema)
+      .set({
+        isDisabled: values.isDisabled,
       })
       .where(eq(roleSchema.roleId, values.roleId))
     return this.find(values.roleId)

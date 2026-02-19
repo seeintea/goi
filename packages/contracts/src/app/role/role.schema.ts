@@ -2,7 +2,7 @@ import { z } from "zod"
 
 const shape = {
   roleId: z.string().length(32).describe("角色ID"),
-  familyId: z.string().uuid().nullable().describe("家庭ID"),
+  familyId: z.uuid().nullable().describe("家庭ID"),
   roleCode: z.string().min(1).max(30).describe("角色编码"),
   roleName: z.string().min(1).max(50).describe("角色名称"),
   isDisabled: z.boolean().describe("是否禁用"),
@@ -31,7 +31,6 @@ export const createAppRoleSchema = z
     familyId: shape.familyId.optional(),
     roleCode: shape.roleCode,
     roleName: shape.roleName,
-    isDisabled: shape.isDisabled.optional(),
   })
   .meta({ id: "创建角色请求" })
 
@@ -41,10 +40,16 @@ export const updateAppRoleSchema = z
     familyId: shape.familyId.optional(),
     roleCode: shape.roleCode.optional(),
     roleName: shape.roleName.optional(),
-    isDisabled: shape.isDisabled.optional(),
     isDeleted: shape.isDeleted.optional(),
   })
   .meta({ id: "更新角色请求" })
+
+export const updateAppRoleStatusSchema = z
+  .object({
+    roleId: shape.roleId,
+    isDisabled: shape.isDisabled,
+  })
+  .meta({ id: "更新角色状态请求" })
 
 export const deleteAppRoleSchema = z
   .object({
@@ -96,4 +101,5 @@ export const updateRolePermissionsSchema = z
 export type AppRole = z.infer<typeof appRoleResponseSchema>
 export type CreateAppRole = z.infer<typeof createAppRoleSchema>
 export type UpdateAppRole = z.infer<typeof updateAppRoleSchema>
+export type UpdateAppRoleStatus = z.infer<typeof updateAppRoleStatusSchema>
 export type UpdateRolePermissions = z.infer<typeof updateRolePermissionsSchema>

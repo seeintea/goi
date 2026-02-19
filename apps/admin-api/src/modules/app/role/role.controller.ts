@@ -11,6 +11,7 @@ import {
   RoleResponseDto,
   UpdateRoleDto,
   UpdateRolePermissionsDto,
+  UpdateRoleStatusDto,
 } from "./role.dto"
 import { RoleService } from "./role.service"
 
@@ -69,6 +70,14 @@ export class RoleController {
   @ZodResponse({ type: RoleResponseDto })
   async update(@Body() body: UpdateRoleDto) {
     return this.roleService.update(body)
+  }
+
+  @Post("updateStatus")
+  @Permission("app:role:update")
+  @ApiOperation({ summary: "更新角色状态" })
+  @ZodResponse({ type: RoleResponseDto })
+  async updateStatus(@Body() body: UpdateRoleStatusDto) {
+    return this.roleService.updateStatus(body)
   }
 
   @Post("delete")

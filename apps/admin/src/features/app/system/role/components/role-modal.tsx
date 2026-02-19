@@ -20,7 +20,6 @@ export function RoleModal({ open, record, onOpenChange, onSuccess }: RoleModalPr
       form.setFieldsValue({
         roleCode: record.roleCode,
         roleName: record.roleName,
-        isDisabled: record.isDisabled,
       })
     } else {
       form.resetFields()
@@ -82,7 +81,6 @@ export function RoleModal({ open, record, onOpenChange, onSuccess }: RoleModalPr
         form={form}
         labelCol={{ span: 5 }}
         wrapperCol={{ span: 19 }}
-        initialValues={{ isDisabled: false }}
       >
         <Form.Item
           name="roleCode"
@@ -101,14 +99,6 @@ export function RoleModal({ open, record, onOpenChange, onSuccess }: RoleModalPr
           rules={[{ required: true, message: "请输入角色名称" }]}
         >
           <Input placeholder="请输入角色名称" />
-        </Form.Item>
-
-        <Form.Item
-          name="isDisabled"
-          label="是否禁用"
-          valuePropName="checked"
-        >
-          <Switch />
         </Form.Item>
       </Form>
     </Modal>

@@ -17,7 +17,6 @@ export type CreateAppRole = {
   familyId?: string
   roleCode: string
   roleName: string
-  isDisabled?: boolean
 }
 
 export type UpdateAppRole = {
@@ -25,8 +24,12 @@ export type UpdateAppRole = {
   familyId?: string
   roleCode?: string
   roleName?: string
-  isDisabled?: boolean
   isDeleted?: boolean
+}
+
+export type UpdateAppRoleStatus = {
+  roleId: string
+  isDisabled: boolean
 }
 
 export type AppRoleListQuery = PageQuery & {
@@ -45,10 +48,11 @@ export const listAppRoles = (query?: AppRoleListQuery) => api.get<PageResult<App
 
 export const updateAppRole = (body: UpdateAppRole) => api.post<AppRole>("/api/app/role/update", body)
 
+export const updateAppRoleStatus = (body: UpdateAppRoleStatus) => api.post<AppRole>("/api/app/role/updateStatus", body)
+
 export const deleteAppRole = (roleId: string) => api.post<boolean>("/api/app/role/delete", { roleId })
 
-export const getRolePermissions = (roleId: string) =>
-  api.get<string[]>("/api/app/role/permissions", { roleId })
+export const getRolePermissions = (roleId: string) => api.get<string[]>("/api/app/role/permissions", { roleId })
 
 export const updateRolePermissions = (body: UpdateRolePermissions) =>
   api.post<boolean>("/api/app/role/updatePermissions", body)

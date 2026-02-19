@@ -1,7 +1,7 @@
 import { Button, Card, Form, message, Popconfirm, Space, Switch, Table, Tag } from "antd"
 import type { ColumnsType } from "antd/es/table"
 import type { AppRole, AppRoleListQuery } from "@/api/service/app/role"
-import { deleteAppRole, listAppRoles, updateAppRole } from "@/api/service/app/role"
+import { deleteAppRole, listAppRoles, updateAppRoleStatus } from "@/api/service/app/role"
 import { type FilterField, FilterForm } from "@/components/filter-form"
 import { ShortId } from "@/components/short-id"
 import { useModal } from "@/hooks/use-modal"
@@ -55,7 +55,7 @@ export function RoleList() {
 
   const handleStatusChange = async (record: AppRole, checked: boolean) => {
     try {
-      const { code, message: msg } = await updateAppRole({
+      const { code, message: msg } = await updateAppRoleStatus({
         roleId: record.roleId,
         isDisabled: checked,
       })
@@ -100,19 +100,21 @@ export function RoleList() {
       width: 150,
     },
     {
-      title: "禁用状态",
+      title: "状态",
       dataIndex: "isDisabled",
       align: "center",
       width: 100,
-      render: (isDisabled: boolean, record) => (
-        <Switch
-          checked={isDisabled}
-          disabled={!record.allowDisable}
-          checkedChildren="是"
-          unCheckedChildren="否"
-          onChange={(checked) => handleStatusChange(record, checked)}
-        />
-      ),
+      render: (isDisabled: boolean, record) => {
+        if (!record.allowDisable) {
+          return isDisabled ? "禁用" : "启用"
+        }
+        return (
+          <Switch
+            checked={!isDisabled}
+            onChange={(checked) => handleStatusChange(record, checked)}
+          />
+        )
+      },
     },
     {
       title: "删除状态",
