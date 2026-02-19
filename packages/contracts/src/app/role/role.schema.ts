@@ -40,7 +40,6 @@ export const updateAppRoleSchema = z
     familyId: shape.familyId.optional(),
     roleCode: shape.roleCode.optional(),
     roleName: shape.roleName.optional(),
-    isDeleted: shape.isDeleted.optional(),
   })
   .meta({ id: "更新角色请求" })
 

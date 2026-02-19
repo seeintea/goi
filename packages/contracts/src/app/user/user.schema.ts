@@ -40,7 +40,6 @@ export const createAppUserSchema = z
     email: shape.email.optional(),
     phone: shape.phone.optional(),
     isVirtual: shape.isVirtual.optional(),
-    isDisabled: shape.isDisabled.optional(),
   })
   .meta({ id: "创建用户请求" })
 
@@ -52,7 +51,6 @@ export const updateAppUserSchema = z
     email: shape.email.optional(),
     phone: shape.phone.optional(),
     isVirtual: shape.isVirtual.optional(),
-    isDeleted: shape.isDeleted.optional(),
   })
   .meta({ id: "更新用户请求" })
 

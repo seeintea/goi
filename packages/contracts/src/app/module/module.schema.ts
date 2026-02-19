@@ -48,7 +48,6 @@ export const updateAppModuleSchema = z
     routePath: shape.routePath,
     permissionCode: shape.permissionCode,
     sort: shape.sort.optional(),
-    isDeleted: shape.isDeleted.optional(),
   })
   .meta({ id: "更新模块请求" })
 

@@ -1,4 +1,4 @@
-export type { AdminUser, CreateAdminUser, UpdateAdminUser } from "./user.schema"
+export type { AdminUser, CreateAdminUser, UpdateAdminUser, UpdateAdminUserStatus } from "./user.schema"
 export {
   adminUserListQuerySchema,
   adminUserPageResponseSchema,
@@ -6,4 +6,5 @@ export {
   createAdminUserSchema,
   deleteAdminUserSchema,
   updateAdminUserSchema,
+  updateAdminUserStatusSchema,
 } from "./user.schema"

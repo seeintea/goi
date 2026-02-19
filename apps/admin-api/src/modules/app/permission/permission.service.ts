@@ -4,6 +4,7 @@ import type {
   AppPermissionTreeResponse,
   CreateAppPermission,
   UpdateAppPermission,
+  UpdateAppPermissionStatus,
 } from "@goi/contracts"
 import { normalizePage, toIsoString, toPageResult } from "@goi/utils"
 import { Injectable, NotFoundException } from "@nestjs/common"
@@ -109,7 +110,7 @@ export class PermissionService {
       code: values.code,
       name: values.name ?? "",
       moduleId: values.moduleId,
-      isDisabled: values.isDisabled ?? false,
+      isDisabled: false,
       isDeleted: false,
     })
     return this.find(values.permissionId)
@@ -122,11 +123,19 @@ export class PermissionService {
         ...(values.code !== undefined ? { code: values.code } : {}),
         ...(values.name !== undefined ? { name: values.name } : {}),
         ...(values.moduleId !== undefined ? { moduleId: values.moduleId } : {}),
-        ...(values.isDisabled !== undefined ? { isDisabled: values.isDisabled } : {}),
-        ...(values.isDeleted !== undefined ? { isDeleted: values.isDeleted } : {}),
       })
       .where(eq(permissionSchema.permissionId, values.permissionId))
 
+    return this.find(values.permissionId)
+  }
+
+  async updateStatus(values: UpdateAppPermissionStatus): Promise<AppPermission> {
+    await this.pg.pdb
+      .update(permissionSchema)
+      .set({
+        isDisabled: values.isDisabled,
+      })
+      .where(eq(permissionSchema.permissionId, values.permissionId))
     return this.find(values.permissionId)
   }
 

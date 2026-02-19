@@ -1,4 +1,4 @@
-import type { AdminUser, CreateAdminUser, UpdateAdminUser } from "@goi/contracts"
+import type { AdminUser, CreateAdminUser, UpdateAdminUser, UpdateAdminUserStatus } from "@goi/contracts"
 import { normalizePage, toIsoString, toPageResult } from "@goi/utils"
 import { verifyPassword } from "@goi/utils-node"
 import { Injectable, NotFoundException } from "@nestjs/common"
@@ -76,7 +76,7 @@ export class UserService {
       salt: values.salt,
       email: values.email ?? "",
       phone: values.phone ?? "",
-      isDisabled: values.isDisabled ?? false,
+      isDisabled: false,
       isDeleted: false,
     })
     return this.find(values.userId)
@@ -91,8 +91,16 @@ export class UserService {
         ...(values.salt !== undefined ? { salt: values.salt } : {}),
         ...(values.email !== undefined ? { email: values.email } : {}),
         ...(values.phone !== undefined ? { phone: values.phone } : {}),
-        ...(values.isDisabled !== undefined ? { isDisabled: values.isDisabled } : {}),
-        ...(values.isDeleted !== undefined ? { isDeleted: values.isDeleted } : {}),
+      })
+      .where(eq(adminUserSchema.userId, values.userId))
+    return this.find(values.userId)
+  }
+
+  async updateStatus(values: UpdateAdminUserStatus): Promise<AdminUser> {
+    await this.pg.pdb
+      .update(adminUserSchema)
+      .set({
+        isDisabled: values.isDisabled,
       })
       .where(eq(adminUserSchema.userId, values.userId))
     return this.find(values.userId)
@@ -142,6 +150,8 @@ export class UserService {
       ...row,
       createdAt: toIsoString(row.createdAt),
       updatedAt: toIsoString(row.updatedAt),
+      allowDelete: true,
+      allowDisable: true,
     }))
 
     return toPageResult(pageParams, total, list)

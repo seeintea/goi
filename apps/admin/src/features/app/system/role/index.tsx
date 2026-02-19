@@ -1,7 +1,12 @@
 import { Button, Card, Form, message, Popconfirm, Space, Switch, Table, Tag } from "antd"
 import type { ColumnsType } from "antd/es/table"
-import type { AppRole, AppRoleListQuery } from "@/api/service/app/role"
-import { deleteAppRole, listAppRoles, updateAppRoleStatus } from "@/api/service/app/role"
+import {
+  type AppRole,
+  type AppRoleListQuery,
+  deleteAppRole,
+  listAppRoles,
+  updateAppRoleStatus,
+} from "@/api/service/app/role"
 import { type FilterField, FilterForm } from "@/components/filter-form"
 import { ShortId } from "@/components/short-id"
 import { useModal } from "@/hooks/use-modal"

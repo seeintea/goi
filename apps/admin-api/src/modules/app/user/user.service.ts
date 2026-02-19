@@ -78,7 +78,7 @@ export class UserService {
       email: values.email ?? "",
       phone: values.phone ?? "",
       isVirtual: values.isVirtual ?? false,
-      isDisabled: values.isDisabled ?? false,
+      isDisabled: false,
       isDeleted: false,
     })
     return this.find(values.userId)
@@ -93,7 +93,6 @@ export class UserService {
         ...(values.email !== undefined ? { email: values.email } : {}),
         ...(values.phone !== undefined ? { phone: values.phone } : {}),
         ...(values.isVirtual !== undefined ? { isVirtual: values.isVirtual } : {}),
-        ...(values.isDeleted !== undefined ? { isDeleted: values.isDeleted } : {}),
       })
       .where(eq(userSchema.userId, values.userId))
     return this.find(values.userId)

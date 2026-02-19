@@ -1,4 +1,9 @@
-export type { AdminPermission, CreateAdminPermission, UpdateAdminPermission } from "./permission.schema"
+export type {
+  AdminPermission,
+  CreateAdminPermission,
+  UpdateAdminPermission,
+  UpdateAdminPermissionStatus,
+} from "./permission.schema"
 export {
   adminPermissionListQuerySchema,
   adminPermissionPageResponseSchema,
@@ -6,4 +11,5 @@ export {
   createAdminPermissionSchema,
   deleteAdminPermissionSchema,
   updateAdminPermissionSchema,
+  updateAdminPermissionStatusSchema,
 } from "./permission.schema"

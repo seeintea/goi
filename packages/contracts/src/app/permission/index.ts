@@ -4,6 +4,7 @@ export type {
   AppPermissionTreeResponse,
   CreateAppPermission,
   UpdateAppPermission,
+  UpdateAppPermissionStatus,
 } from "./permission.schema"
 export {
   appPermissionListQuerySchema,
@@ -13,4 +14,5 @@ export {
   createAppPermissionSchema,
   deleteAppPermissionSchema,
   updateAppPermissionSchema,
+  updateAppPermissionStatusSchema,
 } from "./permission.schema"

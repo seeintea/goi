@@ -10,6 +10,7 @@ import {
   CreateAdminPermissionDto,
   DeleteAdminPermissionDto,
   UpdateAdminPermissionDto,
+  UpdateAdminPermissionStatusDto,
 } from "./permission.dto"
 import { PermissionService } from "./permission.service"
 
@@ -48,6 +49,14 @@ export class PermissionController {
   @ZodResponse({ type: AdminPermissionResponseDto })
   async update(@Body() body: UpdateAdminPermissionDto) {
     return this.permissionService.update(body)
+  }
+
+  @Post("updateStatus")
+  @Permission("admin:permission:update")
+  @ApiOperation({ summary: "更新管理员权限状态" })
+  @ZodResponse({ type: AdminPermissionResponseDto })
+  async updateStatus(@Body() body: UpdateAdminPermissionStatusDto) {
+    return this.permissionService.updateStatus(body)
   }
 
   @Post("delete")

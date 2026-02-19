@@ -33,7 +33,6 @@ export const createAppPermissionSchema = z
     code: shape.code,
     name: shape.name.optional(),
     moduleId: shape.moduleId,
-    isDisabled: shape.isDisabled.optional(),
   })
   .meta({ id: "创建权限请求" })
 
@@ -43,10 +42,15 @@ export const updateAppPermissionSchema = z
     code: shape.code.optional(),
     name: shape.name.optional(),
     moduleId: shape.moduleId.optional(),
-    isDisabled: shape.isDisabled.optional(),
-    isDeleted: shape.isDeleted.optional(),
   })
   .meta({ id: "更新权限请求" })
+
+export const updateAppPermissionStatusSchema = z
+  .object({
+    permissionId: shape.permissionId,
+    isDisabled: shape.isDisabled,
+  })
+  .meta({ id: "更新权限状态请求" })
 
 export const deleteAppPermissionSchema = z
   .object({
@@ -107,4 +111,5 @@ export const appPermissionTreeResponseSchema = z.array(treeNodeSchema).meta({ id
 export type AppPermission = z.infer<typeof appPermissionResponseSchema>
 export type CreateAppPermission = z.infer<typeof createAppPermissionSchema>
 export type UpdateAppPermission = z.infer<typeof updateAppPermissionSchema>
+export type UpdateAppPermissionStatus = z.infer<typeof updateAppPermissionStatusSchema>
 export type AppPermissionTreeResponse = z.infer<typeof appPermissionTreeResponseSchema>

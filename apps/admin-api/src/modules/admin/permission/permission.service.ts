@@ -1,4 +1,9 @@
-import type { AdminPermission, CreateAdminPermission, UpdateAdminPermission } from "@goi/contracts"
+import type {
+  AdminPermission,
+  CreateAdminPermission,
+  UpdateAdminPermission,
+  UpdateAdminPermissionStatus,
+} from "@goi/contracts"
 import { normalizePage, toIsoString, toPageResult } from "@goi/utils"
 import { Injectable, NotFoundException } from "@nestjs/common"
 import { and, desc, eq, like, sql } from "drizzle-orm"
@@ -51,7 +56,7 @@ export class PermissionService {
       code: values.code,
       name: values.name ?? "",
       moduleId: values.moduleId,
-      isDisabled: values.isDisabled ?? false,
+      isDisabled: false,
       isDeleted: false,
     })
     return this.find(values.permissionId)
@@ -64,11 +69,19 @@ export class PermissionService {
         ...(values.code !== undefined ? { code: values.code } : {}),
         ...(values.name !== undefined ? { name: values.name } : {}),
         ...(values.moduleId !== undefined ? { moduleId: values.moduleId } : {}),
-        ...(values.isDisabled !== undefined ? { isDisabled: values.isDisabled } : {}),
-        ...(values.isDeleted !== undefined ? { isDeleted: values.isDeleted } : {}),
       })
       .where(eq(adminPermissionSchema.permissionId, values.permissionId))
 
+    return this.find(values.permissionId)
+  }
+
+  async updateStatus(values: UpdateAdminPermissionStatus): Promise<AdminPermission> {
+    await this.pg.pdb
+      .update(adminPermissionSchema)
+      .set({
+        isDisabled: values.isDisabled,
+      })
+      .where(eq(adminPermissionSchema.permissionId, values.permissionId))
     return this.find(values.permissionId)
   }
 

@@ -48,4 +48,5 @@ export type Role = AppRole & {
 }
 export type CreateRole = CreateAppRole
 export type UpdateRole = UpdateAppRole
+export type UpdateRoleStatus = UpdateAppRoleStatus
 export type { UpdateRolePermissions }

@@ -11,6 +11,7 @@ import {
   CreateAdminUserDto,
   DeleteAdminUserDto,
   UpdateAdminUserDto,
+  UpdateStatusDto,
 } from "./user.dto"
 import { UserService } from "./user.service"
 
@@ -51,6 +52,14 @@ export class UserController {
   @ZodResponse({ type: AdminUserResponseDto })
   async update(@Body() body: UpdateAdminUserDto) {
     return this.userService.update(body)
+  }
+
+  @Post("updateStatus")
+  @Permission("admin:user:update")
+  @ApiOperation({ summary: "更新管理员用户状态" })
+  @ZodResponse({ type: AdminUserResponseDto })
+  async updateStatus(@Body() body: UpdateStatusDto) {
+    return this.userService.updateStatus(body)
   }
 
   @Post("delete")

@@ -11,6 +11,7 @@ import {
   PermissionPageResponseDto,
   PermissionResponseDto,
   UpdatePermissionDto,
+  UpdatePermissionStatusDto,
 } from "./permission.dto"
 import { PermissionService } from "./permission.service"
 
@@ -57,6 +58,14 @@ export class PermissionController {
   @ZodResponse({ type: PermissionResponseDto })
   async update(@Body() body: UpdatePermissionDto) {
     return this.permissionService.update(body)
+  }
+
+  @Post("updateStatus")
+  @Permission("app:permission:update")
+  @ApiOperation({ summary: "更新权限状态" })
+  @ZodResponse({ type: PermissionResponseDto })
+  async updateStatus(@Body() body: UpdatePermissionStatusDto) {
+    return this.permissionService.updateStatus(body)
   }
 
   @Post("delete")

@@ -148,7 +148,6 @@ export class ModuleService {
         ...(values.routePath !== undefined ? { routePath: values.routePath } : {}),
         ...(values.permissionCode !== undefined ? { permissionCode: values.permissionCode } : {}),
         ...(values.sort !== undefined ? { sort: values.sort } : {}),
-        ...(values.isDeleted !== undefined ? { isDeleted: values.isDeleted } : {}),
       })
       .where(eq(authModuleSchema.moduleId, values.moduleId))
 

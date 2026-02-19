@@ -33,7 +33,6 @@ export const createAdminPermissionSchema = z
     code: shape.code,
     name: shape.name.optional(),
     moduleId: shape.moduleId,
-    isDisabled: shape.isDisabled.optional(),
   })
   .meta({ id: "创建管理员权限请求" })
 
@@ -43,10 +42,15 @@ export const updateAdminPermissionSchema = z
     code: shape.code.optional(),
     name: shape.name.optional(),
     moduleId: shape.moduleId.optional(),
-    isDisabled: shape.isDisabled.optional(),
-    isDeleted: shape.isDeleted.optional(),
   })
   .meta({ id: "更新管理员权限请求" })
+
+export const updateAdminPermissionStatusSchema = z
+  .object({
+    permissionId: shape.permissionId,
+    isDisabled: shape.isDisabled,
+  })
+  .meta({ id: "更新管理员权限状态请求" })
 
 export const deleteAdminPermissionSchema = z
   .object({
@@ -87,3 +91,4 @@ export const adminPermissionPageResponseSchema = z
 export type AdminPermission = z.infer<typeof adminPermissionResponseSchema>
 export type CreateAdminPermission = z.infer<typeof createAdminPermissionSchema>
 export type UpdateAdminPermission = z.infer<typeof updateAdminPermissionSchema>
+export type UpdateAdminPermissionStatus = z.infer<typeof updateAdminPermissionStatusSchema>

@@ -48,7 +48,6 @@ export const updateAdminModuleSchema = z
     routePath: shape.routePath.optional(),
     permissionCode: shape.permissionCode.optional(),
     sort: shape.sort.optional(),
-    isDeleted: shape.isDeleted.optional(),
   })
   .meta({ id: "更新管理员模块请求" })
 

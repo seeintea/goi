@@ -34,7 +34,6 @@ export const createAdminUserSchema = z
     password: shape.password,
     email: shape.email.optional(),
     phone: shape.phone.optional(),
-    isDisabled: shape.isDisabled.optional(),
   })
   .meta({ id: "创建管理员用户请求" })
 
@@ -46,10 +45,15 @@ export const updateAdminUserSchema = z
     salt: shape.salt.optional(),
     email: shape.email.optional(),
     phone: shape.phone.optional(),
-    isDisabled: shape.isDisabled.optional(),
-    isDeleted: shape.isDeleted.optional(),
   })
   .meta({ id: "更新管理员用户请求" })
+
+export const updateAdminUserStatusSchema = z
+  .object({
+    userId: shape.userId,
+    isDisabled: shape.isDisabled,
+  })
+  .meta({ id: "更新管理员用户状态请求" })
 
 export const deleteAdminUserSchema = z
   .object({
@@ -89,3 +93,4 @@ export const adminUserPageResponseSchema = z
 export type AdminUser = z.infer<typeof adminUserResponseSchema>
 export type CreateAdminUser = z.infer<typeof createAdminUserSchema>
 export type UpdateAdminUser = z.infer<typeof updateAdminUserSchema>
+export type UpdateAdminUserStatus = z.infer<typeof updateAdminUserStatusSchema>

@@ -121,7 +121,6 @@ export class RoleService {
         ...(values.familyId !== undefined ? { familyId: values.familyId } : {}),
         ...(values.roleCode !== undefined ? { roleCode: values.roleCode } : {}),
         ...(values.roleName !== undefined ? { roleName: values.roleName } : {}),
-        ...(values.isDeleted !== undefined ? { isDeleted: values.isDeleted } : {}),
       })
       .where(eq(roleSchema.roleId, values.roleId))
     return this.find(values.roleId)
