@@ -1,5 +1,5 @@
 import { useCallback, useState } from "react"
-import { bindFamilyFn } from "@/api/service/family"
+import { bindFamily } from "@/api/service/family"
 import { Button } from "@/components/ui/button"
 import { FieldError } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
@@ -20,18 +20,11 @@ export function BindFamilySection({ onBound }: { onBound: (familyId: string) => 
 
     setIsBinding(true)
     try {
-      const result = await bindFamilyFn({
+      await bindFamily({
         data: { familyId: nextFamilyId },
       })
 
-      if (result.error) {
-        setBindError(result.error)
-        return
-      }
-
-      if (result.data) {
-        onBound(nextFamilyId)
-      }
+      onBound(nextFamilyId)
     } catch (error) {
       const e = error as Error
       setBindError(e.message || "绑定失败")

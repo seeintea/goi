@@ -1,4 +1,4 @@
-import type { CreateFamily, Family, FamilyMember } from "@goi/contracts"
+import type { CreateFamily, Family, FamilyMember, PageQuery, PageResult, UpdateFamily } from "@goi/contracts"
 import { createServerFn } from "@tanstack/react-start"
 import { serverFetch } from "../client"
 
@@ -13,16 +13,62 @@ const createFamilyFnBase = createServerFn({ method: "POST" }).handler(async (ctx
       method: "POST",
       body: data as unknown as BodyInit,
     })
-    return { data: res }
+    return res
   } catch (error) {
     console.error("Create family error:", error)
-    return { error: (error as Error).message || "创建失败" }
+    throw error
   }
 })
 
-export const createFamilyFn = createFamilyFnBase as unknown as (ctx: {
-  data: CreateFamily
-}) => Promise<{ data?: Family; error?: string }>
+export const createFamily = createFamilyFnBase as unknown as (ctx: { data: CreateFamily }) => Promise<Family>
+
+const listFamiliesFnBase = createServerFn({ method: "GET" }).handler(async (ctx: { data: unknown }) => {
+  const query = ctx.data as PageQuery & { name?: string }
+  const params = new URLSearchParams()
+  if (query) {
+    Object.entries(query).forEach(([key, value]) => {
+      if (value !== undefined && value !== null) {
+        params.append(key, String(value))
+      }
+    })
+  }
+  return await serverFetch<PageResult<Family>>(`/api/families/list?${params}`, {
+    method: "GET",
+  })
+})
+
+export const listFamilies = listFamiliesFnBase as unknown as (ctx: {
+  data: PageQuery & { name?: string }
+}) => Promise<PageResult<Family>>
+
+const findFamilyFnBase = createServerFn({ method: "GET" }).handler(async (ctx: { data: unknown }) => {
+  const id = ctx.data as string
+  return await serverFetch<Family>(`/api/families/find?id=${id}`, {
+    method: "GET",
+  })
+})
+
+export const findFamily = findFamilyFnBase as unknown as (ctx: { data: string }) => Promise<Family>
+
+const updateFamilyFnBase = createServerFn({ method: "POST" }).handler(async (ctx: { data: unknown }) => {
+  const data = ctx.data as UpdateFamily
+  return await serverFetch<Family>("/api/families/update", {
+    method: "POST",
+    body: data as unknown as BodyInit,
+  })
+})
+
+export const updateFamily = updateFamilyFnBase as unknown as (ctx: { data: UpdateFamily }) => Promise<Family>
+
+const deleteFamilyFnBase = createServerFn({ method: "POST" }).handler(async (ctx: { data: unknown }) => {
+  const id = ctx.data as string
+  return await serverFetch<boolean>("/api/families/delete", {
+    method: "POST",
+    body: { id } as unknown as BodyInit,
+  })
+})
+
+export const deleteFamily = deleteFamilyFnBase as unknown as (ctx: { data: string }) => Promise<boolean>
 
 const bindFamilyFnBase = createServerFn({ method: "POST" }).handler(async (ctx: { data: unknown }) => {
   const data = ctx.data as { familyId: string }
@@ -36,7 +82,7 @@ const bindFamilyFnBase = createServerFn({ method: "POST" }).handler(async (ctx: 
     const session = await getAppSession()
     const userId = session.data?.userId
     if (!userId) {
-      return { error: "用户未登录" }
+      throw new Error("用户未登录")
     }
 
     // 1. Get role ID for 'member' role
@@ -51,7 +97,7 @@ const bindFamilyFnBase = createServerFn({ method: "POST" }).handler(async (ctx: 
     const memberRole = rolesRes.list.find((r) => r.familyId === data.familyId)
 
     if (!memberRole) {
-      return { error: "未找到该家庭的成员角色" }
+      throw new Error("未找到该家庭的成员角色")
     }
 
     const res = await serverFetch<FamilyMember>("/api/family-members/create", {
@@ -63,13 +109,11 @@ const bindFamilyFnBase = createServerFn({ method: "POST" }).handler(async (ctx: 
         status: "active",
       } as unknown as BodyInit,
     })
-    return { data: res }
+    return res
   } catch (error) {
     console.error("Bind family error:", error)
-    return { error: (error as Error).message || "绑定失败" }
+    throw error
   }
 })
 
-export const bindFamilyFn = bindFamilyFnBase as unknown as (ctx: {
-  data: { familyId: string }
-}) => Promise<{ data?: FamilyMember; error?: string }>
+export const bindFamily = bindFamilyFnBase as unknown as (ctx: { data: { familyId: string } }) => Promise<FamilyMember>

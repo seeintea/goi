@@ -1,14 +1,10 @@
+import type { CreateFamily, PageQuery, UpdateFamily } from "@goi/contracts"
 import { queryOptions, useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import {
-  type CreateFamily,
-  createFamily,
-  deleteFamily,
-  type FamilyListQuery,
-  findFamily,
-  listFamilies,
-  type UpdateFamily,
-  updateFamily,
-} from "../service/family"
+import { createFamily, deleteFamily, findFamily, listFamilies, updateFamily } from "../service/family"
+
+export type FamilyListQuery = PageQuery & {
+  name?: string
+}
 
 export const familyKeys = {
   all: ["family"] as const,
@@ -20,7 +16,7 @@ export const familyKeys = {
 export const familyListOptions = (query?: FamilyListQuery) =>
   queryOptions({
     queryKey: familyKeys.list(query),
-    queryFn: () => listFamilies({ data: query }),
+    queryFn: () => listFamilies({ data: query ?? { page: 1, pageSize: 10 } }),
   })
 
 export const familyOptions = (id: string) =>

@@ -1,7 +1,7 @@
 import { Plus } from "lucide-react"
 import { useEffect, useMemo, useState } from "react"
 import { useForm } from "react-hook-form"
-import { createFamilyFn } from "@/api/service/family"
+import { createFamily } from "@/api/service/family"
 import { BaseDialog } from "@/components/base/base-dialog"
 import { FieldGroup, FormField } from "@/components/base/base-field"
 import { Button } from "@/components/ui/button"
@@ -14,15 +14,11 @@ type CreateFamilyFormValues = {
   timezone: string
 }
 
-export function CreateFamilyDialog({
-  onCreated,
-}: {
-  onCreated: (familyId: string) => void
-}) {
+export function CreateFamilyDialog({ onCreated }: { onCreated: (familyId: string) => void }) {
   const [open, setOpen] = useState(false)
   const [submitError, setSubmitError] = useState("")
   const [isPending, setIsPending] = useState(false)
-  
+
   const defaultValues = useMemo<CreateFamilyFormValues>(
     () => ({
       name: "",
@@ -45,23 +41,16 @@ export function CreateFamilyDialog({
     setSubmitError("")
     setIsPending(true)
     try {
-      const result = await createFamilyFn({
+      const family = await createFamily({
         data: {
           name: values.name.trim(),
           baseCurrency: values.baseCurrency.trim() || "CNY",
           timezone: values.timezone.trim() || "Asia/Shanghai",
-        }
+        },
       })
 
-      if (result.error) {
-        setSubmitError(result.error)
-        return
-      }
-
-      if (result.data) {
-        setOpen(false)
-        onCreated(result.data.id)
-      }
+      setOpen(false)
+      onCreated(family.id)
     } catch (error) {
       const e = error as Error
       setSubmitError(e.message || "创建失败")
@@ -79,9 +68,7 @@ export function CreateFamilyDialog({
       }}
       title="新建家庭"
       trigger={
-        <Button
-          variant="outline"
-        >
+        <Button variant="outline">
           <Plus className="mr-2 h-4 w-4" />
           新建家庭
         </Button>
@@ -113,7 +100,7 @@ export function CreateFamilyDialog({
               {...form.register("baseCurrency")}
             />
           </FormField>
-          
+
           <FormField
             label="时区"
             errors={[form.formState.errors.timezone]}
@@ -124,9 +111,12 @@ export function CreateFamilyDialog({
             />
           </FormField>
         </FieldGroup>
-        
+
         <div className="flex justify-end">
-          <Button type="submit" disabled={isPending}>
+          <Button
+            type="submit"
+            disabled={isPending}
+          >
             {isPending ? "创建中..." : "创建"}
           </Button>
         </div>
