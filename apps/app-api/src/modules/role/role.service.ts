@@ -42,7 +42,7 @@ export class RoleService {
         familyId: values.familyId,
         roleCode: values.roleCode,
         roleName: values.roleName,
-        isDisabled: values.isDisabled ?? false,
+        isDisabled: false,
         isDeleted: false,
       })
       .returning({ roleId: roleSchema.roleId })
@@ -56,8 +56,6 @@ export class RoleService {
         ...(values.familyId !== undefined ? { familyId: values.familyId } : {}),
         ...(values.roleCode !== undefined ? { roleCode: values.roleCode } : {}),
         ...(values.roleName !== undefined ? { roleName: values.roleName } : {}),
-        ...(values.isDisabled !== undefined ? { isDisabled: values.isDisabled } : {}),
-        ...(values.isDeleted !== undefined ? { isDeleted: values.isDeleted } : {}),
       })
       .where(eq(roleSchema.roleId, values.roleId))
     return this.find(values.roleId)

@@ -45,7 +45,7 @@ export class PermissionService {
         code: values.code,
         name: values.name ?? "",
         moduleId: values.moduleId,
-        isDisabled: values.isDisabled ?? false,
+        isDisabled: false,
         isDeleted: false,
       })
       .returning({ permissionId: permissionSchema.permissionId })
@@ -59,8 +59,6 @@ export class PermissionService {
         ...(values.code !== undefined ? { code: values.code } : {}),
         ...(values.name !== undefined ? { name: values.name } : {}),
         ...(values.moduleId !== undefined ? { moduleId: values.moduleId } : {}),
-        ...(values.isDisabled !== undefined ? { isDisabled: values.isDisabled } : {}),
-        ...(values.isDeleted !== undefined ? { isDeleted: values.isDeleted } : {}),
       })
       .where(eq(permissionSchema.permissionId, values.permissionId))
 

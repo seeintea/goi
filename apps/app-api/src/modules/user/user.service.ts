@@ -80,7 +80,7 @@ export class UserService {
         email: values.email ?? "",
         phone: values.phone ?? "",
         isVirtual: values.isVirtual ?? false,
-        isDisabled: values.isDisabled ?? false,
+        isDisabled: false,
         isDeleted: false,
       })
       .returning({ userId: userSchema.userId })
@@ -92,9 +92,10 @@ export class UserService {
       .update(userSchema)
       .set({
         ...(values.username !== undefined ? { username: values.username } : {}),
+        ...(values.nickname !== undefined ? { nickname: values.nickname } : {}),
         ...(values.email !== undefined ? { email: values.email } : {}),
         ...(values.phone !== undefined ? { phone: values.phone } : {}),
-        ...(values.isDeleted !== undefined ? { isDeleted: values.isDeleted } : {}),
+        ...(values.isVirtual !== undefined ? { isVirtual: values.isVirtual } : {}),
       })
       .where(eq(userSchema.userId, values.userId))
     return this.find(values.userId)
