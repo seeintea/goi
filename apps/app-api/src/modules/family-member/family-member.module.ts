@@ -5,5 +5,6 @@ import { FamilyMemberService } from "./family-member.service"
 @Module({
   controllers: [FamilyMemberController],
   providers: [FamilyMemberService],
+  exports: [FamilyMemberService],
 })
 export class FamilyMemberModule {}

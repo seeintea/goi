@@ -1,5 +1,5 @@
 export interface UserPayload {
-  sub: string
+  userId: string
   username: string
   email?: string
   roles?: string[]

@@ -1,66 +1,75 @@
-import type { CreateFamily, Family, familyListQuerySchema, PageResult, UpdateFamily } from "@goi/contracts"
+import type { CreateFamily, Family, FamilyMember } from "@goi/contracts"
 import { createServerFn } from "@tanstack/react-start"
-import type { z } from "zod"
 import { serverFetch } from "../client"
-
-export type FamilyListQuery = z.infer<typeof familyListQuerySchema>
-export type { CreateFamily, Family, UpdateFamily }
 
 const createFamilyFnBase = createServerFn({ method: "POST" }).handler(async (ctx: { data: unknown }) => {
   const data = ctx.data as CreateFamily
-  return await serverFetch<Family>("/api/families/create", {
-    method: "POST",
-    body: data as unknown as BodyInit,
-  })
-})
-
-export const createFamily = createFamilyFnBase as unknown as (ctx: { data: CreateFamily }) => Promise<Family>
-
-const findFamilyFnBase = createServerFn({ method: "GET" }).handler(async (ctx: { data: unknown }) => {
-  const id = ctx.data as string
-  const params = new URLSearchParams({ id })
-  return await serverFetch<Family>(`/api/families/find?${params}`, {
-    method: "GET",
-  })
-})
-
-export const findFamily = findFamilyFnBase as unknown as (ctx: { data: string }) => Promise<Family>
-
-const listFamiliesFnBase = createServerFn({ method: "GET" }).handler(async (ctx: { data: unknown }) => {
-  const query = ctx.data as FamilyListQuery | undefined
-  const params = new URLSearchParams()
-  if (query && typeof query === "object") {
-    Object.entries(query).forEach(([key, value]) => {
-      if (value !== undefined && value !== null) {
-        params.append(key, String(value))
-      }
-    })
+  if (!data) {
+    throw new Error("Invalid input")
   }
-  return await serverFetch<PageResult<Family>>(`/api/families/list?${params}`, {
-    method: "GET",
-  })
+
+  try {
+    const res = await serverFetch<Family>("/api/families/create", {
+      method: "POST",
+      body: data as unknown as BodyInit,
+    })
+    return { data: res }
+  } catch (error) {
+    console.error("Create family error:", error)
+    return { error: (error as Error).message || "创建失败" }
+  }
 })
 
-export const listFamilies = listFamiliesFnBase as unknown as (ctx: {
-  data: FamilyListQuery | undefined
-}) => Promise<PageResult<Family>>
+export const createFamilyFn = createFamilyFnBase as unknown as (ctx: {
+  data: CreateFamily
+}) => Promise<{ data?: Family; error?: string }>
 
-const updateFamilyFnBase = createServerFn({ method: "POST" }).handler(async (ctx: { data: unknown }) => {
-  const data = ctx.data as UpdateFamily
-  return await serverFetch<Family>("/api/families/update", {
-    method: "POST",
-    body: data as unknown as BodyInit,
-  })
+const bindFamilyFnBase = createServerFn({ method: "POST" }).handler(async (ctx: { data: unknown }) => {
+  const data = ctx.data as { familyId: string }
+  if (!data || !data.familyId) {
+    throw new Error("Invalid input")
+  }
+
+  try {
+    // Dynamic import to avoid bundling server code on client
+    const { getAppSession } = await import("@/lib/server/session.server")
+    const session = await getAppSession()
+    const userId = session.data?.userId
+    if (!userId) {
+      return { error: "用户未登录" }
+    }
+
+    // 1. Get role ID for 'member' role
+    // We fetch roles with code 'member' and find the one matching our familyId
+    const rolesRes = await serverFetch<{ list: Array<{ roleId: string; roleCode: string; familyId?: string | null }> }>(
+      "/api/sys/role/list?roleCode=member&pageSize=100",
+      {
+        method: "GET",
+      },
+    )
+
+    const memberRole = rolesRes.list.find((r) => r.familyId === data.familyId)
+
+    if (!memberRole) {
+      return { error: "未找到该家庭的成员角色" }
+    }
+
+    const res = await serverFetch<FamilyMember>("/api/family-members/create", {
+      method: "POST",
+      body: {
+        familyId: data.familyId,
+        userId,
+        roleId: memberRole.roleId,
+        status: "active",
+      } as unknown as BodyInit,
+    })
+    return { data: res }
+  } catch (error) {
+    console.error("Bind family error:", error)
+    return { error: (error as Error).message || "绑定失败" }
+  }
 })
 
-export const updateFamily = updateFamilyFnBase as unknown as (ctx: { data: UpdateFamily }) => Promise<Family>
-
-const deleteFamilyFnBase = createServerFn({ method: "POST" }).handler(async (ctx: { data: unknown }) => {
-  const id = ctx.data as string
-  return await serverFetch<boolean>("/api/families/delete", {
-    method: "POST",
-    body: { id } as unknown as BodyInit,
-  })
-})
-
-export const deleteFamily = deleteFamilyFnBase as unknown as (ctx: { data: string }) => Promise<boolean>
+export const bindFamilyFn = bindFamilyFnBase as unknown as (ctx: {
+  data: { familyId: string }
+}) => Promise<{ data?: FamilyMember; error?: string }>

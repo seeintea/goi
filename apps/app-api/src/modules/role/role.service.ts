@@ -1,7 +1,7 @@
 import type { AppRole, CreateAppRole, UpdateAppRole } from "@goi/contracts"
 import { normalizePage, toIsoString, toPageResult } from "@goi/utils"
 import { Injectable, NotFoundException } from "@nestjs/common"
-import { and, desc, eq, like, sql } from "drizzle-orm"
+import { and, desc, eq, isNull, like, sql } from "drizzle-orm"
 import { PgService, pgSchema } from "@/database/postgresql"
 import type { PageResult } from "@/types/response"
 
@@ -32,6 +32,28 @@ export class RoleService {
       createdAt: toIsoString(role.createdAt),
       updatedAt: toIsoString(role.updatedAt),
     }
+  }
+
+  async findGlobalRoles(): Promise<AppRole[]> {
+    const roles = await this.pg.pdb
+      .select({
+        roleId: roleSchema.roleId,
+        familyId: roleSchema.familyId,
+        roleCode: roleSchema.roleCode,
+        roleName: roleSchema.roleName,
+        isDisabled: roleSchema.isDisabled,
+        isDeleted: roleSchema.isDeleted,
+        createdAt: roleSchema.createdAt,
+        updatedAt: roleSchema.updatedAt,
+      })
+      .from(roleSchema)
+      .where(and(eq(roleSchema.isDeleted, false), eq(roleSchema.isDisabled, false), isNull(roleSchema.familyId)))
+
+    return roles.map((role) => ({
+      ...role,
+      createdAt: toIsoString(role.createdAt),
+      updatedAt: toIsoString(role.updatedAt),
+    }))
   }
 
   async create(values: CreateAppRole & { roleId: string }): Promise<AppRole> {

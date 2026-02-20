@@ -2,17 +2,25 @@ import type { CreateFamily, Family, UpdateFamily } from "@goi/contracts"
 import { normalizePage, toPageResult } from "@goi/utils"
 import { Injectable, NotFoundException } from "@nestjs/common"
 import { and, desc, eq, ilike, sql } from "drizzle-orm"
+import { v4 as uuidv4 } from "uuid"
 import { PgService, pgSchema } from "@/database/postgresql"
+import { FamilyMemberService } from "@/modules/family-member/family-member.service"
+import { RoleService } from "@/modules/role/role.service"
 import type { PageResult } from "@/types/response"
 
-const { financeFamily } = pgSchema
+const { financeFamily, authRole: roleSchema, financeFamilyMember: familyMemberSchema } = pgSchema
 
 @Injectable()
 export class FamilyService {
-  constructor(private readonly pg: PgService) {}
+  constructor(
+    private readonly pg: PgService,
+    private readonly roleService: RoleService,
+    private readonly familyMemberService: FamilyMemberService,
+  ) {}
 
-  async find(id: string): Promise<Family> {
-    const rows = await this.pg.pdb
+  async find(id: string, tx?: Parameters<Parameters<PgService["pdb"]["transaction"]>[0]>[0]): Promise<Family> {
+    const db = tx || this.pg.pdb
+    const rows = await db
       .select({
         id: financeFamily.id,
         name: financeFamily.name,
@@ -38,18 +46,51 @@ export class FamilyService {
   }
 
   async create(userId: string, dto: CreateFamily & { id: string }): Promise<Family> {
-    const [inserted] = await this.pg.pdb
-      .insert(financeFamily)
-      .values({
-        id: dto.id,
-        name: dto.name,
-        ownerUserId: userId,
-        baseCurrency: dto.baseCurrency,
-        timezone: dto.timezone,
-      })
-      .returning({ id: financeFamily.id })
+    return this.pg.pdb.transaction(async (tx) => {
+      // 1. Create Family
+      const [insertedFamily] = await tx
+        .insert(financeFamily)
+        .values({
+          id: dto.id,
+          name: dto.name,
+          ownerUserId: userId,
+          baseCurrency: dto.baseCurrency,
+          timezone: dto.timezone,
+        })
+        .returning({ id: financeFamily.id })
 
-    return this.find(inserted.id)
+      const familyId = insertedFamily.id
+
+      // 2. Clone global roles to family roles
+      const globalRoles = await this.roleService.findGlobalRoles()
+      const newRoles = globalRoles.map((role) => ({
+        roleId: uuidv4(),
+        familyId: familyId,
+        roleCode: role.roleCode,
+        roleName: role.roleName,
+        isDisabled: false,
+        isDeleted: false,
+      }))
+
+      if (newRoles.length > 0) {
+        await tx.insert(roleSchema).values(newRoles)
+      }
+
+      // 3. Assign owner role to creator
+      // Find the 'owner' role from the newly created roles
+      const ownerRole = newRoles.find((role) => role.roleCode === "owner")
+      if (ownerRole) {
+        await tx.insert(familyMemberSchema).values({
+          id: uuidv4(),
+          familyId: familyId,
+          userId: userId,
+          roleId: ownerRole.roleId,
+          status: "active",
+        })
+      }
+
+      return this.find(familyId, tx)
+    })
   }
 
   async update(id: string, dto: UpdateFamily): Promise<Family> {

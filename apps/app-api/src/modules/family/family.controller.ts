@@ -25,7 +25,7 @@ export class FamilyController {
   @ApiOperation({ summary: "创建家庭" })
   @ZodResponse({ type: FamilyResponseDto })
   create(@CurrentUser() user: UserPayload, @Body() createFamilyDto: CreateFamilyDto) {
-    return this.familyService.create(user.sub, { ...createFamilyDto, id: uuid() })
+    return this.familyService.create(user.userId, { ...createFamilyDto, id: uuid() })
   }
 
   @Get("list")

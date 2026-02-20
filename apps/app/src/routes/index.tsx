@@ -1,8 +1,6 @@
-import { createFileRoute, redirect, useNavigate, useRouter } from "@tanstack/react-router"
-import { logout } from "@/api/service/auth"
-import { Button } from "@/components/ui/button"
+import { createFileRoute, redirect } from "@tanstack/react-router"
+import { AppPage } from "@/features/app/pages/app-page"
 import { seo } from "@/lib/seo"
-import { useUser } from "@/stores/useUser"
 
 export const Route = createFileRoute("/")({
   beforeLoad: ({ context }) => {
@@ -21,36 +19,9 @@ export const Route = createFileRoute("/")({
   },
   head: () => ({
     meta: seo({
-      title: "绑定",
-      description: "绑定您的家庭",
+      title: "家庭",
+      description: "绑定或创建您的家庭",
     }),
   }),
-  component: HomeComponent,
+  component: AppPage,
 })
-
-function HomeComponent() {
-  const { user } = Route.useRouteContext()
-  const router = useRouter()
-  const navigate = useNavigate()
-  const resetUser = useUser((state) => state.reset)
-
-  const handleLogout = async () => {
-    await logout()
-    resetUser()
-    await router.invalidate()
-    navigate({ to: "/login", replace: true })
-  }
-
-  return (
-    <div className="p-10 flex flex-col items-start gap-4">
-      <h1 className="text-2xl font-bold">Hello, {user?.username}!</h1>
-      <p>Welcome to the SSR App.</p>
-      <Button
-        onClick={handleLogout}
-        variant="destructive"
-      >
-        退出登录
-      </Button>
-    </div>
-  )
-}
