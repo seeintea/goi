@@ -1,17 +1,16 @@
 import { useNavigate, useRouter } from "@tanstack/react-router"
 import { logout } from "@/api/service/auth"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 import { useUser } from "@/stores/useUser"
-import { BindFamilySection } from "../components/bind-family"
-import { CreateFamilyDialog } from "../components/create-family-dialog"
+import { BindFamilySection } from "./components/bind-family"
+import { CreateFamilyDialog } from "./components/create-family-dialog"
 
-export function AppPage() {
+export function Bind() {
   const navigate = useNavigate()
   const router = useRouter()
 
-  const username = useUser((s) => s.username)
   const setFamilyId = useUser((s) => s.setFamilyId)
   const resetUser = useUser((s) => s.reset)
 
@@ -32,7 +31,7 @@ export function AppPage() {
       <Card className="w-full max-w-md">
         <CardHeader>
           <div className="flex items-center justify-between">
-            <CardTitle>家庭</CardTitle>
+            <CardTitle>请选择或创建一个家庭</CardTitle>
             <Button
               variant="ghost"
               size="sm"
@@ -41,7 +40,6 @@ export function AppPage() {
               退出登录
             </Button>
           </div>
-          <CardDescription>{username ? `当前用户：${username}` : "请选择或创建一个家庭"}</CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col gap-6">
           <BindFamilySection onBound={handleSuccess} />

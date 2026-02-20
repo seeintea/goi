@@ -2,9 +2,8 @@ import type { CreateFamily, Family, UpdateFamily } from "@goi/contracts"
 import { normalizePage, toPageResult } from "@goi/utils"
 import { Injectable, NotFoundException } from "@nestjs/common"
 import { and, desc, eq, ilike, sql } from "drizzle-orm"
-import { v4 as uuidv4 } from "uuid"
+import { v4 as uuid } from "uuid"
 import { PgService, pgSchema } from "@/database/postgresql"
-import { FamilyMemberService } from "@/modules/family-member/family-member.service"
 import { RoleService } from "@/modules/role/role.service"
 import type { PageResult } from "@/types/response"
 
@@ -15,7 +14,6 @@ export class FamilyService {
   constructor(
     private readonly pg: PgService,
     private readonly roleService: RoleService,
-    private readonly familyMemberService: FamilyMemberService,
   ) {}
 
   async find(id: string, tx?: Parameters<Parameters<PgService["pdb"]["transaction"]>[0]>[0]): Promise<Family> {
@@ -64,7 +62,7 @@ export class FamilyService {
       // 2. Clone global roles to family roles
       const globalRoles = await this.roleService.findGlobalRoles()
       const newRoles = globalRoles.map((role) => ({
-        roleId: uuidv4(),
+        roleId: uuid(),
         familyId: familyId,
         roleCode: role.roleCode,
         roleName: role.roleName,
@@ -81,7 +79,7 @@ export class FamilyService {
       const ownerRole = newRoles.find((role) => role.roleCode === "owner")
       if (ownerRole) {
         await tx.insert(familyMemberSchema).values({
-          id: uuidv4(),
+          id: uuid(),
           familyId: familyId,
           userId: userId,
           roleId: ownerRole.roleId,

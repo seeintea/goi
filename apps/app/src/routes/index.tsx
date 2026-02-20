@@ -1,9 +1,10 @@
 import { createFileRoute, redirect } from "@tanstack/react-router"
-import { AppPage } from "@/features/app/pages/app-page"
+import { Bind } from "@/features/bind"
 import { seo } from "@/lib/seo"
 
 export const Route = createFileRoute("/")({
   beforeLoad: ({ context }) => {
+    console.log(context)
     if (!context.user?.userId) {
       throw redirect({
         to: "/login",
@@ -12,7 +13,7 @@ export const Route = createFileRoute("/")({
     }
     if (context.user.familyId) {
       throw redirect({
-        to: "/dashboard" as any,
+        to: "/dashboard",
         replace: true,
       })
     }
@@ -23,5 +24,5 @@ export const Route = createFileRoute("/")({
       description: "绑定或创建您的家庭",
     }),
   }),
-  component: AppPage,
+  component: Bind,
 })

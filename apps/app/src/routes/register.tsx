@@ -1,5 +1,5 @@
 import { createFileRoute, redirect } from "@tanstack/react-router"
-import { Register } from "@/features/register/page"
+import { Register } from "@/features/register"
 import { seo } from "@/lib/seo"
 
 export const Route = createFileRoute("/register")({

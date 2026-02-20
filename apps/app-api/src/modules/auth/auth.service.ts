@@ -91,7 +91,14 @@ export class AuthService {
       })
       .from(familyMemberSchema)
       .innerJoin(familySchema, eq(familyMemberSchema.familyId, familySchema.id))
-      .where(and(eq(familyMemberSchema.userId, userId), eq(familyMemberSchema.status, "ACTIVE")))
+      .where(
+        and(
+          eq(familyMemberSchema.userId, userId),
+          eq(familyMemberSchema.status, "active"),
+          eq(familyMemberSchema.isDeleted, false),
+          eq(familySchema.isDeleted, false),
+        ),
+      )
       .orderBy(desc(familyMemberSchema.joinedAt))
       .limit(1)
 

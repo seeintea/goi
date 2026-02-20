@@ -1,6 +1,6 @@
 import { createFileRoute, redirect } from "@tanstack/react-router"
 import { LayoutDashboard } from "lucide-react"
-import { Dashboard } from "@/features/dashboard/page"
+import { Dashboard } from "@/features/dashboard"
 import { seo } from "@/lib/seo"
 
 export const Route = createFileRoute("/dashboard")({
