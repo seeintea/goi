@@ -1,5 +1,5 @@
 import { FetchInstance } from "@goi/utils-web"
-import { getAppSession } from "@/lib/server/session.server"
+import { getAppSession } from "@/utils/server/session.server"
 
 const fetcher = new FetchInstance({
   baseURL: import.meta.env.PUBLIC_BASE_URL || "http://localhost:3000",
@@ -52,4 +52,4 @@ export async function serverFetch<T>(url: string, options: RequestInit = {}): Pr
 }
 
 export { getAppSession }
-export type { UserSession } from "@/lib/server/session.server"
+export type { UserSession } from "@/utils/server/session.server"

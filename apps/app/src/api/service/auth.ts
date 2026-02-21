@@ -18,7 +18,7 @@ const loginFnBase = createServerFn({ method: "POST" }).handler(async (ctx: { dat
     })
 
     // Dynamic import to avoid bundling server code on client
-    const { getAppSession } = await import("@/lib/server/session.server")
+    const { getAppSession } = await import("@/utils/server/session.server")
     const session = await getAppSession()
 
     const sessionData = {
@@ -71,7 +71,7 @@ export const register = registerFnBase as unknown as (ctx: {
 }) => Promise<{ success?: boolean; error?: string }>
 
 const logoutFnBase = createServerFn({ method: "POST" }).handler(async () => {
-  const { getAppSession } = await import("@/lib/server/session.server")
+  const { getAppSession } = await import("@/utils/server/session.server")
   const session = await getAppSession()
 
   // Call backend logout API to clear server-side session/token
@@ -90,7 +90,7 @@ const logoutFnBase = createServerFn({ method: "POST" }).handler(async () => {
 export const logout = logoutFnBase as unknown as () => Promise<void>
 
 const getAuthUserFnBase = createServerFn({ method: "GET" }).handler(async () => {
-  const { getAppSession } = await import("@/lib/server/session.server")
+  const { getAppSession } = await import("@/utils/server/session.server")
   const session = await getAppSession()
   if (!session.data?.userId) return undefined
   return session.data as LoginResponse

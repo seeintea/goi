@@ -5,10 +5,10 @@ import { useEffect } from "react"
 import { getAuthUser, type LoginResponse } from "@/api/service/auth"
 import { DefaultCatchBoundary } from "@/features/core/pages/default-catch-boundary"
 import { NotFound } from "@/features/core/pages/not-found"
-import { seo } from "@/lib/seo"
 import { useUser } from "@/stores/useUser"
 import appCss from "@/styles/app.css?url"
 import type { RouteTreeNode } from "@/utils/route-tree"
+import { seo } from "@/utils/seo"
 
 type RouterContext = {
   user?: LoginResponse

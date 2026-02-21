@@ -3,7 +3,7 @@ import { useState } from "react"
 import { login, register } from "@/api/service/auth"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { FieldError } from "@/components/ui/field"
-import { sha1Hex } from "@/lib/crypto"
+import { sha1Hex } from "@/utils/crypto"
 import { useUser } from "@/stores/useUser"
 import { RegisterForm, type RegisterFormValues } from "./components/register-form"
 

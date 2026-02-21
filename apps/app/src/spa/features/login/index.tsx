@@ -6,7 +6,7 @@ import { createUser, useLogin } from "@/api"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { FieldError } from "@/components/ui/field"
-import { sha1Hex } from "@/lib/crypto"
+import { sha1Hex } from "@/utils/crypto"
 import { LoginForm } from "./components/login-form"
 import { RegisterForm, type RegisterFormValues } from "./components/register-form"
 

@@ -1,6 +1,6 @@
 import { createFileRoute, redirect } from "@tanstack/react-router"
 import { Bind } from "@/features/bind"
-import { seo } from "@/lib/seo"
+import { seo } from "@/utils/seo"
 
 export const Route = createFileRoute("/")({
   beforeLoad: ({ context }) => {

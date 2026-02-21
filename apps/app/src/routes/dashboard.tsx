@@ -1,7 +1,6 @@
 import { createFileRoute, redirect } from "@tanstack/react-router"
-import { LayoutDashboard } from "lucide-react"
 import { Dashboard } from "@/features/dashboard"
-import { seo } from "@/lib/seo"
+import { seo } from "@/utils/seo"
 
 export const Route = createFileRoute("/dashboard")({
   beforeLoad: ({ context }) => {
@@ -16,9 +15,4 @@ export const Route = createFileRoute("/dashboard")({
     }),
   }),
   component: Dashboard,
-  staticData: {
-    name: "数据面板",
-    permission: "dashboard",
-    icon: <LayoutDashboard />,
-  },
 })

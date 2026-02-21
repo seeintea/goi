@@ -1,5 +1,4 @@
 import type { AnyRoute } from "@tanstack/react-router"
-import * as React from "react"
 
 export type RouteChildStaticData = {
   name: string

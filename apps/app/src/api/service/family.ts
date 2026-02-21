@@ -78,7 +78,7 @@ const bindFamilyFnBase = createServerFn({ method: "POST" }).handler(async (ctx: 
 
   try {
     // Dynamic import to avoid bundling server code on client
-    const { getAppSession } = await import("@/lib/server/session.server")
+    const { getAppSession } = await import("@/utils/server/session.server")
     const session = await getAppSession()
     const userId = session.data?.userId
     if (!userId) {

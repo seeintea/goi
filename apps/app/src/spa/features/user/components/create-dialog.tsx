@@ -8,7 +8,7 @@ import { FieldGroup, FormField } from "@/components/base/base-field"
 import { PasswordInput } from "@/components/base/password-input"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { sha1Hex } from "@/lib/crypto"
+import { sha1Hex } from "@/utils/crypto"
 
 type FormValues = {
   username: string
