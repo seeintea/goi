@@ -1,5 +1,6 @@
-import { Public } from "@goi/nest-kit"
-import { Body, Controller, Post, Req } from "@nestjs/common"
+import { NavMenuTree } from "@goi/contracts"
+import { CurrentUser, Public } from "@goi/nest-kit"
+import { Body, Controller, Get, Post, Req } from "@nestjs/common"
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger"
 import type { Request } from "express"
 import { ZodResponse } from "nestjs-zod"
@@ -35,5 +36,17 @@ export class AuthController {
     const [type, token] = req.headers.authorization?.split(" ") ?? []
     if (type !== "Bearer") return true
     return this.authService.logout(token)
+  }
+
+  @Get("nav")
+  @ApiOperation({ summary: "获取用户导航菜单" })
+  async getNav(@CurrentUser() user: { userId: string }): Promise<NavMenuTree[]> {
+    return this.authService.getNav(user.userId)
+  }
+
+  @Get("permissions")
+  @ApiOperation({ summary: "获取用户权限列表" })
+  async getPermissions(@CurrentUser() user: { userId: string }): Promise<string[]> {
+    return this.authService.getPermissions(user.userId)
   }
 }

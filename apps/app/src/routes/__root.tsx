@@ -1,26 +1,26 @@
+import type { NavMenuTree } from "@goi/contracts"
 import type { QueryClient } from "@tanstack/react-query"
 import { createRootRouteWithContext, HeadContent, Outlet, Scripts } from "@tanstack/react-router"
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools"
 import { useEffect } from "react"
-import { getAuthUser, type LoginResponse } from "@/api/service/auth"
+import { getAuthUser, getNav, getPermissions, type LoginResponse } from "@/api/service/auth"
 import { DefaultCatchBoundary } from "@/features/core/pages/default-catch-boundary"
 import { NotFound } from "@/features/core/pages/not-found"
 import { useUser } from "@/stores/useUser"
 import appCss from "@/styles/app.css?url"
-import type { RouteTreeNode } from "@/utils/route-tree"
 import { seo } from "@/utils/seo"
 
 type RouterContext = {
   user?: LoginResponse
   queryClient: QueryClient
-  menuTree: RouteTreeNode[]
+  menuTree: NavMenuTree[]
+  permissions: string[]
 }
 
 export const Route = createRootRouteWithContext<RouterContext>()({
   beforeLoad: async () => {
-    // We only fetch the user here. menuTree is already provided via router context creation.
-    const user = await getAuthUser()
-    return { user }
+    const [user, menuTree, permissions] = await Promise.all([getAuthUser(), getNav(), getPermissions()])
+    return { user, menuTree, permissions }
   },
   head: () => ({
     meta: seo({

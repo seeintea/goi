@@ -104,9 +104,31 @@ export const appModulePageResponseSchema = z
     page: shape.page,
     pageSize: shape.pageSize,
   })
-  .meta({ id: "模块分页响应" })
+  .meta({ id: "查询模块分页列表响应" })
 
-export const appModuleListResponseSchema = z.array(appModuleResponseSchema).meta({ id: "模块列表响应" })
+export const appModuleListResponseSchema = z.array(appModulePageItemSchema).meta({ id: "查询模块列表响应" })
+
+export type NavMenuTree = {
+  moduleId: string
+  parentId: string | null
+  name: string
+  routePath: string
+  permissionCode: string
+  sort: number
+  children?: NavMenuTree[]
+}
+
+export const navMenuTreeSchema: z.ZodType<NavMenuTree> = z.lazy(() =>
+  z.object({
+    moduleId: shape.moduleId,
+    parentId: shape.parentId,
+    name: shape.name,
+    routePath: shape.routePath,
+    permissionCode: shape.permissionCode,
+    sort: shape.sort,
+    children: z.array(navMenuTreeSchema).optional(),
+  }),
+)
 
 export type AppModule = z.infer<typeof appModuleResponseSchema>
 export type CreateAppModule = z.infer<typeof createAppModuleSchema>

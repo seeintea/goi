@@ -14,14 +14,18 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar"
 import { Route } from "@/routes/__root"
+import { getIcon } from "@/utils/icon-map"
 
 export function Sidebar() {
   const { pathname } = useLocation()
   const { open } = useSidebar()
 
-  const { menuTree: rootTree } = Route.useRouteContext()
-  const flatItems = rootTree.filter((n) => !n.isGroup).flatMap((n) => n.children)
-  const groupNodes = rootTree.filter((n) => n.isGroup)
+  const { menuTree } = Route.useRouteContext()
+
+  // Items without children are considered flat/root items
+  const flatItems = menuTree.filter((n) => !n.children || n.children.length === 0)
+  // Items with children are considered groups
+  const groupNodes = menuTree.filter((n) => n.children && n.children.length > 0)
 
   return (
     <ShadcnSidebar collapsible="icon">
@@ -47,15 +51,17 @@ export function Sidebar() {
             <SidebarGroupContent>
               <SidebarMenu>
                 {flatItems.map((item) => (
-                  <SidebarMenuItem key={item.id}>
+                  <SidebarMenuItem key={item.moduleId}>
                     <SidebarMenuButton
-                      tooltip={item.staticData.name}
-                      isActive={pathname === item.id}
-                      render={<Link to={item.id} />}
-                    >
-                      {item.staticData.icon}
-                      <span>{item.staticData.name}</span>
-                    </SidebarMenuButton>
+                      tooltip={item.name}
+                      isActive={pathname === item.routePath}
+                      render={
+                        <Link to={item.routePath}>
+                          {getIcon(item.routePath.split("/").filter(Boolean).pop() || "circle")}
+                          <span>{item.name}</span>
+                        </Link>
+                      }
+                    />
                   </SidebarMenuItem>
                 ))}
               </SidebarMenu>
@@ -64,22 +70,24 @@ export function Sidebar() {
         )}
 
         {groupNodes.map((node) => (
-          <SidebarGroup key={node.id}>
+          <SidebarGroup key={node.moduleId}>
             <Activity mode={open ? "visible" : "hidden"}>
-              <SidebarGroupLabel>{node.groupName}</SidebarGroupLabel>
+              <SidebarGroupLabel>{node.name}</SidebarGroupLabel>
             </Activity>
             <SidebarGroupContent>
               <SidebarMenu>
-                {node.children.map((child) => (
-                  <SidebarMenuItem key={child.id}>
+                {node.children?.map((child) => (
+                  <SidebarMenuItem key={child.moduleId}>
                     <SidebarMenuButton
-                      tooltip={child.staticData.name}
-                      isActive={pathname === child.id}
-                      render={<Link to={child.id} />}
-                    >
-                      {child.staticData.icon}
-                      <span>{child.staticData.name}</span>
-                    </SidebarMenuButton>
+                      tooltip={child.name}
+                      isActive={pathname === child.routePath}
+                      render={
+                        <Link to={child.routePath}>
+                          {getIcon(child.routePath.split("/").filter(Boolean).pop() || "circle")}
+                          <span>{child.name}</span>
+                        </Link>
+                      }
+                    />
                   </SidebarMenuItem>
                 ))}
               </SidebarMenu>

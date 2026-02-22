@@ -1,4 +1,4 @@
-export type { AppModule, CreateAppModule, UpdateAppModule } from "./module.schema"
+export type { AppModule, CreateAppModule, UpdateAppModule, NavMenuTree } from "./module.schema"
 export {
   appModuleAllQuerySchema,
   appModuleListQuerySchema,
@@ -9,4 +9,5 @@ export {
   deleteAppModuleSchema,
   updateAppModuleSchema,
   updateAppModuleSortSchema,
+  navMenuTreeSchema,
 } from "./module.schema"

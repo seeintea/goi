@@ -1,4 +1,4 @@
-import type { Login, LoginResponse, Register } from "@goi/contracts"
+import type { Login, LoginResponse, NavMenuTree, Register } from "@goi/contracts"
 import { createServerFn } from "@tanstack/react-start"
 import { serverFetch } from "../client"
 
@@ -97,3 +97,33 @@ const getAuthUserFnBase = createServerFn({ method: "GET" }).handler(async () => 
 })
 
 export const getAuthUser = getAuthUserFnBase as unknown as () => Promise<LoginResponse | undefined>
+
+const getNavFnBase = createServerFn({ method: "GET" }).handler(async () => {
+  try {
+    const { getAppSession } = await import("@/utils/server/session.server")
+    const session = await getAppSession()
+    if (!session.data?.accessToken) return []
+    const nav = await serverFetch<NavMenuTree[]>("/api/sys/auth/nav")
+    return nav
+  } catch (error) {
+    console.error("Get nav error:", error)
+    return []
+  }
+})
+
+export const getNav = getNavFnBase as unknown as () => Promise<NavMenuTree[]>
+
+const getPermissionsFnBase = createServerFn({ method: "GET" }).handler(async () => {
+  try {
+    const { getAppSession } = await import("@/utils/server/session.server")
+    const session = await getAppSession()
+    if (!session.data?.accessToken) return []
+    const permissions = await serverFetch<string[]>("/api/sys/auth/permissions")
+    return permissions
+  } catch (error) {
+    console.error("Get permissions error:", error)
+    return []
+  }
+})
+
+export const getPermissions = getPermissionsFnBase as unknown as () => Promise<string[]>
