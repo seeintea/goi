@@ -3,6 +3,7 @@ import { normalizePage, toPageResult } from "@goi/utils"
 import { Injectable, NotFoundException } from "@nestjs/common"
 import { and, desc, eq, ilike, sql } from "drizzle-orm"
 import { v4 as uuid } from "uuid"
+import { FAMILY_ROLE_CONFIG } from "@/config/family-role.config"
 import { PgService, pgSchema } from "@/database/postgresql"
 import { RoleService } from "@/modules/role/role.service"
 import type { PageResult } from "@/types/response"
@@ -76,7 +77,7 @@ export class FamilyService {
 
       // 3. Assign owner role to creator
       // Find the 'owner' role from the newly created roles
-      const ownerRole = newRoles.find((role) => role.roleCode === "owner")
+      const ownerRole = newRoles.find((role) => role.roleCode === FAMILY_ROLE_CONFIG.CREATOR_ROLE_CODE)
       if (ownerRole) {
         await tx.insert(familyMemberSchema).values({
           id: uuid(),

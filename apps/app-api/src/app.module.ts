@@ -4,8 +4,10 @@ import {
   NEST_KIT_AUTH_GUARD_OPTIONS,
   NEST_KIT_AUTHENTICATOR,
   NEST_KIT_AUTHORIZER,
+  SystemProtectionModule,
   TransformResponseInterceptor,
 } from "@goi/nest-kit"
+import { SHARED_ROLE_PROTECTION } from "@goi/rules"
 import { Module } from "@nestjs/common"
 import { ConfigModule } from "@nestjs/config"
 import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR } from "@nestjs/core"
@@ -32,6 +34,7 @@ import {
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
+    SystemProtectionModule.register({ role: SHARED_ROLE_PROTECTION }),
     PgModule,
     RedisModule,
     AuthModule,

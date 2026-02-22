@@ -7,8 +7,9 @@ import {
   UnauthorizedException,
 } from "@nestjs/common"
 import { JwtService } from "@nestjs/jwt"
-import { and, eq, inArray } from "drizzle-orm"
+import { and, eq, inArray, isNull } from "drizzle-orm"
 import type { Request } from "express"
+import { FAMILY_ROLE_CONFIG } from "@/config/family-role.config"
 import { PgService, pgSchema } from "@/database/postgresql"
 import { RedisService } from "@/database/redis"
 
@@ -19,6 +20,7 @@ const {
   financeFamilyMember: familyMemberSchema,
   authPermission: permissionSchema,
   authRolePermission: rolePermissionSchema,
+  authRole: roleSchema,
 } = pgSchema
 
 @Injectable()
@@ -65,7 +67,7 @@ export class FinanceAuthorizer implements NestKitAuthorizer {
       ;(request as unknown as { familyId?: string }).familyId = familyId
       const access = await this.resolveFamilyAccess(user.userId, familyId)
       if (args.permissions.length > 0 && !access.isOwner) {
-        await this.assertHasPermissions(access.roleId, args.permissions)
+        await this.assertHasPermissions(access.roleId, access.roleCode, args.permissions)
       }
     }
   }
@@ -98,17 +100,19 @@ export class FinanceAuthorizer implements NestKitAuthorizer {
   private async resolveFamilyAccess(
     userId: string,
     familyId: string,
-  ): Promise<{ isOwner: boolean; roleId: string | null }> {
+  ): Promise<{ isOwner: boolean; roleId: string | null; roleCode: string | null }> {
     const memberRows = await this.pg.pdb
       .select({
         roleId: familyMemberSchema.roleId,
+        roleCode: roleSchema.roleCode,
       })
       .from(familyMemberSchema)
+      .innerJoin(roleSchema, eq(familyMemberSchema.roleId, roleSchema.roleId))
       .where(
         and(
           eq(familyMemberSchema.userId, userId),
           eq(familyMemberSchema.familyId, familyId),
-          eq(familyMemberSchema.status, "ACTIVE"),
+          eq(familyMemberSchema.status, "active"),
         ),
       )
       .limit(1)
@@ -117,33 +121,63 @@ export class FinanceAuthorizer implements NestKitAuthorizer {
     // For now we check owner via family table if needed, but simplified:
 
     let roleId: string | null = null
+    let roleCode: string | null = null
     if (memberRows[0]) {
       roleId = memberRows[0].roleId
+      roleCode = memberRows[0].roleCode
     }
 
     if (!memberRows[0] && !isOwner) {
       throw new ForbiddenException("You are not a member of this family")
     }
 
-    return { isOwner, roleId }
+    return { isOwner, roleId, roleCode }
   }
 
-  private async assertHasPermissions(roleId: string | null, permissions: string[]): Promise<void> {
-    if (!roleId) throw new ForbiddenException("Role missing")
+  private async assertHasPermissions(
+    roleId: string | null,
+    roleCode: string | null,
+    permissions: string[],
+  ): Promise<void> {
+    if (!roleId || !roleCode) throw new ForbiddenException("Role missing")
 
     const uniquePermissions = Array.from(new Set(permissions))
-    const rows = await this.pg.pdb
-      .select({ code: permissionSchema.code })
-      .from(rolePermissionSchema)
-      .innerJoin(permissionSchema, eq(rolePermissionSchema.permissionId, permissionSchema.permissionId))
-      .where(
-        and(
-          eq(rolePermissionSchema.roleId, roleId),
-          inArray(permissionSchema.code, uniquePermissions),
-          eq(permissionSchema.isDeleted, false),
-          eq(permissionSchema.isDisabled, false),
-        ),
-      )
+
+    const shouldInherit = (FAMILY_ROLE_CONFIG.GLOBAL_PERMISSION_INHERITANCE_ROLES as readonly string[]).includes(
+      roleCode,
+    )
+
+    let rows: { code: string }[]
+
+    if (shouldInherit) {
+      rows = await this.pg.pdb
+        .select({ code: permissionSchema.code })
+        .from(rolePermissionSchema)
+        .innerJoin(roleSchema, eq(rolePermissionSchema.roleId, roleSchema.roleId))
+        .innerJoin(permissionSchema, eq(rolePermissionSchema.permissionId, permissionSchema.permissionId))
+        .where(
+          and(
+            eq(roleSchema.roleCode, roleCode),
+            isNull(roleSchema.familyId),
+            inArray(permissionSchema.code, uniquePermissions),
+            eq(permissionSchema.isDeleted, false),
+            eq(permissionSchema.isDisabled, false),
+          ),
+        )
+    } else {
+      rows = await this.pg.pdb
+        .select({ code: permissionSchema.code })
+        .from(rolePermissionSchema)
+        .innerJoin(permissionSchema, eq(rolePermissionSchema.permissionId, permissionSchema.permissionId))
+        .where(
+          and(
+            eq(rolePermissionSchema.roleId, roleId),
+            inArray(permissionSchema.code, uniquePermissions),
+            eq(permissionSchema.isDeleted, false),
+            eq(permissionSchema.isDisabled, false),
+          ),
+        )
+    }
 
     if (new Set(rows.map((r) => r.code)).size !== uniquePermissions.length) {
       throw new ForbiddenException("Permission denied")

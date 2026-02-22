@@ -1,4 +1,5 @@
 import type { AppRole, CreateAppRole, UpdateAppRole } from "@goi/contracts"
+import { SystemProtectionService } from "@goi/nest-kit"
 import { normalizePage, toIsoString, toPageResult } from "@goi/utils"
 import { Injectable, NotFoundException } from "@nestjs/common"
 import { and, desc, eq, isNull, like, sql } from "drizzle-orm"
@@ -9,7 +10,10 @@ const { authRole: roleSchema } = pgSchema
 
 @Injectable()
 export class RoleService {
-  constructor(private readonly pg: PgService) {}
+  constructor(
+    private readonly pg: PgService,
+    private readonly protection: SystemProtectionService,
+  ) {}
 
   async find(roleId: string): Promise<AppRole> {
     const roles = await this.pg.pdb
@@ -72,6 +76,9 @@ export class RoleService {
   }
 
   async update(values: UpdateAppRole): Promise<AppRole> {
+    const role = await this.find(values.roleId)
+    this.protection.validate("role", "update", role.roleCode ?? "")
+
     await this.pg.pdb
       .update(roleSchema)
       .set({
@@ -84,6 +91,9 @@ export class RoleService {
   }
 
   async delete(roleId: string): Promise<boolean> {
+    const role = await this.find(roleId)
+    this.protection.validate("role", "delete", role.roleCode ?? "")
+
     await this.pg.pdb.update(roleSchema).set({ isDeleted: true }).where(eq(roleSchema.roleId, roleId))
     return true
   }

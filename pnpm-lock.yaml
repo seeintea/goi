@@ -320,6 +320,9 @@ importers:
       '@goi/nest-kit':
         specifier: workspace:*
         version: link:../../packages/nest-kit
+      '@goi/rules':
+        specifier: workspace:*
+        version: link:../../packages/rules
       '@goi/utils':
         specifier: workspace:^
         version: link:../../packages/utils
