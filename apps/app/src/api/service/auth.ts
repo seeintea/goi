@@ -92,8 +92,16 @@ export const logout = logoutFnBase as unknown as () => Promise<void>
 const getAuthUserFnBase = createServerFn({ method: "GET" }).handler(async () => {
   const { getAppSession } = await import("@/utils/server/session.server")
   const session = await getAppSession()
-  if (!session.data?.userId) return undefined
-  return session.data as LoginResponse
+  const accessToken = session.data?.accessToken
+  if (!accessToken) return undefined
+
+  try {
+    const user = await serverFetch<Omit<LoginResponse, "accessToken">>("/api/sys/auth/me")
+    return { ...user, accessToken }
+  } catch (error) {
+    console.error("Failed to fetch user profile:", error)
+    return undefined
+  }
 })
 
 export const getAuthUser = getAuthUserFnBase as unknown as () => Promise<LoginResponse | undefined>

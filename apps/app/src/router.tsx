@@ -1,3 +1,4 @@
+import { QueryClientProvider } from "@tanstack/react-query"
 import { createRouter } from "@tanstack/react-router"
 import { getQueryClient } from "@/utils/query-client"
 // Import the generated route tree
@@ -18,6 +19,9 @@ export function getRouter() {
     scrollRestoration: true,
     defaultStructuralSharing: true,
     defaultPreloadStaleTime: 0,
+    Wrap: ({ children }) => {
+      return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    },
   })
 
   return router

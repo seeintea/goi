@@ -5,7 +5,7 @@ import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger"
 import type { Request } from "express"
 import { ZodResponse } from "nestjs-zod"
 import { UserResponseDto } from "../user/user.dto"
-import { LoginDto, LoginResponseDto, RegisterDto } from "./auth.dto"
+import { AuthUserResponseDto, LoginDto, LoginResponseDto, RegisterDto } from "./auth.dto"
 import { AuthService } from "./auth.service"
 
 @ApiTags("授权")
@@ -36,6 +36,13 @@ export class AuthController {
     const [type, token] = req.headers.authorization?.split(" ") ?? []
     if (type !== "Bearer") return true
     return this.authService.logout(token)
+  }
+
+  @Get("me")
+  @ApiOperation({ summary: "获取当前用户信息" })
+  @ZodResponse({ type: AuthUserResponseDto })
+  async me(@CurrentUser() user: { userId: string }) {
+    return this.authService.getProfile(user.userId)
   }
 
   @Get("nav")

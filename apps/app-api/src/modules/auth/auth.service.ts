@@ -63,6 +63,19 @@ export class AuthService {
     }
   }
 
+  async getProfile(userId: string): Promise<Omit<LoginResponse, "accessToken">> {
+    const user = await this.userService.find(userId)
+    const context = await this.resolveLoginContext(userId)
+
+    return {
+      userId: user.userId,
+      username: user.username,
+      roleId: context.roleId,
+      roleName: context.roleName,
+      familyId: context.familyId,
+    }
+  }
+
   async register(dto: RegisterDto): Promise<AppUser> {
     const salt = generateSalt(16)
     const password = hashPassword(dto.password, salt)

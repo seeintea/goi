@@ -12,3 +12,6 @@ export class RegisterDto extends createZodDto(registerSchema as z.ZodType<Regist
 
 export class LoginDto extends createZodDto(loginSchema as z.ZodType<Login>) {}
 export class LoginResponseDto extends createZodDto(loginResponseSchema) {}
+
+export const authUserResponseSchema = loginResponseSchema.omit({ accessToken: true })
+export class AuthUserResponseDto extends createZodDto(authUserResponseSchema) {}

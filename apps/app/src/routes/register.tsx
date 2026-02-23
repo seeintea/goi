@@ -5,7 +5,7 @@ import { seo } from "@/utils/seo"
 export const Route = createFileRoute("/register")({
   beforeLoad: ({ context }) => {
     if (context.user) {
-      throw redirect({ to: context.user.familyId ? "/dashboard" : "/" } as any)
+      throw redirect({ to: context.user.familyId ? "/dashboard" : "/" })
     }
   },
   component: Register,

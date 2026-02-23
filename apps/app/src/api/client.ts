@@ -1,4 +1,5 @@
 import { FetchInstance } from "@goi/utils-web"
+import { redirect } from "@tanstack/react-router"
 import { getAppSession } from "@/utils/server/session.server"
 
 const fetcher = new FetchInstance({
@@ -43,6 +44,11 @@ export async function serverFetch<T>(url: string, options: RequestInit = {}): Pr
     ...options,
     headers,
   })
+
+  if (response.code === 401) {
+    await session.clear()
+    throw redirect({ to: "/login" })
+  }
 
   if (response.code !== 200) {
     throw new Error(response.message || "Request failed")
