@@ -1,13 +1,7 @@
-import type { 
-  Login, 
-  LoginResponse, 
-  NavMenuTree, 
-  Register 
-} from "@goi/contracts"
+import type { Login, LoginResponse, NavMenuTree, Register } from "@goi/contracts"
 import type { RequestFn } from "../core/types"
 
 export const createAuthApi = (request: RequestFn) => ({
-  
   login: (data: Login) => {
     return request<LoginResponse>("/api/sys/auth/login", {
       method: "POST",
@@ -38,7 +32,7 @@ export const createAuthApi = (request: RequestFn) => ({
 
   getPermissions: () => {
     return request<string[]>("/api/sys/auth/permissions")
-  }
+  },
 })
 
 export type AuthApi = ReturnType<typeof createAuthApi>

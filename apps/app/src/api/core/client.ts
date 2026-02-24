@@ -8,7 +8,7 @@ import type { RequestFn } from "./types"
 
 // Initialize the fetch instance
 const http = new FetchInstance({
-  baseURL: import.meta.env.VITE_API_BASE_URL || "",
+  baseURL: import.meta.env.PUBLIC_BASE_URL || "",
   timeout: 30000,
 })
 

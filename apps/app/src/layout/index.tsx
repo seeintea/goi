@@ -37,7 +37,8 @@ function LogicLayout({ menuTree }: LayoutProps) {
 }
 
 export function Layout({ user, menuTree }: LayoutProps) {
-  const [set, reset] = useUser((state) => [state.setUser, state.reset])
+  const set = useUser((state) => state.setUser)
+  const reset = useUser((state) => state.reset)
 
   useEffect(() => {
     if (user?.userId) {

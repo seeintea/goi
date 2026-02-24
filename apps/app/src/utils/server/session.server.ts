@@ -3,7 +3,7 @@ import { useSession } from "@tanstack/react-start/server"
 
 export type UserSession = LoginResponse
 
-export async function getAppSession(): Promise<ReturnType<typeof useSession<UserSession>>> {
+export async function getAppSession(): ReturnType<typeof useSession<UserSession>> {
   return useSession<UserSession>({
     name: "goi_session",
     password: import.meta.env.VITE_SESSION_SECRET || "change-this-to-a-secure-random-string-in-production",
