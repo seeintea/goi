@@ -1,3 +1,4 @@
+import type { NavMenuTree } from "@goi/contracts"
 import { Link, useLocation } from "@tanstack/react-router"
 import { BadgeDollarSign } from "lucide-react"
 import {
@@ -11,18 +12,15 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
-import { Route } from "@/routes/__root"
 import { getIcon } from "@/utils/icon-map"
 
-export function Sidebar() {
+export function Sidebar({ menuTree }: { menuTree?: NavMenuTree[] }) {
   const { pathname } = useLocation()
 
-  const { menuTree } = Route.useRouteContext()
-
   // Items without children are considered flat/root items
-  const flatItems = menuTree.filter((n) => !n.children || n.children.length === 0)
+  const flatItems = (menuTree ?? []).filter((n) => !n.children || n.children.length === 0)
   // Items with children are considered groups
-  const groupNodes = menuTree.filter((n) => n.children && n.children.length > 0)
+  const groupNodes = (menuTree ?? []).filter((n) => n.children && n.children.length > 0)
 
   return (
     <ShadcnSidebar collapsible="icon">

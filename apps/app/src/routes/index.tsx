@@ -4,7 +4,6 @@ import { seo } from "@/utils/seo"
 
 export const Route = createFileRoute("/")({
   beforeLoad: ({ context }) => {
-    console.log(context)
     if (!context.user?.userId) {
       throw redirect({
         to: "/login",

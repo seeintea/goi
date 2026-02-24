@@ -3,8 +3,8 @@ import { useState } from "react"
 import { useLogin } from "@/api/queries/auth"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { FieldError } from "@/components/ui/field"
-import { sha1Hex } from "@/utils/crypto"
 import { useUser } from "@/stores/useUser"
+import { sha1Hex } from "@/utils/crypto"
 import { LoginForm, type LoginFormValues } from "./components/login-form"
 
 export function Login() {

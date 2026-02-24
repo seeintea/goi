@@ -1,51 +1,46 @@
 // Core Layer: Server Strategy (Node.js)
 // Uses Node fetch and Cookie Session for auth.
 
+import { FetchInstance, withHeader } from "@goi/utils-web"
+import { redirect } from "@tanstack/react-router"
 import { getAppSession } from "@/utils/server/session.server"
 import type { RequestFn } from "./types"
+
+const http = new FetchInstance({
+  baseURL: import.meta.env.VITE_API_BASE_URL || "http://localhost:3000",
+  timeout: 30000,
+})
+
+// Note: FetchInstance request interceptors are synchronous, so we handle async session retrieval in the wrapper below.
 
 export const serverRequest: RequestFn = async (url, config = {}) => {
   const session = await getAppSession()
   const token = session.data?.accessToken
-  
-  const headers = new Headers(config.headers)
+
+  let headers = config.headers
   if (token) {
-    headers.set("Authorization", `Bearer ${token}`)
+    headers = withHeader(headers, "Authorization", `Bearer ${token}`)
   }
 
   // Ensure Content-Type is set for JSON bodies
-  if (config.body && typeof config.body === "string" && !headers.has("Content-Type")) {
+  if (config.body && typeof config.body === "string") {
     try {
       JSON.parse(config.body)
-      headers.set("Content-Type", "application/json")
+      headers = withHeader(headers, "Content-Type", "application/json")
     } catch {
-      // Not JSON, ignore
+      // ignore
     }
   }
 
-  // In Node environment, we need absolute URLs if not proxied correctly or using internal service discovery
-  // Assuming relative URLs work via TanStack Start proxy or similar mechanism, 
-  // but usually for SSR fetches to API server, we might need full URL.
-  // For now, we assume relative URLs are handled by the framework or a global fetch polyfill with base URL.
-  // If not, we might need process.env.API_BASE_URL.
-  
-  // Checking for base URL environment variable
-  const baseURL = import.meta.env.VITE_API_BASE_URL || "http://localhost:3000"
-  const fullURL = url.startsWith("http") ? url : `${baseURL}${url}`
-
-  const response = await fetch(fullURL, {
-    ...config,
-    headers,
-  })
-
-  if (!response.ok) {
-    if (response.status === 401) {
+  try {
+    return await http.request(url, { ...config, headers })
+  } catch (error) {
+    const err = error as Error
+    // FetchInstance throws "HTTP {status}: {statusText}"
+    if (err.message.startsWith("HTTP 401")) {
       await session.clear()
+      throw redirect({ to: "/login" })
     }
-    const errorBody = await response.text()
-    throw new Error(errorBody || `Server Request Failed: ${response.statusText}`)
+    throw err
   }
-
-  const text = await response.text()
-  return text ? JSON.parse(text) : {}
 }

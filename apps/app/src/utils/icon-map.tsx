@@ -1,3 +1,4 @@
+import type { LucideIcon } from "lucide-react"
 import {
   BadgeDollarSign,
   Bell,
@@ -27,7 +28,6 @@ import {
   Users,
   X,
 } from "lucide-react"
-import type { LucideIcon } from "lucide-react"
 
 export const iconMap: Record<string, LucideIcon> = {
   "layout-dashboard": LayoutDashboard,

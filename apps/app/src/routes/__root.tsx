@@ -3,10 +3,8 @@ import type { QueryClient } from "@tanstack/react-query"
 import { createRootRouteWithContext } from "@tanstack/react-router"
 
 import { getAuthUserFn, getNavFn, getPermissionsFn } from "@/api/server/auth"
-import { DefaultCatchBoundary } from "@/features/core/pages/default-catch-boundary"
-import { NotFound } from "@/features/core/pages/not-found"
-import { RootDocument, RootLayout } from "@/layout/root"
-import appCss from "@/styles/app.css?url"
+import appCss from "@/app.css?url"
+import { DefaultCatchBoundary, Layout, NotFound } from "@/layout"
 import { seo } from "@/utils/seo"
 
 type RouterContext = {
@@ -28,20 +26,15 @@ export const Route = createRootRouteWithContext<RouterContext>()({
     }),
     links: [{ rel: "stylesheet", href: appCss }],
   }),
-  errorComponent: (props) => {
-    return (
-      <RootDocument>
-        <DefaultCatchBoundary {...props} />
-      </RootDocument>
-    )
-  },
-  notFoundComponent: () => (
-    <RootDocument>
-      <NotFound />
-    </RootDocument>
-  ),
+  errorComponent: DefaultCatchBoundary,
+  notFoundComponent: NotFound,
   component: () => {
-    const { user } = Route.useRouteContext()
-    return <RootLayout user={user} />
+    const { user, menuTree } = Route.useRouteContext()
+    return (
+      <Layout
+        user={user}
+        menuTree={menuTree}
+      />
+    )
   },
 })

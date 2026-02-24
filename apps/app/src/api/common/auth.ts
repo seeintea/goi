@@ -1,10 +1,10 @@
-import type { RequestFn } from "../core/types"
 import type { 
   Login, 
   LoginResponse, 
   NavMenuTree, 
   Register 
 } from "@goi/contracts"
+import type { RequestFn } from "../core/types"
 
 export const createAuthApi = (request: RequestFn) => ({
   

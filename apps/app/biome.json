@@ -2,7 +2,7 @@
   "$schema": "../../node_modules/@biomejs/biome/configuration_schema.json",
   "extends": "//",
   "files": {
-    "includes": ["**/src/**", "!!**/src/components/ui/**", "!!**/src/routeTree.gen.ts"]
+    "includes": ["**/src/**", "!!**/src/components/ui", "!!**/src/routeTree.gen.ts"]
   },
   "linter": {
     "enabled": true,

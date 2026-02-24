@@ -3,8 +3,8 @@ import { useState } from "react"
 import { useLogin, useRegister } from "@/api/queries/auth"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { FieldError } from "@/components/ui/field"
-import { sha1Hex } from "@/utils/crypto"
 import { useUser } from "@/stores/useUser"
+import { sha1Hex } from "@/utils/crypto"
 import { RegisterForm, type RegisterFormValues } from "./components/register-form"
 
 export function Register() {
@@ -18,7 +18,7 @@ export function Register() {
   const handleRegisterSubmit = async (values: RegisterFormValues) => {
     setSubmitError("")
     setSubmitSuccess("")
-    
+
     try {
       const username = values.username.trim()
       const password = await sha1Hex(values.password)
@@ -34,7 +34,7 @@ export function Register() {
 
       // Auto login
       const loginResp = await loginMutation.mutateAsync({ username, password })
-      
+
       setUser({
         token: loginResp.accessToken,
         userId: loginResp.userId,
