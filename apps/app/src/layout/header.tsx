@@ -1,6 +1,6 @@
 import { useNavigate } from "@tanstack/react-router"
 
-import { useLogout } from "@/api"
+import { useLogout } from "@/api/queries/auth"
 import { Button } from "@/components/ui/button"
 import { SidebarTrigger } from "@/components/ui/sidebar"
 import { Route } from "@/routes/__root"

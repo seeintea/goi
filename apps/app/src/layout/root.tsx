@@ -1,8 +1,8 @@
+import type { LoginResponse } from "@goi/contracts"
 import { HeadContent, Scripts } from "@tanstack/react-router"
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools"
 import { useEffect } from "react"
 
-import type { LoginResponse } from "@/api/service/auth"
 import { Layout } from "@/layout"
 import { useUser } from "@/stores/useUser"
 

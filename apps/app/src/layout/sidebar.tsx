@@ -1,6 +1,5 @@
 import { Link, useLocation } from "@tanstack/react-router"
 import { BadgeDollarSign } from "lucide-react"
-import { Activity } from "react"
 import {
   Sidebar as ShadcnSidebar,
   SidebarContent,
@@ -11,14 +10,12 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  useSidebar,
 } from "@/components/ui/sidebar"
 import { Route } from "@/routes/__root"
 import { getIcon } from "@/utils/icon-map"
 
 export function Sidebar() {
   const { pathname } = useLocation()
-  const { open } = useSidebar()
 
   const { menuTree } = Route.useRouteContext()
 
@@ -71,9 +68,7 @@ export function Sidebar() {
 
         {groupNodes.map((node) => (
           <SidebarGroup key={node.moduleId}>
-            <Activity mode={open ? "visible" : "hidden"}>
-              <SidebarGroupLabel>{node.name}</SidebarGroupLabel>
-            </Activity>
+            <SidebarGroupLabel>{node.name}</SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
                 {node.children?.map((child) => (

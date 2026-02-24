@@ -1,8 +1,8 @@
-import type { NavMenuTree } from "@goi/contracts"
+import type { LoginResponse, NavMenuTree } from "@goi/contracts"
 import type { QueryClient } from "@tanstack/react-query"
 import { createRootRouteWithContext } from "@tanstack/react-router"
 
-import { getAuthUser, getNav, getPermissions, type LoginResponse } from "@/api/service/auth"
+import { getAuthUserFn, getNavFn, getPermissionsFn } from "@/api/server/auth"
 import { DefaultCatchBoundary } from "@/features/core/pages/default-catch-boundary"
 import { NotFound } from "@/features/core/pages/not-found"
 import { RootDocument, RootLayout } from "@/layout/root"
@@ -18,7 +18,7 @@ type RouterContext = {
 
 export const Route = createRootRouteWithContext<RouterContext>()({
   beforeLoad: async () => {
-    const [user, menuTree, permissions] = await Promise.all([getAuthUser(), getNav(), getPermissions()])
+    const [user, menuTree, permissions] = await Promise.all([getAuthUserFn(), getNavFn(), getPermissionsFn()])
     return { user, menuTree, permissions }
   },
   head: () => ({

@@ -1,7 +1,7 @@
 import { Plus } from "lucide-react"
 import { useEffect, useMemo, useState } from "react"
 import { useForm } from "react-hook-form"
-import { createFamily } from "@/api/service/family"
+import { useCreateFamily } from "@/api/queries/family"
 import { BaseDialog } from "@/components/base/base-dialog"
 import { FieldGroup, FormField } from "@/components/base/base-field"
 import { Button } from "@/components/ui/button"
@@ -17,7 +17,7 @@ type CreateFamilyFormValues = {
 export function CreateFamilyDialog({ onCreated }: { onCreated: (familyId: string) => void }) {
   const [open, setOpen] = useState(false)
   const [submitError, setSubmitError] = useState("")
-  const [isPending, setIsPending] = useState(false)
+  const createFamilyMutation = useCreateFamily()
 
   const defaultValues = useMemo<CreateFamilyFormValues>(
     () => ({
@@ -39,14 +39,11 @@ export function CreateFamilyDialog({ onCreated }: { onCreated: (familyId: string
 
   const onSubmit = form.handleSubmit(async (values) => {
     setSubmitError("")
-    setIsPending(true)
     try {
-      const family = await createFamily({
-        data: {
-          name: values.name.trim(),
-          baseCurrency: values.baseCurrency.trim() || "CNY",
-          timezone: values.timezone.trim() || "Asia/Shanghai",
-        },
+      const family = await createFamilyMutation.mutateAsync({
+        name: values.name.trim(),
+        baseCurrency: values.baseCurrency.trim() || "CNY",
+        timezone: values.timezone.trim() || "Asia/Shanghai",
       })
 
       setOpen(false)
@@ -54,8 +51,6 @@ export function CreateFamilyDialog({ onCreated }: { onCreated: (familyId: string
     } catch (error) {
       const e = error as Error
       setSubmitError(e.message || "创建失败")
-    } finally {
-      setIsPending(false)
     }
   })
 
@@ -63,7 +58,7 @@ export function CreateFamilyDialog({ onCreated }: { onCreated: (familyId: string
     <BaseDialog
       open={open}
       onOpenChange={(next) => {
-        if (isPending) return
+        if (createFamilyMutation.isPending) return
         setOpen(next)
       }}
       title="新建家庭"
@@ -112,12 +107,12 @@ export function CreateFamilyDialog({ onCreated }: { onCreated: (familyId: string
           </FormField>
         </FieldGroup>
 
-        <div className="flex justify-end">
+        <div className="pt-2 flex justify-end">
           <Button
             type="submit"
-            disabled={isPending}
+            disabled={createFamilyMutation.isPending}
           >
-            {isPending ? "创建中..." : "创建"}
+            {createFamilyMutation.isPending ? "创建中..." : "创建"}
           </Button>
         </div>
       </form>

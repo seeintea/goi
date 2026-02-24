@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "@tanstack/react-router"
 import { useState } from "react"
-import { login, register } from "@/api/service/auth"
+import { useLogin, useRegister } from "@/api/queries/auth"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { FieldError } from "@/components/ui/field"
 import { sha1Hex } from "@/utils/crypto"
@@ -10,56 +10,43 @@ import { RegisterForm, type RegisterFormValues } from "./components/register-for
 export function Register() {
   const navigate = useNavigate()
   const setUser = useUser((state) => state.setUser)
+  const registerMutation = useRegister()
+  const loginMutation = useLogin()
   const [submitError, setSubmitError] = useState("")
   const [submitSuccess, setSubmitSuccess] = useState("")
-  const [isPending, setIsPending] = useState(false)
 
   const handleRegisterSubmit = async (values: RegisterFormValues) => {
     setSubmitError("")
     setSubmitSuccess("")
-    setIsPending(true)
+    
     try {
       const username = values.username.trim()
       const password = await sha1Hex(values.password)
 
-      const resp = await register({
-        data: {
-          username,
-          password,
-          email: values.email.trim() || undefined,
-          phone: values.phone.trim() || undefined,
-        },
+      await registerMutation.mutateAsync({
+        username,
+        password,
+        email: values.email.trim() || undefined,
+        phone: values.phone.trim() || undefined,
       })
-
-      if (resp.error) {
-        setSubmitError(resp.error)
-        return
-      }
 
       setSubmitSuccess("注册成功，正在登录...")
 
       // Auto login
-      const loginResp = await login({ data: { username, password } })
-      if (loginResp.error || !loginResp.data) {
-        setSubmitError(loginResp.error || "登录失败")
-        setSubmitSuccess("")
-        return
-      }
-
+      const loginResp = await loginMutation.mutateAsync({ username, password })
+      
       setUser({
-        token: loginResp.data.accessToken,
-        userId: loginResp.data.userId,
-        username: loginResp.data.username,
-        roleId: loginResp.data.roleId ?? "",
-        roleName: loginResp.data.roleName ?? "",
+        token: loginResp.accessToken,
+        userId: loginResp.userId,
+        username: loginResp.username,
+        roleId: loginResp.roleId ?? "",
+        roleName: loginResp.roleName ?? "",
       })
 
       navigate({ to: "/" })
     } catch (error) {
       const e = error as Error
       setSubmitError(e.message || "注册失败")
-    } finally {
-      setIsPending(false)
     }
   }
 
@@ -77,7 +64,7 @@ export function Register() {
           </div>
           <RegisterForm
             onSubmit={handleRegisterSubmit}
-            isPending={isPending}
+            isPending={registerMutation.isPending || loginMutation.isPending}
           />
           <div className="text-center text-sm text-muted-foreground">
             已有账号？{" "}

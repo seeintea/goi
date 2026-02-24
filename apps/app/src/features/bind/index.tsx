@@ -1,5 +1,5 @@
 import { useNavigate, useRouter } from "@tanstack/react-router"
-import { logout } from "@/api/service/auth"
+import { useLogout } from "@/api/queries/auth"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
@@ -10,9 +10,9 @@ import { CreateFamilyDialog } from "./components/create-family-dialog"
 export function Bind() {
   const navigate = useNavigate()
   const router = useRouter()
+  const logoutMutation = useLogout()
 
   const setFamilyId = useUser((s) => s.setFamilyId)
-  const resetUser = useUser((s) => s.reset)
 
   const handleSuccess = (id: string) => {
     setFamilyId(id)
@@ -20,8 +20,7 @@ export function Bind() {
   }
 
   const handleLogout = async () => {
-    await logout()
-    resetUser()
+    await logoutMutation.mutateAsync()
     await router.invalidate()
     navigate({ to: "/login", replace: true })
   }
@@ -36,8 +35,9 @@ export function Bind() {
               variant="ghost"
               size="sm"
               onClick={handleLogout}
+              disabled={logoutMutation.isPending}
             >
-              退出登录
+              {logoutMutation.isPending ? "退出中..." : "退出登录"}
             </Button>
           </div>
         </CardHeader>

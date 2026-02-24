@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "@tanstack/react-router"
 import { useState } from "react"
-import { login } from "@/api/service/auth"
+import { useLogin } from "@/api/queries/auth"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { FieldError } from "@/components/ui/field"
 import { sha1Hex } from "@/utils/crypto"
@@ -10,36 +10,28 @@ import { LoginForm, type LoginFormValues } from "./components/login-form"
 export function Login() {
   const navigate = useNavigate()
   const setUser = useUser((state) => state.setUser)
+  const loginMutation = useLogin()
   const [submitError, setSubmitError] = useState("")
-  const [isPending, setIsPending] = useState(false)
 
   const handleLoginSubmit = async (values: LoginFormValues) => {
     setSubmitError("")
-    setIsPending(true)
     try {
       const password = await sha1Hex(values.password)
-      const res = await login({ data: { username: values.username, password } })
+      const res = await loginMutation.mutateAsync({ username: values.username, password })
 
-      if (res?.error) {
-        setSubmitError(res.error)
-        return
-      }
-
-      if (res.data) {
+      if (res) {
         setUser({
-          token: res.data.accessToken,
-          userId: res.data.userId,
-          username: res.data.username,
-          roleId: res.data.roleId ?? "",
-          roleName: res.data.roleName ?? "",
+          token: res.accessToken,
+          userId: res.userId,
+          username: res.username,
+          roleId: res.roleId ?? "",
+          roleName: res.roleName ?? "",
         })
         navigate({ to: "/" })
       }
     } catch (error) {
       console.error(error)
-      // Redirects are handled automatically by the router/server function
-    } finally {
-      setIsPending(false)
+      setSubmitError((error as Error).message || "登录失败")
     }
   }
 
@@ -56,7 +48,7 @@ export function Login() {
           </div>
           <LoginForm
             onSubmit={handleLoginSubmit}
-            isPending={isPending}
+            isPending={loginMutation.isPending}
           />
           <div className="text-center text-sm text-muted-foreground">
             还没有账号？{" "}

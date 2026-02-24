@@ -1,5 +1,5 @@
 import { useCallback, useState } from "react"
-import { bindFamily } from "@/api/service/family"
+import { useBindFamily } from "@/api/queries/family"
 import { Button } from "@/components/ui/button"
 import { FieldError } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input"
 export function BindFamilySection({ onBound }: { onBound: (familyId: string) => void }) {
   const [bindFamilyId, setBindFamilyId] = useState("")
   const [bindError, setBindError] = useState("")
-  const [isBinding, setIsBinding] = useState(false)
+  const bindFamilyMutation = useBindFamily()
 
   const handleBind = useCallback(async () => {
     setBindError("")
@@ -18,20 +18,14 @@ export function BindFamilySection({ onBound }: { onBound: (familyId: string) => 
       return
     }
 
-    setIsBinding(true)
     try {
-      await bindFamily({
-        data: { familyId: nextFamilyId },
-      })
-
+      await bindFamilyMutation.mutateAsync({ familyId: nextFamilyId })
       onBound(nextFamilyId)
     } catch (error) {
       const e = error as Error
       setBindError(e.message || "绑定失败")
-    } finally {
-      setIsBinding(false)
     }
-  }, [bindFamilyId, onBound])
+  }, [bindFamilyId, onBound, bindFamilyMutation])
 
   return (
     <div className="flex flex-col gap-2">
@@ -43,10 +37,10 @@ export function BindFamilySection({ onBound }: { onBound: (familyId: string) => 
           placeholder="输入 familyId"
         />
         <Button
-          disabled={isBinding}
+          disabled={bindFamilyMutation.isPending}
           onClick={handleBind}
         >
-          {isBinding ? "绑定中..." : "绑定"}
+          {bindFamilyMutation.isPending ? "绑定中..." : "绑定"}
         </Button>
       </div>
       <FieldError errors={bindError ? [{ message: bindError }] : undefined} />
