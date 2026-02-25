@@ -1,24 +1,18 @@
-import type { 
-  Login, 
-  LoginResponse, 
-  NavMenuTree, 
-  Register 
-} from "@goi/contracts"
+import type { Login, LoginResponse, NavMenuTree, Register } from "@goi/contracts"
 import type { RequestFn } from "../core/types"
 
 export const createAuthApi = (request: RequestFn) => ({
-  
   login: (data: Login) => {
     return request<LoginResponse>("/api/sys/auth/login", {
       method: "POST",
-      body: JSON.stringify(data),
+      body: data,
     })
   },
 
   register: (data: Register) => {
     return request<LoginResponse>("/api/sys/auth/register", {
       method: "POST",
-      body: JSON.stringify(data),
+      body: data,
     })
   },
 
@@ -38,7 +32,7 @@ export const createAuthApi = (request: RequestFn) => ({
 
   getPermissions: () => {
     return request<string[]>("/api/sys/auth/permissions")
-  }
+  },
 })
 
 export type AuthApi = ReturnType<typeof createAuthApi>

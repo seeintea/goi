@@ -35,7 +35,13 @@ export class AppAuthenticator implements NestKitAuthenticator {
     const token = extractBearerToken(req)
     if (!token) throw new UnauthorizedException()
 
-    const payload = (await this.jwtService.verifyAsync(token)) as JwtPayload
+    let payload: JwtPayload | undefined
+    try {
+      payload = (await this.jwtService.verifyAsync(token)) as JwtPayload
+    } catch {
+      throw new UnauthorizedException("Invalid token")
+    }
+
     if (!payload?.userId) throw new UnauthorizedException()
 
     const cached = await this.redisService.get(`auth:token:${token}`)

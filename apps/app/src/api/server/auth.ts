@@ -5,23 +5,30 @@ import { serverRequest } from "../core/server"
 
 const api = createAuthApi(serverRequest)
 
-const loginFnBase = createServerFn({ method: "POST" }).handler(
-  async (ctx: { data: unknown }): Promise<LoginResponse> => {
-    const data = ctx.data as Login
-    // 1. Call Backend API
-    const res = await api.login(data)
+const loginFnBase = createServerFn({ method: "POST" }).handler(async (ctx: { data: unknown }) => {
+  const data = ctx.data as Login
+  if (!data || typeof data !== "object" || !("username" in data) || !("password" in data)) {
+    throw new Error("Invalid input")
+  }
+  const payload = data
 
-    // 2. Set Session Cookie
+  try {
+    const resp = await api.login(payload)
+
+    // Dynamic import to avoid bundling server code on client
     const { getAppSession } = await import("@/utils/server/session.server")
     const session = await getAppSession()
 
-    await session.update({
-      ...res,
-    })
+    await session.update(resp)
 
-    return res
-  },
-)
+    return resp
+  } catch (error) {
+    console.error("Login error:", error)
+    return {
+      error: (error as Error).message || "登录服务异常",
+    }
+  }
+})
 
 export const loginFn = loginFnBase as unknown as (ctx: { data: Login }) => Promise<LoginResponse>
 
@@ -56,7 +63,6 @@ export const getAuthUserFn = createServerFn({ method: "GET" }).handler(async ():
     const accessToken = session.data?.accessToken
 
     if (!accessToken) return undefined
-
     const user = await api.getMe()
     return { ...user, accessToken }
   } catch (error) {

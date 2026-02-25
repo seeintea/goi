@@ -1,14 +1,15 @@
 // Core Layer: Client Strategy (Browser)
 // Uses browser fetch and Zustand store for auth token.
 
-import { FetchInstance, withHeader } from "@goi/utils-web"
+import type { ApiResponse } from "@goi/contracts"
+import { FetchInstance, stringifyUrl, withHeader } from "@goi/utils-web"
 import { redirect } from "@tanstack/react-router"
 import { useUser } from "@/stores/useUser"
-import type { RequestFn } from "./types"
+import type { RequestConfig, RequestFn } from "./types"
 
 // Initialize the fetch instance
 const http = new FetchInstance({
-  baseURL: import.meta.env.VITE_API_BASE_URL || "",
+  baseURL: import.meta.env.PUBLIC_BASE_URL || "",
   timeout: 30000,
 })
 
@@ -61,9 +62,32 @@ http.addResponseInterceptor((response) => {
   return response
 })
 
-export const clientRequest: RequestFn = async (url, config = {}) => {
+export const clientRequest: RequestFn = async <T>(url: string, config: RequestConfig = {}) => {
   try {
-    return await http.request(url, config)
+    const { params, body, ...rest } = config
+    let fullUrl = url
+    let requestBody = body as BodyInit | null | undefined
+
+    if (params) {
+      fullUrl = stringifyUrl(url, params)
+    }
+
+    if (
+      body &&
+      typeof body === "object" &&
+      !(body instanceof FormData) &&
+      !(body instanceof Blob) &&
+      !(body instanceof URLSearchParams)
+    ) {
+      requestBody = JSON.stringify(body)
+      rest.headers = withHeader(rest.headers, "Content-Type", "application/json")
+    }
+
+    const response = await http.request<ApiResponse<T>>(fullUrl, { ...rest, body: requestBody })
+    if (response.code === 200) {
+      return response.data
+    }
+    throw new Error(response.message || "请求失败")
   } catch (error) {
     // Handle errors specifically if needed, or rethrow
     // If 401 happened, the interceptor might have handled reset.

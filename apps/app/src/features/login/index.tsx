@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "@tanstack/react-router"
 import { useState } from "react"
-import { useLogin } from "@/api/queries/auth"
+import { loginFn } from "@/api/server/auth"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { FieldError } from "@/components/ui/field"
 import { useUser } from "@/stores/useUser"
@@ -10,22 +10,23 @@ import { LoginForm, type LoginFormValues } from "./components/login-form"
 export function Login() {
   const navigate = useNavigate()
   const setUser = useUser((state) => state.setUser)
-  const loginMutation = useLogin()
+  const [isPending, setIsPending] = useState(false)
   const [submitError, setSubmitError] = useState("")
 
   const handleLoginSubmit = async (values: LoginFormValues) => {
     setSubmitError("")
+    setIsPending(true)
     try {
       const password = await sha1Hex(values.password)
-      const res = await loginMutation.mutateAsync({ username: values.username, password })
+      const resp = await loginFn({ data: { username: values.username, password } })
 
-      if (res) {
+      if (resp) {
         setUser({
-          token: res.accessToken,
-          userId: res.userId,
-          username: res.username,
-          roleId: res.roleId ?? "",
-          roleName: res.roleName ?? "",
+          token: resp.accessToken,
+          userId: resp.userId,
+          username: resp.username,
+          roleId: resp.roleId ?? "",
+          roleName: resp.roleName ?? "",
         })
         navigate({ to: "/" })
       }
@@ -48,7 +49,7 @@ export function Login() {
           </div>
           <LoginForm
             onSubmit={handleLoginSubmit}
-            isPending={loginMutation.isPending}
+            isPending={isPending}
           />
           <div className="text-center text-sm text-muted-foreground">
             还没有账号？{" "}
