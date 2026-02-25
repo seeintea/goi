@@ -13,21 +13,15 @@ const loginFnBase = createServerFn({ method: "POST" }).handler(async (ctx: { dat
   const payload = data
 
   try {
-    const res = await api.login(payload)
+    const resp = await api.login(payload)
 
     // Dynamic import to avoid bundling server code on client
     const { getAppSession } = await import("@/utils/server/session.server")
     const session = await getAppSession()
 
-    const sessionData = {
-      ...res,
-    }
+    await session.update(resp)
 
-    await session.update(sessionData)
-
-    return {
-      data: sessionData,
-    }
+    return resp
   } catch (error) {
     console.error("Login error:", error)
     return {

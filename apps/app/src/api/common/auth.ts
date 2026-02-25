@@ -5,14 +5,14 @@ export const createAuthApi = (request: RequestFn) => ({
   login: (data: Login) => {
     return request<LoginResponse>("/api/sys/auth/login", {
       method: "POST",
-      body: JSON.stringify(data),
+      body: data,
     })
   },
 
   register: (data: Register) => {
     return request<LoginResponse>("/api/sys/auth/register", {
       method: "POST",
-      body: JSON.stringify(data),
+      body: data,
     })
   },
 

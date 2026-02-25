@@ -18,17 +18,15 @@ export function Login() {
     setIsPending(true)
     try {
       const password = await sha1Hex(values.password)
-      const data = await loginFn({ data: { username: values.username, password } })
+      const resp = await loginFn({ data: { username: values.username, password } })
 
-      const res = data?.data?.data as any
-
-      if (res) {
+      if (resp) {
         setUser({
-          token: res.accessToken,
-          userId: res.userId,
-          username: res.username,
-          roleId: res.roleId ?? "",
-          roleName: res.roleName ?? "",
+          token: resp.accessToken,
+          userId: resp.userId,
+          username: resp.username,
+          roleId: resp.roleId ?? "",
+          roleName: resp.roleName ?? "",
         })
         navigate({ to: "/" })
       }
