@@ -4,7 +4,7 @@ import { generateSalt, hashPassword, verifyPassword } from "@goi/utils-node"
 import { Injectable, UnauthorizedException } from "@nestjs/common"
 import { ConfigService } from "@nestjs/config"
 import { JwtService } from "@nestjs/jwt"
-import { and, desc, eq, isNull } from "drizzle-orm"
+import { and, desc, eq, inArray, isNull, or } from "drizzle-orm"
 import { v4 as uuid } from "uuid"
 import { FAMILY_ROLE_CONFIG } from "@/config/family-role.config"
 import { PgService, pgSchema } from "@/database/postgresql"
@@ -19,6 +19,7 @@ const {
   authPermission: permissionSchema,
   authRolePermission: rolePermissionSchema,
   authModule: appModule,
+  authRoleModule: roleModuleSchema,
 } = pgSchema
 
 @Injectable()
@@ -103,22 +104,24 @@ export class AuthService {
   }
 
   async getNav(userId: string, familyId?: string): Promise<NavMenuTree[]> {
-    const permissions = await this.getPermissions(userId, familyId)
+    const allowedModuleIds = await this.getAccessibleModuleIds(userId, familyId)
 
-    const allModules = await this.pg.pdb
+    const conditions = [eq(appModule.isDeleted, false)]
+
+    if (allowedModuleIds.length > 0) {
+      const condition = or(isNull(appModule.permissionCode), inArray(appModule.moduleId, allowedModuleIds))
+      if (condition) conditions.push(condition)
+    } else {
+      conditions.push(isNull(appModule.permissionCode))
+    }
+
+    const modules = await this.pg.pdb
       .select()
       .from(appModule)
-      .where(eq(appModule.isDeleted, false))
+      .where(and(...conditions))
       .orderBy(appModule.sort)
 
-    const validModules = allModules.filter((m) => {
-      if (m.permissionCode && !permissions.includes(m.permissionCode)) {
-        return false
-      }
-      return true
-    })
-
-    return this.buildMenuTree(validModules)
+    return this.buildMenuTree(modules)
   }
 
   private buildMenuTree(modules: (typeof appModule.$inferSelect)[], parentId: string | null = null): NavMenuTree[] {
@@ -128,7 +131,7 @@ export class AuthService {
         const subChildren = this.buildMenuTree(modules, m.moduleId)
         return {
           moduleId: m.moduleId,
-          parentId: m.parentId as any,
+          parentId: m.parentId,
           name: m.name,
           routePath: m.routePath,
           permissionCode: m.permissionCode,
@@ -216,6 +219,71 @@ export class AuthService {
     }
 
     return Array.from(permissionSet)
+  }
+
+  async getAccessibleModuleIds(userId: string, familyId?: string): Promise<string[]> {
+    let targetFamilyId: string | null | undefined = familyId
+    let roleId: string | null = null
+    let roleCode: string | null = null
+
+    if (!targetFamilyId) {
+      const context = await this.resolveLoginContext(userId)
+      targetFamilyId = context.familyId
+      roleId = context.roleId
+      roleCode = context.roleCode
+    } else {
+      const memberRows = await this.pg.pdb
+        .select({
+          roleId: familyMemberSchema.roleId,
+          roleCode: roleSchema.roleCode,
+        })
+        .from(familyMemberSchema)
+        .innerJoin(roleSchema, eq(familyMemberSchema.roleId, roleSchema.roleId))
+        .where(
+          and(
+            eq(familyMemberSchema.userId, userId),
+            eq(familyMemberSchema.familyId, targetFamilyId),
+            eq(familyMemberSchema.status, "active"),
+          ),
+        )
+        .limit(1)
+
+      if (memberRows[0]) {
+        roleId = memberRows[0].roleId
+        roleCode = memberRows[0].roleCode
+      }
+    }
+
+    if (!roleId || !roleCode) return []
+
+    const shouldInherit = (FAMILY_ROLE_CONFIG.GLOBAL_PERMISSION_INHERITANCE_ROLES as readonly string[]).includes(
+      roleCode,
+    )
+
+    // 1. Fetch local modules
+    const localModules = await this.pg.pdb
+      .select({ moduleId: roleModuleSchema.moduleId })
+      .from(roleModuleSchema)
+      .innerJoin(appModule, eq(roleModuleSchema.moduleId, appModule.moduleId))
+      .where(and(eq(roleModuleSchema.roleId, roleId), eq(appModule.isDeleted, false)))
+
+    const moduleSet = new Set(localModules.map((r) => r.moduleId))
+
+    // 2. If role should inherit global permissions, fetch them and merge
+    if (shouldInherit) {
+      const globalModules = await this.pg.pdb
+        .select({ moduleId: roleModuleSchema.moduleId })
+        .from(roleModuleSchema)
+        .innerJoin(roleSchema, eq(roleModuleSchema.roleId, roleSchema.roleId))
+        .innerJoin(appModule, eq(roleModuleSchema.moduleId, appModule.moduleId))
+        .where(and(eq(roleSchema.roleCode, roleCode), isNull(roleSchema.familyId), eq(appModule.isDeleted, false)))
+
+      for (const m of globalModules) {
+        moduleSet.add(m.moduleId)
+      }
+    }
+
+    return Array.from(moduleSet)
   }
 
   private async resolveLoginContext(

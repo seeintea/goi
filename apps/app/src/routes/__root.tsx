@@ -1,8 +1,8 @@
 import type { LoginResponse, NavMenuTree } from "@goi/contracts"
-import type { QueryClient } from "@tanstack/react-query"
+import { type QueryClient, useSuspenseQuery } from "@tanstack/react-query"
 import { createRootRouteWithContext } from "@tanstack/react-router"
 
-import { getAuthUserFn, getNavFn, getPermissionsFn } from "@/api/server/auth"
+import { authUserQueryOptions, navQueryOptions, permissionsQueryOptions } from "@/api/queries/auth"
 import appCss from "@/app.css?url"
 import { DefaultCatchBoundary, Layout, NotFound } from "@/layout"
 import { seo } from "@/utils/seo"
@@ -15,8 +15,13 @@ type RouterContext = {
 }
 
 export const Route = createRootRouteWithContext<RouterContext>()({
-  beforeLoad: async () => {
-    const [user, menuTree, permissions] = await Promise.all([getAuthUserFn(), getNavFn(), getPermissionsFn()])
+  beforeLoad: async ({ context }) => {
+    const { queryClient } = context
+    const [user, menuTree, permissions] = await Promise.all([
+      queryClient.ensureQueryData(authUserQueryOptions()),
+      queryClient.ensureQueryData(navQueryOptions()),
+      queryClient.ensureQueryData(permissionsQueryOptions()),
+    ])
     return { user, menuTree, permissions }
   },
   head: () => ({
@@ -28,13 +33,17 @@ export const Route = createRootRouteWithContext<RouterContext>()({
   }),
   errorComponent: DefaultCatchBoundary,
   notFoundComponent: NotFound,
-  component: () => {
-    const { user, menuTree } = Route.useRouteContext()
-    return (
-      <Layout
-        user={user}
-        menuTree={menuTree}
-      />
-    )
-  },
+  component: RootComponent,
 })
+
+function RootComponent() {
+  const { data: user } = useSuspenseQuery(authUserQueryOptions())
+  const { data: menuTree } = useSuspenseQuery(navQueryOptions())
+
+  return (
+    <Layout
+      user={user}
+      menuTree={menuTree}
+    />
+  )
+}

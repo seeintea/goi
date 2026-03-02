@@ -1,6 +1,6 @@
-import { Link, useNavigate } from "@tanstack/react-router"
+import { Link, useNavigate, useRouter } from "@tanstack/react-router"
 import { useState } from "react"
-import { loginFn } from "@/api/server/auth"
+import { useLogin } from "@/api/queries/auth"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { FieldError } from "@/components/ui/field"
 import { useUser } from "@/stores/useUser"
@@ -9,7 +9,9 @@ import { LoginForm, type LoginFormValues } from "./components/login-form"
 
 export function Login() {
   const navigate = useNavigate()
+  const router = useRouter()
   const setUser = useUser((state) => state.setUser)
+  const loginMutation = useLogin()
   const [isPending, setIsPending] = useState(false)
   const [submitError, setSubmitError] = useState("")
 
@@ -18,7 +20,7 @@ export function Login() {
     setIsPending(true)
     try {
       const password = await sha1Hex(values.password)
-      const resp = await loginFn({ data: { username: values.username, password } })
+      const resp = await loginMutation.mutateAsync({ username: values.username, password })
 
       if (resp) {
         setUser({
@@ -28,11 +30,13 @@ export function Login() {
           roleId: resp.roleId ?? "",
           roleName: resp.roleName ?? "",
         })
+        await router.invalidate()
         navigate({ to: "/" })
       }
     } catch (error) {
       console.error(error)
       setSubmitError((error as Error).message || "登录失败")
+      setIsPending(false)
     }
   }
 

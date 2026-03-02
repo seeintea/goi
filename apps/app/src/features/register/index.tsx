@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "@tanstack/react-router"
+import { Link, useNavigate, useRouter } from "@tanstack/react-router"
 import { useState } from "react"
 import { useLogin, useRegister } from "@/api/queries/auth"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -9,6 +9,7 @@ import { RegisterForm, type RegisterFormValues } from "./components/register-for
 
 export function Register() {
   const navigate = useNavigate()
+  const router = useRouter()
   const setUser = useUser((state) => state.setUser)
   const registerMutation = useRegister()
   const loginMutation = useLogin()
@@ -43,6 +44,7 @@ export function Register() {
         roleName: loginResp.roleName ?? "",
       })
 
+      await router.invalidate()
       navigate({ to: "/" })
     } catch (error) {
       const e = error as Error
