@@ -12,7 +12,9 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as RegisterRouteImport } from './routes/register'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as DashboardRouteImport } from './routes/dashboard'
+import { Route as SystemRouteRouteImport } from './routes/system/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as SystemUserRouteImport } from './routes/system/user'
 
 const RegisterRoute = RegisterRouteImport.update({
   id: '/register',
@@ -29,41 +31,71 @@ const DashboardRoute = DashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SystemRouteRoute = SystemRouteRouteImport.update({
+  id: '/system',
+  path: '/system',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SystemUserRoute = SystemUserRouteImport.update({
+  id: '/user',
+  path: '/user',
+  getParentRoute: () => SystemRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/system': typeof SystemRouteRouteWithChildren
   '/dashboard': typeof DashboardRoute
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
+  '/system/user': typeof SystemUserRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/system': typeof SystemRouteRouteWithChildren
   '/dashboard': typeof DashboardRoute
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
+  '/system/user': typeof SystemUserRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/system': typeof SystemRouteRouteWithChildren
   '/dashboard': typeof DashboardRoute
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
+  '/system/user': typeof SystemUserRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/dashboard' | '/login' | '/register'
+  fullPaths:
+    | '/'
+    | '/system'
+    | '/dashboard'
+    | '/login'
+    | '/register'
+    | '/system/user'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/dashboard' | '/login' | '/register'
-  id: '__root__' | '/' | '/dashboard' | '/login' | '/register'
+  to: '/' | '/system' | '/dashboard' | '/login' | '/register' | '/system/user'
+  id:
+    | '__root__'
+    | '/'
+    | '/system'
+    | '/dashboard'
+    | '/login'
+    | '/register'
+    | '/system/user'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  SystemRouteRoute: typeof SystemRouteRouteWithChildren
   DashboardRoute: typeof DashboardRoute
   LoginRoute: typeof LoginRoute
   RegisterRoute: typeof RegisterRoute
@@ -92,6 +124,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/system': {
+      id: '/system'
+      path: '/system'
+      fullPath: '/system'
+      preLoaderRoute: typeof SystemRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -99,11 +138,31 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/system/user': {
+      id: '/system/user'
+      path: '/user'
+      fullPath: '/system/user'
+      preLoaderRoute: typeof SystemUserRouteImport
+      parentRoute: typeof SystemRouteRoute
+    }
   }
 }
 
+interface SystemRouteRouteChildren {
+  SystemUserRoute: typeof SystemUserRoute
+}
+
+const SystemRouteRouteChildren: SystemRouteRouteChildren = {
+  SystemUserRoute: SystemUserRoute,
+}
+
+const SystemRouteRouteWithChildren = SystemRouteRoute._addFileChildren(
+  SystemRouteRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  SystemRouteRoute: SystemRouteRouteWithChildren,
   DashboardRoute: DashboardRoute,
   LoginRoute: LoginRoute,
   RegisterRoute: RegisterRoute,

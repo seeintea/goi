@@ -5,7 +5,9 @@ import { and, desc, eq, ilike, sql } from "drizzle-orm"
 import { v4 as uuid } from "uuid"
 import { FAMILY_ROLE_CONFIG } from "@/config/family-role.config"
 import { PgService, pgSchema } from "@/database/postgresql"
+import { RedisService } from "@/database/redis"
 import { RoleService } from "@/modules/role/role.service"
+import * as crypto from "node:crypto"
 import type { PageResult } from "@/types/response"
 
 const { financeFamily, authRole: roleSchema, financeFamilyMember: familyMemberSchema } = pgSchema
@@ -15,7 +17,17 @@ export class FamilyService {
   constructor(
     private readonly pg: PgService,
     private readonly roleService: RoleService,
+    private readonly redisService: RedisService,
   ) {}
+
+  async generateInviteCode(userId: string, familyId: string): Promise<string> {
+    const code = crypto.randomBytes(6).toString("hex")
+    const key = `invite:code:${code}`
+    const value = JSON.stringify({ familyId, userId })
+    // 7 days in seconds
+    await this.redisService.set(key, value, 7 * 24 * 60 * 60)
+    return code
+  }
 
   async find(id: string, tx?: Parameters<Parameters<PgService["pdb"]["transaction"]>[0]>[0]): Promise<Family> {
     const db = tx || this.pg.pdb

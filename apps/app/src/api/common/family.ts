@@ -1,4 +1,11 @@
-import type { CreateFamily, Family, PageResult } from "@goi/contracts"
+import type {
+  CreateFamily,
+  Family,
+  GenerateInviteCode,
+  InviteCodeResponse,
+  PageResult,
+  UpdateFamily,
+} from "@goi/contracts"
 import { pageQuerySchema } from "@goi/contracts"
 import { z } from "zod"
 import type { RequestFn } from "../core/types"
@@ -13,20 +20,40 @@ export type FamilyListQuery = z.infer<typeof familyListQuerySchema>
 
 export const createFamilyApi = (request: RequestFn) => ({
   create: (data: CreateFamily) => {
-    return request<Family>("/api/ff/book/create", {
+    return request<Family>("/api/families/create", {
       method: "POST",
       body: data,
     })
   },
 
   list: (query?: FamilyListQuery) => {
-    return request<PageResult<Family>>("/api/ff/book/list", {
+    return request<PageResult<Family>>("/api/families/list", {
       params: query,
     })
   },
 
-  bind: (data: { familyId: string }) => {
-    return request<boolean>("/api/ff/book/bind", {
+  find: (id: string) => {
+    return request<Family>("/api/families/find", {
+      params: { id },
+    })
+  },
+
+  update: (data: UpdateFamily) => {
+    return request<Family>("/api/families/update", {
+      method: "POST",
+      body: data,
+    })
+  },
+
+  delete: (id: string) => {
+    return request<boolean>("/api/families/delete", {
+      method: "POST",
+      body: { id },
+    })
+  },
+
+  generateInviteCode: (data: GenerateInviteCode) => {
+    return request<InviteCodeResponse>("/api/families/invite-code", {
       method: "POST",
       body: data,
     })

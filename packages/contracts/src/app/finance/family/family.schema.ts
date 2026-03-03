@@ -40,3 +40,14 @@ export const familyPageResponseSchema = pageResponseSchema(familyResponseSchema)
 export type Family = z.infer<typeof familySchema>
 export type CreateFamily = z.infer<typeof createFamilySchema>
 export type UpdateFamily = z.infer<typeof updateFamilySchema>
+
+export const generateInviteCodeSchema = z.object({
+  familyId: z.uuid(),
+})
+
+export const inviteCodeResponseSchema = z.object({
+  code: z.string(),
+})
+
+export type GenerateInviteCode = z.infer<typeof generateInviteCodeSchema>
+export type InviteCodeResponse = z.infer<typeof inviteCodeResponseSchema>

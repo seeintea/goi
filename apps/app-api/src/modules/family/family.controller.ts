@@ -11,6 +11,8 @@ import {
   FamilyListQueryDto,
   FamilyPageResponseDto,
   FamilyResponseDto,
+  GenerateInviteCodeDto,
+  InviteCodeResponseDto,
   UpdateFamilyDto,
 } from "./family.dto"
 import { FamilyService } from "./family.service"
@@ -19,6 +21,15 @@ import { FamilyService } from "./family.service"
 @Controller("families")
 export class FamilyController {
   constructor(private readonly familyService: FamilyService) {}
+
+  @Post("invite-code")
+  @Permission("fin:family:update")
+  @ApiOperation({ summary: "生成邀请码" })
+  @ZodResponse({ type: InviteCodeResponseDto })
+  async generateInviteCode(@CurrentUser() user: UserPayload, @Body() dto: GenerateInviteCodeDto) {
+    const code = await this.familyService.generateInviteCode(user.userId, dto.familyId)
+    return { code }
+  }
 
   @Post("create")
   @Permission("fin:family:create")
