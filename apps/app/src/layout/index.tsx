@@ -14,7 +14,7 @@ export { DefaultCatchBoundary } from "./default-catch-boundary"
 export { NotFound } from "./not-found"
 
 interface LayoutProps {
-  user?: User
+  user?: User | null
   menuTree?: NavMenuTree[]
 }
 

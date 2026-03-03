@@ -1,14 +1,16 @@
 import type { LoginResponse, NavMenuTree } from "@goi/contracts"
 import { type QueryClient, useSuspenseQuery } from "@tanstack/react-query"
-import { createRootRouteWithContext } from "@tanstack/react-router"
+import { createRootRouteWithContext, isRedirect } from "@tanstack/react-router"
 
 import { authUserQueryOptions, navQueryOptions, permissionsQueryOptions } from "@/api/queries/auth"
+import { logoutFn } from "@/api/server/auth"
 import appCss from "@/app.css?url"
 import { DefaultCatchBoundary, Layout, NotFound } from "@/layout"
+import { useUser } from "@/stores"
 import { seo } from "@/utils/seo"
 
 type RouterContext = {
-  user?: LoginResponse
+  user?: LoginResponse | null
   queryClient: QueryClient
   menuTree: NavMenuTree[]
   permissions: string[]
@@ -17,12 +19,21 @@ type RouterContext = {
 export const Route = createRootRouteWithContext<RouterContext>()({
   beforeLoad: async ({ context }) => {
     const { queryClient } = context
-    const [user, menuTree, permissions] = await Promise.all([
-      queryClient.ensureQueryData(authUserQueryOptions()),
-      queryClient.ensureQueryData(navQueryOptions()),
-      queryClient.ensureQueryData(permissionsQueryOptions()),
-    ])
-    return { user, menuTree, permissions }
+    try {
+      const [user, menuTree, permissions] = await Promise.all([
+        queryClient.ensureQueryData(authUserQueryOptions()),
+        queryClient.ensureQueryData(navQueryOptions()),
+        queryClient.ensureQueryData(permissionsQueryOptions()),
+      ])
+      return { user, menuTree, permissions }
+    } catch (e) {
+      useUser.getState().reset()
+      await logoutFn()
+      if (isRedirect(e)) {
+        throw e
+      }
+    }
+    return { user: null, menuTree: [], permissions: [] }
   },
   head: () => ({
     meta: seo({

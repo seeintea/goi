@@ -1,4 +1,5 @@
 import type { Login, LoginResponse, NavMenuTree } from "@goi/contracts"
+import { isRedirect } from "@tanstack/react-router"
 import { createServerFn } from "@tanstack/react-start"
 import { createAuthApi } from "../common/auth"
 import { serverRequest } from "../core/server"
@@ -23,6 +24,9 @@ const loginFnBase = createServerFn({ method: "POST" }).handler(async (ctx: { dat
 
     return resp
   } catch (error) {
+    if (isRedirect(error)) {
+      throw error
+    }
     console.error("Login error:", error)
     return {
       error: (error as Error).message || "登录服务异常",
@@ -37,6 +41,9 @@ export const logoutFn = createServerFn({ method: "POST" }).handler(async (): Pro
     // 1. Call Backend API (optional, but good practice)
     await api.logout()
   } catch (e) {
+    if (isRedirect(e)) {
+      throw e
+    }
     // Ignore backend logout errors, proceed to clear local session
     console.error("Backend logout failed:", e)
   }
@@ -49,7 +56,7 @@ export const logoutFn = createServerFn({ method: "POST" }).handler(async (): Pro
   return true
 })
 
-export const getAuthUserFn = createServerFn({ method: "GET" }).handler(async (): Promise<LoginResponse | undefined> => {
+export const getAuthUserFn = createServerFn({ method: "GET" }).handler(async (): Promise<LoginResponse | null> => {
   try {
     // In server context, we might need to handle token extraction differently
     // if not handled by serverRequest automatically from session.
@@ -62,12 +69,15 @@ export const getAuthUserFn = createServerFn({ method: "GET" }).handler(async ():
     const session = await getAppSession()
     const accessToken = session.data?.accessToken
 
-    if (!accessToken) return undefined
+    if (!accessToken) return null
     const user = await api.getMe()
     return { ...user, accessToken }
   } catch (error) {
+    if (isRedirect(error)) {
+      throw error
+    }
     console.error("Failed to fetch user profile:", error)
-    return undefined
+    return null
   }
 })
 
