@@ -1,9 +1,12 @@
 import type { GenerateInviteCode } from "@goi/contracts"
 import { useMutation } from "@tanstack/react-query"
-import { generateInviteCodeFn } from "../server/family"
+import { createFamilyApi } from "../common/family"
+import { clientRequest } from "../core/client"
+
+const api = createFamilyApi(clientRequest)
 
 export function useGenerateInviteCode() {
   return useMutation({
-    mutationFn: (data: GenerateInviteCode) => generateInviteCodeFn({ data }),
+    mutationFn: (data: GenerateInviteCode) => api.generateInviteCode(data),
   })
 }

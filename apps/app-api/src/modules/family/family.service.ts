@@ -1,3 +1,4 @@
+import * as crypto from "node:crypto"
 import type { CreateFamily, Family, UpdateFamily } from "@goi/contracts"
 import { normalizePage, toPageResult } from "@goi/utils"
 import { Injectable, NotFoundException } from "@nestjs/common"
@@ -7,7 +8,6 @@ import { FAMILY_ROLE_CONFIG } from "@/config/family-role.config"
 import { PgService, pgSchema } from "@/database/postgresql"
 import { RedisService } from "@/database/redis"
 import { RoleService } from "@/modules/role/role.service"
-import * as crypto from "node:crypto"
 import type { PageResult } from "@/types/response"
 
 const { financeFamily, authRole: roleSchema, financeFamilyMember: familyMemberSchema } = pgSchema
@@ -21,11 +21,30 @@ export class FamilyService {
   ) {}
 
   async generateInviteCode(userId: string, familyId: string): Promise<string> {
+    const userFamilyKey = `invite:user:${userId}:family:${familyId}`
+    const existingCode = await this.redisService.get(userFamilyKey)
+
+    if (existingCode) {
+      const key = `invite:code:${existingCode}`
+      const exists = await this.redisService.get(key)
+      if (exists) {
+        // Reset expiration for both keys
+        // 7 days in seconds
+        const ttl = 7 * 24 * 60 * 60
+        await Promise.all([
+          this.redisService.set(userFamilyKey, existingCode, ttl),
+          this.redisService.set(key, exists, ttl),
+        ])
+        return existingCode
+      }
+    }
+
     const code = crypto.randomBytes(6).toString("hex")
     const key = `invite:code:${code}`
     const value = JSON.stringify({ familyId, userId })
     // 7 days in seconds
-    await this.redisService.set(key, value, 7 * 24 * 60 * 60)
+    const ttl = 7 * 24 * 60 * 60
+    await Promise.all([this.redisService.set(key, value, ttl), this.redisService.set(userFamilyKey, code, ttl)])
     return code
   }
 
