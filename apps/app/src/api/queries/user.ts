@@ -1,7 +1,10 @@
-import type { CreateAppUser, UpdateAppUser } from "@goi/contracts"
+import type { CreateAppUser, ResetAppUserPassword, UpdateAppUser } from "@goi/contracts"
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import type { UserListQuery } from "../common/user"
-import { createUserFn, deleteUserFn, findUserFn, listUsersFn, updateUserFn } from "../server/user"
+import { createUserApi, type UserListQuery } from "../common/user"
+import { clientRequest } from "../core/client"
+import { deleteUserFn, findUserFn, listUsersFn, updateUserFn } from "../server/user"
+
+const api = createUserApi(clientRequest)
 
 export const userKeys = {
   all: ["user"] as const,
@@ -29,7 +32,7 @@ export function useUser(userId: string) {
 export function useCreateUser() {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: (data: CreateAppUser) => createUserFn({ data }),
+    mutationFn: (data: CreateAppUser) => api.create(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: userKeys.lists() })
     },
@@ -44,6 +47,12 @@ export function useUpdateUser() {
       queryClient.invalidateQueries({ queryKey: userKeys.lists() })
       queryClient.invalidateQueries({ queryKey: userKeys.find(data.userId) })
     },
+  })
+}
+
+export function useResetPassword() {
+  return useMutation({
+    mutationFn: (data: ResetAppUserPassword) => api.resetPassword(data),
   })
 }
 

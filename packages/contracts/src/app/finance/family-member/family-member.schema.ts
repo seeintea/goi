@@ -38,6 +38,12 @@ export const familyMemberListQuerySchema = pageQuerySchema.extend({
 
 export const familyMemberPageResponseSchema = pageResponseSchema(familyMemberResponseSchema)
 
+export const removeFamilyMemberByUserIdSchema = z.object({
+  familyId: z.uuid(),
+  userId: z.uuid(),
+})
+
 export type FamilyMember = z.infer<typeof familyMemberSchema>
 export type CreateFamilyMember = z.infer<typeof createFamilyMemberSchema>
 export type UpdateFamilyMember = z.infer<typeof updateFamilyMemberSchema>
+export type RemoveFamilyMemberByUserId = z.infer<typeof removeFamilyMemberByUserIdSchema>

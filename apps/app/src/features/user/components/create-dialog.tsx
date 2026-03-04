@@ -7,6 +7,7 @@ import { BaseDialog } from "@/components/base/base-dialog"
 import { FieldGroup, FormField } from "@/components/base/base-field"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { useUser } from "@/stores/useUser"
 
 type CreateUserFormValues = {
   username: string
@@ -14,11 +15,13 @@ type CreateUserFormValues = {
   nickname?: string
   email?: string
   phone?: string
+  familyId?: string
 }
 
 export function CreateUserDialog() {
   const [open, setOpen] = useState(false)
   const createUser = useCreateUser()
+  const familyId = useUser((s) => s.familyId)
 
   const form = useForm<CreateUserFormValues>({
     defaultValues: {
@@ -27,12 +30,17 @@ export function CreateUserDialog() {
       nickname: "",
       email: "",
       phone: "",
+      familyId: "",
     },
   })
 
   const onSubmit = async (values: CreateUserFormValues) => {
     try {
-      await createUser.mutateAsync(values)
+      await createUser.mutateAsync({
+        ...values,
+        isVirtual: true,
+        familyId: familyId ?? "",
+      })
       setOpen(false)
       form.reset()
     } catch (error) {

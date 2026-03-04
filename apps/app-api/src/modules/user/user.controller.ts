@@ -7,6 +7,7 @@ import { v4 as uuid } from "uuid"
 import {
   CreateUserDto,
   DeleteUserDto,
+  ResetUserPasswordDto,
   UpdateUserDto,
   UserListQueryDto,
   UserPageResponseDto,
@@ -51,6 +52,15 @@ export class UserController {
   @ZodResponse({ type: UserResponseDto })
   async update(@Body() body: UpdateUserDto) {
     return this.userService.update(body)
+  }
+
+  @Post("reset-password")
+  @Permission("sys:user:update")
+  @ApiOperation({ summary: "重置用户密码" })
+  async resetPassword(@Body() body: ResetUserPasswordDto) {
+    const salt = generateSalt(16)
+    const password = hashPassword(body.password, salt)
+    return this.userService.resetPassword(body.userId, password, salt)
   }
 
   @Post("delete")

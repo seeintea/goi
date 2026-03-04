@@ -75,6 +75,25 @@ export class FamilyMemberService {
     return true
   }
 
+  async removeByUserId(familyId: string, userId: string): Promise<boolean> {
+    const [deleted] = await this.pg.pdb
+      .update(financeFamilyMember)
+      .set({ isDeleted: true })
+      .where(
+        and(
+          eq(financeFamilyMember.familyId, familyId),
+          eq(financeFamilyMember.userId, userId),
+          eq(financeFamilyMember.isDeleted, false),
+        ),
+      )
+      .returning({
+        id: financeFamilyMember.id,
+      })
+
+    if (!deleted) throw new NotFoundException("FamilyMember not found")
+    return true
+  }
+
   async list(query: {
     familyId: string
     roleId?: string

@@ -9,6 +9,7 @@ import {
   FamilyMemberListQueryDto,
   FamilyMemberPageResponseDto,
   FamilyMemberResponseDto,
+  RemoveFamilyMemberByUserIdDto,
   UpdateFamilyMemberDto,
 } from "./family-member.dto"
 import { FamilyMemberService } from "./family-member.service"
@@ -48,6 +49,13 @@ export class FamilyMemberController {
   @ZodResponse({ type: FamilyMemberResponseDto })
   update(@Body() updateFamilyMemberDto: UpdateFamilyMemberDto) {
     return this.familyMemberService.update(updateFamilyMemberDto.id, updateFamilyMemberDto)
+  }
+
+  @Post("remove-by-user")
+  @Permission("fin:family-member:delete")
+  @ApiOperation({ summary: "移除家庭成员(按用户ID)" })
+  removeByUserId(@Body() dto: RemoveFamilyMemberByUserIdDto) {
+    return this.familyMemberService.removeByUserId(dto.familyId, dto.userId)
   }
 
   @Post("delete")

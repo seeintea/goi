@@ -6,22 +6,29 @@ import { ConfirmDialog } from "@/components/base/confirm-dialog"
 import { Button } from "@/components/ui/button"
 
 export type UserActions = {
+  currentUserId: string
   onEdit: (user: AppUser) => void
-  onDelete: (user: AppUser) => void
-  onToggleStatus: (user: AppUser) => void
+  onResetPassword: (user: AppUser) => void
+  onExitFamily: (user: AppUser) => void
+  onRemoveFromFamily: (user: AppUser) => void
 }
 
 export function getUserColumns({
+  currentUserId,
   onEdit,
-  onDelete,
-  onToggleStatus,
+  onResetPassword,
+  onExitFamily,
+  onRemoveFromFamily,
 }: UserActions): ColumnDef<AppUser>[] {
   return [
     {
       accessorKey: "userId",
       header: "ID",
       cell: ({ row }) => (
-        <div className="max-w-[100px] truncate font-mono text-xs" title={row.getValue("userId")}>
+        <div
+          className="max-w-[100px] truncate font-mono text-xs"
+          title={row.getValue("userId")}
+        >
           {row.getValue("userId")}
         </div>
       ),
@@ -46,15 +53,19 @@ export function getUserColumns({
       cell: ({ row }) => row.getValue("phone") || "-",
     },
     {
+      accessorKey: "isVirtual",
+      header: "虚拟账户",
+      cell: ({ row }) => {
+        const isVirtual = row.getValue("isVirtual")
+        return isVirtual ? "是" : "否"
+      },
+    },
+    {
       accessorKey: "isDisabled",
       header: "状态",
       cell: ({ row }) => {
         const isDisabled = row.getValue("isDisabled")
-        return (
-          <div className={isDisabled ? "text-destructive" : "text-green-600"}>
-            {isDisabled ? "禁用" : "正常"}
-          </div>
-        )
+        return <div className={isDisabled ? "text-destructive" : "text-green-600"}>{isDisabled ? "禁用" : "正常"}</div>
       },
     },
     {
@@ -70,32 +81,61 @@ export function getUserColumns({
       header: "操作",
       cell: ({ row }) => {
         const user = row.original
+        const isSelf = user.userId === currentUserId
+        const isVirtual = user.isVirtual
+
         return (
           <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => onEdit(user)}
-            >
-              编辑
-            </Button>
-            <Button
-              variant={user.isDisabled ? "outline" : "secondary"}
-              size="sm"
-              onClick={() => onToggleStatus(user)}
-            >
-              {user.isDisabled ? "启用" : "禁用"}
-            </Button>
-            <ConfirmDialog
-              title="确认删除"
-              description={`确定要删除用户 "${user.username}" 吗？此操作不可恢复。`}
-              onConfirm={() => onDelete(user)}
-              trigger={
-                <Button variant="destructive" size="sm">
-                  删除
+            {(isSelf || isVirtual) && (
+              <>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => onEdit(user)}
+                >
+                  编辑
                 </Button>
-              }
-            />
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => onResetPassword(user)}
+                >
+                  重置密码
+                </Button>
+              </>
+            )}
+
+            {isSelf && (
+              <ConfirmDialog
+                title="退出家庭"
+                description="确定要退出当前家庭吗？"
+                onConfirm={() => onExitFamily(user)}
+                trigger={
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                  >
+                    退出家庭
+                  </Button>
+                }
+              />
+            )}
+
+            {!isSelf && (
+              <ConfirmDialog
+                title="移出家庭"
+                description={`确定要将用户 "${user.username}" 移出家庭吗？`}
+                onConfirm={() => onRemoveFromFamily(user)}
+                trigger={
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                  >
+                    移出家庭
+                  </Button>
+                }
+              />
+            )}
           </div>
         )
       },

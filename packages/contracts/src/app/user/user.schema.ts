@@ -40,6 +40,7 @@ export const createAppUserSchema = z
     email: shape.email.optional(),
     phone: shape.phone.optional(),
     isVirtual: shape.isVirtual.optional(),
+    familyId: z.uuid().optional().describe("家庭ID"),
   })
   .meta({ id: "创建用户请求" })
 
@@ -79,6 +80,7 @@ export const appUserListQuerySchema = z
   .object({
     userId: shape.userId.optional(),
     username: shape.username.optional(),
+    familyId: z.uuid().optional().describe("家庭ID"),
     isDisabled: z.coerce.boolean().optional(),
     isDeleted: z.coerce.boolean().optional(),
     page: shape.page.optional(),

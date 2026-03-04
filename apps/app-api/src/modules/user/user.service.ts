@@ -1,11 +1,11 @@
 import type { AppUser, CreateAppUser, UpdateAppUser } from "@goi/contracts"
 import { normalizePage, toIsoString, toPageResult } from "@goi/utils"
 import { Injectable, NotFoundException } from "@nestjs/common"
-import { and, desc, eq, like, sql } from "drizzle-orm"
+import { and, desc, eq, exists, like, sql } from "drizzle-orm"
 import { PgService, pgSchema } from "@/database/postgresql"
 import type { PageResult } from "@/types/response"
 
-const { authUser: userSchema } = pgSchema
+const { authUser: userSchema, financeFamilyMember: familyMemberSchema, authRole: roleSchema } = pgSchema
 
 @Injectable()
 export class UserService {
@@ -68,22 +68,62 @@ export class UserService {
     return rows[0]
   }
 
-  async create(values: CreateAppUser & { salt: string; password: string; userId: string }): Promise<AppUser> {
-    const [inserted] = await this.pg.pdb
-      .insert(userSchema)
-      .values({
-        userId: values.userId,
-        username: values.username,
-        nickname: values.nickname ?? values.username,
-        password: values.password,
-        salt: values.salt,
-        email: values.email ?? "",
-        phone: values.phone ?? "",
-        isVirtual: values.isVirtual ?? false,
-        isDisabled: false,
-        isDeleted: false,
-      })
-      .returning({ userId: userSchema.userId })
+  async create(
+    values: CreateAppUser & { salt: string; password: string; userId: string; familyId?: string },
+  ): Promise<AppUser> {
+    const inserted = await this.pg.pdb.transaction(async (tx) => {
+      const [user] = await tx
+        .insert(userSchema)
+        .values({
+          userId: values.userId,
+          username: values.username,
+          nickname: values.nickname ?? values.username,
+          password: values.password,
+          salt: values.salt,
+          email: values.email ?? "",
+          phone: values.phone ?? "",
+          isVirtual: values.isVirtual ?? false,
+          isDisabled: false,
+          isDeleted: false,
+        })
+        .returning({ userId: userSchema.userId })
+
+      if (values.familyId) {
+        // Find 'member' role in the family, or fallback to 'owner' if not found?
+        // Actually, for virtual users, we should probably assign a minimal role.
+        // Let's try to find a role with code 'member'.
+        const [role] = await tx
+          .select({ roleId: roleSchema.roleId })
+          .from(roleSchema)
+          .where(and(eq(roleSchema.familyId, values.familyId), eq(roleSchema.roleCode, "member")))
+          .limit(1)
+
+        // If no 'member' role, maybe 'owner'? Or just pick any?
+        // Let's assume 'member' exists or use the first role found.
+        let roleId = role?.roleId
+
+        if (!roleId) {
+          const [anyRole] = await tx
+            .select({ roleId: roleSchema.roleId })
+            .from(roleSchema)
+            .where(eq(roleSchema.familyId, values.familyId))
+            .limit(1)
+          roleId = anyRole?.roleId
+        }
+
+        if (roleId) {
+          await tx.insert(familyMemberSchema).values({
+            id: sql`gen_random_uuid()`,
+            userId: values.userId,
+            familyId: values.familyId,
+            roleId: roleId,
+            status: "active",
+          })
+        }
+      }
+      return user
+    })
+
     return this.find(inserted.userId)
   }
 
@@ -101,6 +141,11 @@ export class UserService {
     return this.find(values.userId)
   }
 
+  async resetPassword(userId: string, password: string, salt: string): Promise<boolean> {
+    await this.pg.pdb.update(userSchema).set({ password, salt }).where(eq(userSchema.userId, userId))
+    return true
+  }
+
   async delete(userId: string): Promise<boolean> {
     await this.pg.pdb.update(userSchema).set({ isDeleted: true }).where(eq(userSchema.userId, userId))
     return true
@@ -109,12 +154,29 @@ export class UserService {
   async list(query: {
     userId?: string
     username?: string
+    familyId?: string
     page?: number | string
     pageSize?: number | string
   }): Promise<PageResult<AppUser>> {
     const where: Parameters<typeof and> = [eq(userSchema.isDeleted, false)]
     if (query.userId) where.push(eq(userSchema.userId, query.userId))
     if (query.username) where.push(like(userSchema.username, `%${query.username}%`))
+    if (query.familyId) {
+      where.push(
+        exists(
+          this.pg.pdb
+            .select({ id: familyMemberSchema.id })
+            .from(familyMemberSchema)
+            .where(
+              and(
+                eq(familyMemberSchema.userId, userSchema.userId),
+                eq(familyMemberSchema.familyId, query.familyId),
+                eq(familyMemberSchema.isDeleted, false),
+              ),
+            ),
+        ),
+      )
+    }
 
     const pageParams = normalizePage(query)
 

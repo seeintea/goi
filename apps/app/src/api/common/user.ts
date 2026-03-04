@@ -1,10 +1,11 @@
-import type { AppUser, CreateAppUser, PageResult, UpdateAppUser } from "@goi/contracts"
+import type { AppUser, CreateAppUser, PageResult, ResetAppUserPassword, UpdateAppUser } from "@goi/contracts"
 import { pageQuerySchema } from "@goi/contracts"
 import { z } from "zod"
 import type { RequestFn } from "../core/types"
 
 export const userListQuerySchema = pageQuerySchema.extend({
   username: z.string().optional(),
+  familyId: z.string().optional(),
 })
 export type UserListQuery = z.infer<typeof userListQuerySchema>
 
@@ -30,6 +31,13 @@ export const createUserApi = (request: RequestFn) => ({
 
   update: (data: UpdateAppUser) => {
     return request<AppUser>("/api/sys/user/update", {
+      method: "POST",
+      body: data,
+    })
+  },
+
+  resetPassword: (data: ResetAppUserPassword) => {
+    return request<boolean>("/api/sys/user/reset-password", {
       method: "POST",
       body: data,
     })
