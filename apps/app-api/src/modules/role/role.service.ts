@@ -101,12 +101,14 @@ export class RoleService {
   async list(query: {
     roleCode?: string
     roleName?: string
+    familyId?: string
     page?: number | string
     pageSize?: number | string
   }): Promise<PageResult<AppRole>> {
     const where: Parameters<typeof and> = [eq(roleSchema.isDeleted, false)]
     if (query.roleCode) where.push(like(roleSchema.roleCode, `%${query.roleCode}%`))
     if (query.roleName) where.push(like(roleSchema.roleName, `%${query.roleName}%`))
+    if (query.familyId) where.push(eq(roleSchema.familyId, query.familyId))
 
     const pageParams = normalizePage(query)
 

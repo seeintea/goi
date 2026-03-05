@@ -1,12 +1,14 @@
 import { Plus } from "lucide-react"
 import { useState } from "react"
-import { useForm } from "react-hook-form"
+import { Controller, useForm } from "react-hook-form"
 
+import { useRoleList } from "@/api/queries/role"
 import { useCreateUser } from "@/api/queries/user"
 import { BaseDialog } from "@/components/base/base-dialog"
 import { FieldGroup, FormField } from "@/components/base/base-field"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useUser } from "@/stores/useUser"
 
 type CreateUserFormValues = {
@@ -16,12 +18,15 @@ type CreateUserFormValues = {
   email?: string
   phone?: string
   familyId?: string
+  roleId?: string
 }
 
 export function CreateUserDialog() {
   const [open, setOpen] = useState(false)
   const createUser = useCreateUser()
   const familyId = useUser((s) => s.familyId)
+  const { data: roleData } = useRoleList({ familyId: familyId || undefined })
+  const roles = roleData?.list ?? []
 
   const form = useForm<CreateUserFormValues>({
     defaultValues: {
@@ -31,6 +36,7 @@ export function CreateUserDialog() {
       email: "",
       phone: "",
       familyId: "",
+      roleId: "",
     },
   })
 
@@ -83,6 +89,37 @@ export function CreateUserDialog() {
               type="password"
               {...form.register("password", { required: "请输入密码" })}
               placeholder="请输入密码"
+            />
+          </FormField>
+
+          <FormField
+            label="角色"
+            errors={[form.formState.errors.roleId]}
+          >
+            <Controller
+              control={form.control}
+              name="roleId"
+              render={({ field }) => (
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                  value={field.value}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="请选择角色" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {roles.map((role) => (
+                      <SelectItem
+                        key={role.roleId}
+                        value={role.roleId}
+                      >
+                        {role.roleName}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
             />
           </FormField>
 

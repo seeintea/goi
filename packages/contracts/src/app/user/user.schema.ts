@@ -29,6 +29,8 @@ export const appUserResponseSchema = z
     isDeleted: shape.isDeleted,
     createdAt: shape.createdAt,
     updatedAt: shape.updatedAt,
+    roleId: z.string().uuid().optional().nullable().describe("角色ID"),
+    roleName: z.string().optional().nullable().describe("角色名称"),
   })
   .meta({ id: "用户响应类型" })
 
@@ -40,7 +42,8 @@ export const createAppUserSchema = z
     email: shape.email.optional(),
     phone: shape.phone.optional(),
     isVirtual: shape.isVirtual.optional(),
-    familyId: z.uuid().optional().describe("家庭ID"),
+    familyId: z.string().uuid().optional().describe("家庭ID"),
+    roleId: z.string().uuid().optional().describe("角色ID"),
   })
   .meta({ id: "创建用户请求" })
 
@@ -52,6 +55,8 @@ export const updateAppUserSchema = z
     email: shape.email.optional(),
     phone: shape.phone.optional(),
     isVirtual: shape.isVirtual.optional(),
+    familyId: z.string().uuid().optional().describe("家庭ID"),
+    roleId: z.string().uuid().optional().describe("角色ID"),
   })
   .meta({ id: "更新用户请求" })
 
@@ -99,6 +104,8 @@ const appUserPageItemSchema = z.object({
   isDeleted: shape.isDeleted,
   createdAt: shape.createdAt,
   updatedAt: shape.updatedAt,
+  roleId: z.string().uuid().optional().nullable().describe("角色ID"),
+  roleName: z.string().optional().nullable().describe("角色名称"),
 })
 
 export const appUserPageResponseSchema = z

@@ -38,6 +38,11 @@ export function getUserColumns({
       header: "用户名",
     },
     {
+      accessorKey: "roleName",
+      header: "角色",
+      cell: ({ row }) => row.getValue("roleName") || "-",
+    },
+    {
       accessorKey: "nickname",
       header: "昵称",
       cell: ({ row }) => row.getValue("nickname") || "-",

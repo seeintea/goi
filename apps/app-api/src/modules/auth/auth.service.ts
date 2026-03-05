@@ -254,6 +254,9 @@ export class AuthService {
       }
     }
 
+    console.log("roleId", roleId)
+    console.log("roleCode", roleCode)
+
     if (!roleId || !roleCode) return []
 
     const shouldInherit = (FAMILY_ROLE_CONFIG.GLOBAL_PERMISSION_INHERITANCE_ROLES as readonly string[]).includes(

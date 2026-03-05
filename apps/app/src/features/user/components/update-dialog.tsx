@@ -2,16 +2,20 @@ import type { AppUser } from "@goi/contracts"
 import { useEffect } from "react"
 import { useForm } from "react-hook-form"
 
+import { useRoleList } from "@/api/queries/role"
 import { useUpdateUser } from "@/api/queries/user"
 import { BaseDialog } from "@/components/base/base-dialog"
 import { FieldGroup, FormField } from "@/components/base/base-field"
+import { Select } from "@/components/base/select"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { useUser } from "@/stores/useUser"
 
 type UpdateUserFormValues = {
   nickname?: string
   email?: string
   phone?: string
+  roleId?: string
 }
 
 type UpdateUserDialogProps = {
@@ -22,6 +26,13 @@ type UpdateUserDialogProps = {
 
 export function UpdateUserDialog({ user, open, onOpenChange }: UpdateUserDialogProps) {
   const updateUser = useUpdateUser()
+  const familyId = useUser((s) => s.familyId)
+  const { data: roleData } = useRoleList({ familyId: familyId || undefined })
+
+  const rolesOptions = (roleData?.list ?? []).map((item) => ({
+    label: item.roleName,
+    value: item.roleId,
+  }))
 
   const form = useForm<UpdateUserFormValues>()
 
@@ -31,6 +42,7 @@ export function UpdateUserDialog({ user, open, onOpenChange }: UpdateUserDialogP
         nickname: user.nickname || "",
         email: user.email || "",
         phone: user.phone || "",
+        roleId: user.roleId || "",
       })
     }
   }, [user, open, form])
@@ -41,6 +53,7 @@ export function UpdateUserDialog({ user, open, onOpenChange }: UpdateUserDialogP
     try {
       await updateUser.mutateAsync({
         userId: user.userId,
+        familyId: familyId || undefined,
         ...values,
       })
       onOpenChange(false)
@@ -67,6 +80,23 @@ export function UpdateUserDialog({ user, open, onOpenChange }: UpdateUserDialogP
             <Input
               {...form.register("nickname")}
               placeholder="请输入昵称"
+            />
+          </FormField>
+
+          <FormField
+            label="角色"
+            errors={[form.formState.errors.roleId]}
+          >
+            <input
+              type="hidden"
+              {...form.register("roleId", { required: "请选择模块" })}
+            />
+            <Select
+              options={rolesOptions}
+              value={form.watch("roleId")}
+              onValueChange={(next) => {
+                form.setValue("roleId", String(next), { shouldValidate: true })
+              }}
             />
           </FormField>
 

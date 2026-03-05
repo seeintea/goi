@@ -1,7 +1,7 @@
 import type { AppUser, CreateAppUser, UpdateAppUser } from "@goi/contracts"
 import { normalizePage, toIsoString, toPageResult } from "@goi/utils"
 import { Injectable, NotFoundException } from "@nestjs/common"
-import { and, desc, eq, exists, like, sql } from "drizzle-orm"
+import { and, desc, eq, like, sql } from "drizzle-orm"
 import { PgService, pgSchema } from "@/database/postgresql"
 import type { PageResult } from "@/types/response"
 
@@ -69,7 +69,7 @@ export class UserService {
   }
 
   async create(
-    values: CreateAppUser & { salt: string; password: string; userId: string; familyId?: string },
+    values: CreateAppUser & { salt: string; password: string; userId: string; familyId?: string; roleId?: string },
   ): Promise<AppUser> {
     const inserted = await this.pg.pdb.transaction(async (tx) => {
       const [user] = await tx
@@ -92,15 +92,17 @@ export class UserService {
         // Find 'member' role in the family, or fallback to 'owner' if not found?
         // Actually, for virtual users, we should probably assign a minimal role.
         // Let's try to find a role with code 'member'.
-        const [role] = await tx
-          .select({ roleId: roleSchema.roleId })
-          .from(roleSchema)
-          .where(and(eq(roleSchema.familyId, values.familyId), eq(roleSchema.roleCode, "member")))
-          .limit(1)
+        let roleId = values.roleId
 
-        // If no 'member' role, maybe 'owner'? Or just pick any?
-        // Let's assume 'member' exists or use the first role found.
-        let roleId = role?.roleId
+        if (!roleId) {
+          const [role] = await tx
+            .select({ roleId: roleSchema.roleId })
+            .from(roleSchema)
+            .where(and(eq(roleSchema.familyId, values.familyId), eq(roleSchema.roleCode, "member")))
+            .limit(1)
+
+          roleId = role?.roleId
+        }
 
         if (!roleId) {
           const [anyRole] = await tx
@@ -128,16 +130,31 @@ export class UserService {
   }
 
   async update(values: UpdateAppUser): Promise<AppUser> {
-    await this.pg.pdb
-      .update(userSchema)
-      .set({
-        ...(values.username !== undefined ? { username: values.username } : {}),
-        ...(values.nickname !== undefined ? { nickname: values.nickname } : {}),
-        ...(values.email !== undefined ? { email: values.email } : {}),
-        ...(values.phone !== undefined ? { phone: values.phone } : {}),
-        ...(values.isVirtual !== undefined ? { isVirtual: values.isVirtual } : {}),
-      })
-      .where(eq(userSchema.userId, values.userId))
+    await this.pg.pdb.transaction(async (tx) => {
+      await tx
+        .update(userSchema)
+        .set({
+          ...(values.username !== undefined ? { username: values.username } : {}),
+          ...(values.nickname !== undefined ? { nickname: values.nickname } : {}),
+          ...(values.email !== undefined ? { email: values.email } : {}),
+          ...(values.phone !== undefined ? { phone: values.phone } : {}),
+          ...(values.isVirtual !== undefined ? { isVirtual: values.isVirtual } : {}),
+        })
+        .where(eq(userSchema.userId, values.userId))
+
+      if (values.familyId && values.roleId) {
+        await tx
+          .update(familyMemberSchema)
+          .set({ roleId: values.roleId })
+          .where(
+            and(
+              eq(familyMemberSchema.userId, values.userId),
+              eq(familyMemberSchema.familyId, values.familyId),
+              eq(familyMemberSchema.isDeleted, false),
+            ),
+          )
+      }
+    })
     return this.find(values.userId)
   }
 
@@ -162,20 +179,7 @@ export class UserService {
     if (query.userId) where.push(eq(userSchema.userId, query.userId))
     if (query.username) where.push(like(userSchema.username, `%${query.username}%`))
     if (query.familyId) {
-      where.push(
-        exists(
-          this.pg.pdb
-            .select({ id: familyMemberSchema.id })
-            .from(familyMemberSchema)
-            .where(
-              and(
-                eq(familyMemberSchema.userId, userSchema.userId),
-                eq(familyMemberSchema.familyId, query.familyId),
-                eq(familyMemberSchema.isDeleted, false),
-              ),
-            ),
-        ),
-      )
+      where.push(and(eq(familyMemberSchema.familyId, query.familyId), eq(familyMemberSchema.isDeleted, false)))
     }
 
     const pageParams = normalizePage(query)
@@ -183,6 +187,10 @@ export class UserService {
     const totalRows = await this.pg.pdb
       .select({ count: sql<number>`count(*)` })
       .from(userSchema)
+      .leftJoin(
+        familyMemberSchema,
+        and(eq(familyMemberSchema.userId, userSchema.userId), eq(familyMemberSchema.isDeleted, false)),
+      )
       .where(and(...where))
     const total = Number(totalRows[0]?.count ?? 0)
 
@@ -198,8 +206,15 @@ export class UserService {
         isDeleted: userSchema.isDeleted,
         createdAt: userSchema.createdAt,
         updatedAt: userSchema.updatedAt,
+        roleId: roleSchema.roleId,
+        roleName: roleSchema.roleName,
       })
       .from(userSchema)
+      .leftJoin(
+        familyMemberSchema,
+        and(eq(familyMemberSchema.userId, userSchema.userId), eq(familyMemberSchema.isDeleted, false)),
+      )
+      .leftJoin(roleSchema, eq(roleSchema.roleId, familyMemberSchema.roleId))
       .where(and(...where))
       .orderBy(desc(userSchema.createdAt))
       .limit(pageParams.limit)
@@ -209,6 +224,8 @@ export class UserService {
       ...row,
       createdAt: toIsoString(row.createdAt),
       updatedAt: toIsoString(row.updatedAt),
+      roleId: row.roleId,
+      roleName: row.roleName,
     }))
 
     return toPageResult(pageParams, total, list)
