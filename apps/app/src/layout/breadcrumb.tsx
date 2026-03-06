@@ -1,4 +1,6 @@
+import type { NavMenuTree } from "@goi/contracts"
 import { useMatches } from "@tanstack/react-router"
+import { useMemo } from "react"
 
 import {
   BreadcrumbItem,
@@ -7,15 +9,44 @@ import {
   BreadcrumbSeparator,
   Breadcrumb as ShadcnBreadcrumb,
 } from "@/components/ui/breadcrumb"
+import { Route } from "@/routes/__root"
 
 export function Breadcrumb() {
   const matches = useMatches()
+  const { menuTree } = Route.useRouteContext()
 
-  const crumbs = matches.map((match) => {
-    const staticData = (match as unknown as { staticData?: { name?: string } })?.staticData ?? null
-    const name = staticData?.name ?? ""
-    return { to: match.routeId, name }
-  })
+  const pathNameMap = useMemo(() => {
+    const map = new Map<string, string>()
+    const traverse = (nodes: NavMenuTree[]) => {
+      for (const node of nodes) {
+        map.set(node.routePath, node.name)
+        if (node.children) {
+          traverse(node.children)
+        }
+      }
+    }
+    if (menuTree) {
+      traverse(menuTree)
+    }
+    return map
+  }, [menuTree])
+
+  const crumbs = matches
+    .map((match) => {
+      const { routeId, loaderData } = match
+      // Priority: loaderData.crumb -> menuTree name -> staticData.name
+      const loaderCrumb = (loaderData as { crumb?: string } | undefined)?.crumb
+      const menuName = pathNameMap.get(routeId)
+      const staticName = (match as unknown as { staticData?: { name?: string } })?.staticData?.name
+
+      const name = loaderCrumb ?? menuName ?? staticName
+
+      return {
+        to: routeId,
+        name,
+      }
+    })
+    .filter((crumb) => crumb.name)
 
   if (crumbs.length === 0) {
     return null
