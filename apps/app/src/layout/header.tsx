@@ -3,13 +3,13 @@ import { useNavigate } from "@tanstack/react-router"
 import { useLogout } from "@/api/queries/auth"
 import { Button } from "@/components/ui/button"
 import { SidebarTrigger } from "@/components/ui/sidebar"
-import { Route } from "@/routes/__root"
+import { useRouteContext } from "@/hooks/use-route-context"
 import { Breadcrumb } from "./breadcrumb"
 
 export function Header() {
   const navigate = useNavigate()
   const logoutMutation = useLogout()
-  const { user } = Route.useRouteContext()
+  const { user } = useRouteContext()
   const username = user?.username
 
   return (

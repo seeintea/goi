@@ -9,11 +9,11 @@ import {
   BreadcrumbSeparator,
   Breadcrumb as ShadcnBreadcrumb,
 } from "@/components/ui/breadcrumb"
-import { Route } from "@/routes/__root"
+import { useMenuTree } from "@/hooks/use-route-context"
 
 export function Breadcrumb() {
   const matches = useMatches()
-  const { menuTree } = Route.useRouteContext()
+  const menuTree = useMenuTree()
 
   const pathNameMap = useMemo(() => {
     const map = new Map<string, string>()

@@ -9,7 +9,7 @@ import { DefaultCatchBoundary, Layout, NotFound } from "@/layout"
 import { useUser } from "@/stores"
 import { seo } from "@/utils/seo"
 
-type RouterContext = {
+export type RouterContext = {
   user?: LoginResponse | null
   queryClient: QueryClient
   menuTree: NavMenuTree[]
