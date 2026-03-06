@@ -45,7 +45,7 @@ export function CreateUserDialog() {
       await createUser.mutateAsync({
         ...values,
         isVirtual: true,
-        familyId: familyId ?? "",
+        familyId: familyId || undefined,
       })
       setOpen(false)
       form.reset()
