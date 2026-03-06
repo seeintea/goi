@@ -58,6 +58,13 @@ export const createFamilyApi = (request: RequestFn) => ({
       body: data,
     })
   },
+
+  join: (data: { familyId: string }) => {
+    return request<boolean>("/api/families/join", {
+      method: "POST",
+      body: data,
+    })
+  },
 })
 
 export type FamilyApi = ReturnType<typeof createFamilyApi>

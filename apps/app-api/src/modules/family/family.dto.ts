@@ -35,3 +35,8 @@ export class DeleteFamilyDto extends createZodDto(deleteFamilySchema) {}
 
 export class InviteCodeResponseDto extends createZodDto(typedInviteCodeResponseSchema) {}
 export class GenerateInviteCodeDto extends createZodDto(typedGenerateInviteCodeSchema) {}
+
+const joinFamilySchema = z.object({
+  familyId: z.string(),
+})
+export class JoinFamilyDto extends createZodDto(joinFamilySchema) {}

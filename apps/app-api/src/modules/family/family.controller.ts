@@ -13,6 +13,7 @@ import {
   FamilyResponseDto,
   GenerateInviteCodeDto,
   InviteCodeResponseDto,
+  JoinFamilyDto,
   UpdateFamilyDto,
 } from "./family.dto"
 import { FamilyService } from "./family.service"
@@ -21,6 +22,13 @@ import { FamilyService } from "./family.service"
 @Controller("families")
 export class FamilyController {
   constructor(private readonly familyService: FamilyService) {}
+
+  @Post("join")
+  @Permission("fin:family:read")
+  @ApiOperation({ summary: "加入家庭" })
+  join(@CurrentUser() user: UserPayload, @Body() dto: JoinFamilyDto) {
+    return this.familyService.join(user.userId, dto.familyId)
+  }
 
   @Post("invite-code")
   @Permission("fin:family:update")

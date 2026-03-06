@@ -48,6 +48,64 @@ export class FamilyService {
     return code
   }
 
+  async join(userId: string, codeOrId: string): Promise<boolean> {
+    let familyId = codeOrId
+
+    // Check if invite code
+    if (codeOrId.length !== 36) {
+      const inviteKey = `invite:code:${codeOrId}`
+      const inviteValue = await this.redisService.get(inviteKey)
+      if (!inviteValue) throw new NotFoundException("无效的邀请码")
+      const parsed = JSON.parse(inviteValue)
+      familyId = parsed.familyId
+    } else {
+      // Assume it is familyId, verify existence
+      const family = await this.find(familyId).catch(() => null)
+      if (!family) throw new NotFoundException("家庭不存在")
+    }
+
+    // Check membership
+    const [existing] = await this.pg.pdb
+      .select({ id: familyMemberSchema.id })
+      .from(familyMemberSchema)
+      .where(
+        and(
+          eq(familyMemberSchema.familyId, familyId),
+          eq(familyMemberSchema.userId, userId),
+          eq(familyMemberSchema.isDeleted, false),
+        ),
+      )
+      .limit(1)
+
+    if (existing) return true
+
+    // Find role
+    const roles = await this.pg.pdb
+      .select({ roleId: roleSchema.roleId, roleCode: roleSchema.roleCode })
+      .from(roleSchema)
+      .where(and(eq(roleSchema.familyId, familyId), eq(roleSchema.isDeleted, false)))
+
+    let role = roles.find((r) => r.roleCode === "member")
+    if (!role) {
+      role = roles.find((r) => r.roleCode !== FAMILY_ROLE_CONFIG.CREATOR_ROLE_CODE)
+    }
+    if (!role) {
+      role = roles[0]
+    }
+    if (!role) throw new Error("No roles found for family")
+
+    // Add member
+    await this.pg.pdb.insert(familyMemberSchema).values({
+      id: uuid(),
+      familyId,
+      userId,
+      roleId: role.roleId,
+      status: "active",
+    })
+
+    return true
+  }
+
   async find(id: string, tx?: Parameters<Parameters<PgService["pdb"]["transaction"]>[0]>[0]): Promise<Family> {
     const db = tx || this.pg.pdb
     const rows = await db
