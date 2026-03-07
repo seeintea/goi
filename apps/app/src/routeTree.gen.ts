@@ -15,6 +15,7 @@ import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as SystemRouteRouteImport } from './routes/system/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as SystemUserRouteImport } from './routes/system/user'
+import { Route as SystemTagRouteImport } from './routes/system/tag'
 import { Route as SystemRoleRouteImport } from './routes/system/role'
 
 const RegisterRoute = RegisterRouteImport.update({
@@ -47,6 +48,11 @@ const SystemUserRoute = SystemUserRouteImport.update({
   path: '/user',
   getParentRoute: () => SystemRouteRoute,
 } as any)
+const SystemTagRoute = SystemTagRouteImport.update({
+  id: '/tag',
+  path: '/tag',
+  getParentRoute: () => SystemRouteRoute,
+} as any)
 const SystemRoleRoute = SystemRoleRouteImport.update({
   id: '/role',
   path: '/role',
@@ -60,6 +66,7 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
   '/system/role': typeof SystemRoleRoute
+  '/system/tag': typeof SystemTagRoute
   '/system/user': typeof SystemUserRoute
 }
 export interface FileRoutesByTo {
@@ -69,6 +76,7 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
   '/system/role': typeof SystemRoleRoute
+  '/system/tag': typeof SystemTagRoute
   '/system/user': typeof SystemUserRoute
 }
 export interface FileRoutesById {
@@ -79,6 +87,7 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
   '/system/role': typeof SystemRoleRoute
+  '/system/tag': typeof SystemTagRoute
   '/system/user': typeof SystemUserRoute
 }
 export interface FileRouteTypes {
@@ -90,6 +99,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/register'
     | '/system/role'
+    | '/system/tag'
     | '/system/user'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -99,6 +109,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/register'
     | '/system/role'
+    | '/system/tag'
     | '/system/user'
   id:
     | '__root__'
@@ -108,6 +119,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/register'
     | '/system/role'
+    | '/system/tag'
     | '/system/user'
   fileRoutesById: FileRoutesById
 }
@@ -163,6 +175,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SystemUserRouteImport
       parentRoute: typeof SystemRouteRoute
     }
+    '/system/tag': {
+      id: '/system/tag'
+      path: '/tag'
+      fullPath: '/system/tag'
+      preLoaderRoute: typeof SystemTagRouteImport
+      parentRoute: typeof SystemRouteRoute
+    }
     '/system/role': {
       id: '/system/role'
       path: '/role'
@@ -175,11 +194,13 @@ declare module '@tanstack/react-router' {
 
 interface SystemRouteRouteChildren {
   SystemRoleRoute: typeof SystemRoleRoute
+  SystemTagRoute: typeof SystemTagRoute
   SystemUserRoute: typeof SystemUserRoute
 }
 
 const SystemRouteRouteChildren: SystemRouteRouteChildren = {
   SystemRoleRoute: SystemRoleRoute,
+  SystemTagRoute: SystemTagRoute,
   SystemUserRoute: SystemUserRoute,
 }
 
